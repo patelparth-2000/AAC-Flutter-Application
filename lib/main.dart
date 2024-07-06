@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'AAC app',
+      title: 'AAC',
       theme: ThemeData(
         fontFamily: AppConstants.fontFamilyNormal,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
