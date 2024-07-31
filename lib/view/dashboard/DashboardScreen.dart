@@ -363,12 +363,69 @@ class DashboardScreenState extends State<DashboardScreen> {
 
   void readAllText() {
     String allText = _widgetList
-        .where((widget) =>
-            // ignore: unnecessary_cast
-            widget is Container && (widget as Container).child is Text)
-        .map((widget) => (widget as Container).child as Text)
-        .map((textWidget) => textWidget.data)
+        .map((widget) {
+          if (widget is Container) {
+            var child = widget.child;
+            if (child is Column) {
+              // Collect all Text children from Column
+              return child.children
+                  .where((child) => child is Text)
+                  .map((textWidget) => (textWidget as Text).data)
+                  .join(" ");
+            } else if (child is Text) {
+              // Directly use the Text widget
+              return child.data;
+            }
+          }
+          return "";
+        })
+        .where((text) => text!.isNotEmpty)
         .join(" ");
     speakToText(allText, flutterTts);
   }
+
+  // This is only for Column text
+  // void readAllText() {
+  //   String allText = _widgetList
+  //       .where((widget) =>
+  //           widget is Container &&
+  //               ((widget as Container).child is Column &&
+  //                   ((widget as Container).child as Column)
+  //                       .children
+  //                       .any((child) => child is Text)) ||
+  //           (widget as Container).child is Text)
+  //       .map((widget) => ((widget as Container).child as Column)
+  //           .children
+  //           .where((child) => child is Text)
+  //           .map((textWidget) => (textWidget as Text).data)
+  //           .join(" "))
+  //       .join(" ");
+  //   speakToText(allText, flutterTts);
+  // }
+
+  // This is mine tested
+  // void readAllText() {
+  //   String allText = _widgetList
+  //       .where((widget) =>
+  //           // ignore: unnecessary_cast
+  //           widget is Container &&
+  //           (widget as Container).child is Text &&
+  //           ((widget as Container).child as Column).children is Text)
+  //       .map((widget) => (widget as Container).child as Text)
+  //       .map((textWidget) => textWidget.data)
+  //       .join(" ");
+  //   speakToText(allText, flutterTts);
+  // }
+
+  // This is before changes
+  //  void readAllText() {
+  //   String allText = _widgetList
+  //       .where((widget) =>
+  //           // ignore: unnecessary_cast
+  //           widget is Container && (widget as Container).child is Text)
+  //       .map((widget) => (widget as Container).child as Text)
+  //       .map((textWidget) => textWidget.data)
+  //       .join(" ");
+  //   speakToText(allText, flutterTts);
+  // }
 }
