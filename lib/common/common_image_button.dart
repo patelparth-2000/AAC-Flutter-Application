@@ -20,6 +20,7 @@ class CommonImageButton extends StatelessWidget {
     this.isHorizontal = false,
     this.isImageShow = false,
     this.isTextShow = true,
+    this.buttonImage,
   });
   final double? vertical;
   final double? horizontal;
@@ -28,8 +29,9 @@ class CommonImageButton extends StatelessWidget {
   final double? width;
   final TextStyle? textStyle;
   final String? buttonName;
+  final String? buttonImage;
   final IconData? buttonIcon;
-  final Color buttonIconColor;
+  final Color? buttonIconColor;
   final Color buttonTextColor;
   final Color backgroundColor;
   final Color borderColor;
@@ -61,7 +63,14 @@ class CommonImageButton extends StatelessWidget {
                       color: buttonIconColor,
                       size: imageSize,
                     ),
-                 const SizedBox(
+                  if (buttonImage != null)
+                    Image.asset(
+                      buttonImage!,
+                      color: buttonIconColor,
+                      height: imageSize,
+                      width: imageSize,
+                    ),
+                  const SizedBox(
                     width: 3,
                   ),
                   if (buttonName != null)
@@ -81,6 +90,13 @@ class CommonImageButton extends StatelessWidget {
                       buttonIcon,
                       color: buttonIconColor,
                       size: imageSize,
+                    ),
+                  if (buttonImage != null && isImageShow)
+                    Image.asset(
+                      buttonImage!,
+                      color: buttonIconColor,
+                      height: imageSize,
+                      width: imageSize,
                     ),
                   if (buttonName != null && isTextShow)
                     Text(

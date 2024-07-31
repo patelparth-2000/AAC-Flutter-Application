@@ -19,7 +19,7 @@ class _GridDateScreenState extends State<GridDateScreen> {
   List<String> gridList = [
     "hello",
     "ok",
-    "by",
+    "bye",
     "how",
     "where",
     "why",
@@ -43,7 +43,7 @@ class _GridDateScreenState extends State<GridDateScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(top: 5),
+      padding: const EdgeInsets.only(top: 5, bottom: 5),
       color: AppColorConstants.white,
       child: GridView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -60,16 +60,19 @@ class _GridDateScreenState extends State<GridDateScreen> {
             flutterTts: widget.flutterTts,
             text: data,
             onTap: () {
-              widget.onAdd(data, data);
+              widget.onAdd(data, "assets/grid_icons/$data-image.png");
             },
             child: CommonImageButton(
+                buttonImage: "assets/grid_icons/$data-image.png",
+                imageSize: 55,
+                isImageShow: true,
                 backgroundColor: AppColorConstants.keyBoardBackColor,
                 borderColor: AppColorConstants.keyBoardBackColor,
                 textStyle: const TextStyle(
                     color: AppColorConstants.keyBoardTextColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 18),
-                buttonIconColor: AppColorConstants.keyBoardTextColor,
+                buttonIconColor: null,
                 buttonName: data),
           );
         },

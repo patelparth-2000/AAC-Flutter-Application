@@ -296,7 +296,18 @@ class DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       _widgetList.add(Container(
           margin: const EdgeInsets.symmetric(horizontal: 3),
-          child: Text("$text")));
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                icon,
+                height: 15,
+                width: 15,
+              ),
+              Text("$text"),
+            ],
+          )));
       _isNewWidget = true;
       _mainTextFieldController.clear();
     });
