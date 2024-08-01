@@ -27,10 +27,12 @@ class DashboardScreenState extends State<DashboardScreen> {
   final TextEditingController _mainTextFieldController =
       TextEditingController();
   final List<Widget> _widgetList = [];
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     setDefaultEngineAndLanguage();
   }
 
@@ -53,6 +55,7 @@ class DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -121,6 +124,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                               height: 50,
                               child: ListView.builder(
                                 shrinkWrap: true,
+                                controller: _scrollController,
                                 scrollDirection: Axis.horizontal,
                                 itemCount: _widgetList.length,
                                 itemBuilder: (context, index) {
@@ -129,69 +133,38 @@ class DashboardScreenState extends State<DashboardScreen> {
                               ),
                             ),
                           ),
-                          for (int i = 0; i < 4; i++)
-                            Row(
-                              children: [
-                                CommonImageButton(
-                                  isImageShow: true,
-                                  isTextShow: true,
-                                  vertical: 0,
-                                  horizontal: 0,
-                                  width: 45,
-                                  height: 45,
-                                  backgroundColor: AppColorConstants.white,
-                                  buttonIconColor:
-                                      AppColorConstants.imageTextButtonColor,
-                                  buttonIcon: textFieldButtonNameList[i]
-                                      ["icon"],
-                                  imageSize: 25,
-                                  buttonName: textFieldButtonNameList[i]
-                                      ["name"],
-                                  textStyle: const TextStyle(
-                                      color: AppColorConstants
-                                          .imageTextButtonColor,
-                                      fontSize: 10),
-                                  onTap: () {
-                                    speakToText(
-                                        textFieldButtonNameList[i]["name"],
-                                        flutterTts);
-                                    if (textFieldButtonNameList[i]["name"] ==
-                                        "Delete") {
-                                      _isNewWidget = true;
-                                      _mainTextFieldController.clear();
-                                      if (_widgetList.isNotEmpty) {
-                                        _widgetList.removeLast();
-                                      }
-                                    } else if (textFieldButtonNameList[i]
-                                            ["name"] ==
-                                        "Clear") {
-                                      _isNewWidget = true;
-                                      _mainTextFieldController.clear();
-                                      _widgetList.clear();
-                                    } else if (textFieldButtonNameList[i]
-                                            ["name"] ==
-                                        "Speak") {
-                                      readAllText();
-                                    } else if (textFieldButtonNameList[i]
-                                            ["name"] ==
-                                        "Share") {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const MyHomePage(
-                                                    title: "hello boys"),
-                                          ));
-                                    }
-
-                                    setState(() {});
-                                  },
-                                ),
-                                SizedBox(
-                                  width: Dimensions.screenWidth * 0.004,
-                                )
-                              ],
-                            ),
+                          if (_widgetList.isNotEmpty)
+                            for (int i = 0; i < 4; i++)
+                              Row(
+                                children: [
+                                  CommonImageButton(
+                                    isImageShow: true,
+                                    isTextShow: true,
+                                    vertical: 0,
+                                    horizontal: 0,
+                                    width: 45,
+                                    height: 45,
+                                    backgroundColor: AppColorConstants.white,
+                                    buttonIconColor:
+                                        AppColorConstants.imageTextButtonColor,
+                                    buttonIcon: textFieldButtonNameList[i]
+                                        ["icon"],
+                                    imageSize: 25,
+                                    buttonName: textFieldButtonNameList[i]
+                                        ["name"],
+                                    textStyle: const TextStyle(
+                                        color: AppColorConstants
+                                            .imageTextButtonColor,
+                                        fontSize: 10),
+                                    onTap: () {
+                                      onTextfieldButton(i);
+                                    },
+                                  ),
+                                  SizedBox(
+                                    width: Dimensions.screenWidth * 0.004,
+                                  )
+                                ],
+                              ),
                         ],
                       ),
                     ),
@@ -292,7 +265,32 @@ class DashboardScreenState extends State<DashboardScreen> {
     {"name": "Share", "icon": Icons.share},
   ];
 
-  void _addNewWidget(text, icon) {
+  void onTextfieldButton(int i) {
+    speakToText(textFieldButtonNameList[i]["name"], flutterTts);
+    if (textFieldButtonNameList[i]["name"] == "Delete") {
+      _isNewWidget = true;
+      _mainTextFieldController.clear();
+      if (_widgetList.isNotEmpty) {
+        _widgetList.removeLast();
+      }
+    } else if (textFieldButtonNameList[i]["name"] == "Clear") {
+      _isNewWidget = true;
+      _mainTextFieldController.clear();
+      _widgetList.clear();
+    } else if (textFieldButtonNameList[i]["name"] == "Speak") {
+      readAllText();
+    } else if (textFieldButtonNameList[i]["name"] == "Share") {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MyHomePage(title: "hello boys"),
+          ));
+    }
+
+    setState(() {});
+  }
+
+  void _addNewWidget(text, String? icon) {
     setState(() {
       _widgetList.add(Container(
           margin: const EdgeInsets.symmetric(horizontal: 3),
@@ -300,16 +298,18 @@ class DashboardScreenState extends State<DashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                icon,
-                height: 15,
-                width: 15,
-              ),
+              if (icon != null)
+                Image.asset(
+                  icon,
+                  height: 20,
+                  width: 20,
+                ),
               Text("$text"),
             ],
           )));
       _isNewWidget = true;
       _mainTextFieldController.clear();
+      scrollLastItem();
     });
   }
 
@@ -335,6 +335,7 @@ class DashboardScreenState extends State<DashboardScreen> {
               child: Text(_mainTextFieldController.text));
         }
       }
+      scrollLastItem();
     });
   }
 
@@ -351,6 +352,7 @@ class DashboardScreenState extends State<DashboardScreen> {
               child: Text(_mainTextFieldController.text));
         }
       }
+      scrollLastItem();
     });
   }
 
@@ -358,6 +360,7 @@ class DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       _isNewWidget = true;
       _mainTextFieldController.clear();
+      scrollLastItem();
     });
   }
 
@@ -367,13 +370,11 @@ class DashboardScreenState extends State<DashboardScreen> {
           if (widget is Container) {
             var child = widget.child;
             if (child is Column) {
-              // Collect all Text children from Column
               return child.children
-                  .where((child) => child is Text)
-                  .map((textWidget) => (textWidget as Text).data)
+                  .whereType<Text>()
+                  .map((textWidget) => (textWidget).data)
                   .join(" ");
             } else if (child is Text) {
-              // Directly use the Text widget
               return child.data;
             }
           }
@@ -384,48 +385,15 @@ class DashboardScreenState extends State<DashboardScreen> {
     speakToText(allText, flutterTts);
   }
 
-  // This is only for Column text
-  // void readAllText() {
-  //   String allText = _widgetList
-  //       .where((widget) =>
-  //           widget is Container &&
-  //               ((widget as Container).child is Column &&
-  //                   ((widget as Container).child as Column)
-  //                       .children
-  //                       .any((child) => child is Text)) ||
-  //           (widget as Container).child is Text)
-  //       .map((widget) => ((widget as Container).child as Column)
-  //           .children
-  //           .where((child) => child is Text)
-  //           .map((textWidget) => (textWidget as Text).data)
-  //           .join(" "))
-  //       .join(" ");
-  //   speakToText(allText, flutterTts);
-  // }
-
-  // This is mine tested
-  // void readAllText() {
-  //   String allText = _widgetList
-  //       .where((widget) =>
-  //           // ignore: unnecessary_cast
-  //           widget is Container &&
-  //           (widget as Container).child is Text &&
-  //           ((widget as Container).child as Column).children is Text)
-  //       .map((widget) => (widget as Container).child as Text)
-  //       .map((textWidget) => textWidget.data)
-  //       .join(" ");
-  //   speakToText(allText, flutterTts);
-  // }
-
-  // This is before changes
-  //  void readAllText() {
-  //   String allText = _widgetList
-  //       .where((widget) =>
-  //           // ignore: unnecessary_cast
-  //           widget is Container && (widget as Container).child is Text)
-  //       .map((widget) => (widget as Container).child as Text)
-  //       .map((textWidget) => textWidget.data)
-  //       .join(" ");
-  //   speakToText(allText, flutterTts);
-  // }
+  void scrollLastItem() {
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
 }

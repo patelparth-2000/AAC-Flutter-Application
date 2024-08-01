@@ -15,7 +15,7 @@ class KeyboardScreen extends StatefulWidget {
       required this.onSpace,
       required this.deleteLast});
   final FlutterTts flutterTts;
-  final Function(String, String) onAdd;
+  final Function(String, String?) onAdd;
   final Function(String) onTextValue;
   final Function() onSpace;
   final Function() deleteLast;
@@ -115,7 +115,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount:
-                    suggestionList.length, // Number of columns in the grid
+                        suggestionList.length, // Number of columns in the grid
                     childAspectRatio: 8 / 3, // Aspect ratio of the grid items
                     mainAxisSpacing: 11,
                     crossAxisSpacing: 11),
@@ -127,7 +127,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                     flutterTts: widget.flutterTts,
                     text: data,
                     onTap: () {
-                      widget.onAdd(data, data);
+                      widget.onAdd(data, null);
                     },
                     child: CommonImageButton(
                       backgroundColor: AppColorConstants.keyBoardBackColor,
