@@ -63,7 +63,7 @@ class DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: _canExit ? true : false,
-      onPopInvoked: (value) async {
+      onPopInvokedWithResult: (value, popdata) async {
         if (_canExit) {
           return;
         } else {

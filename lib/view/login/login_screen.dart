@@ -10,6 +10,7 @@ import '../../API/common_api_call.dart';
 import '../../common/common.dart';
 import '../../common/common_button_widget.dart';
 import '../../common/common_flag_text_field_widget.dart';
+import '../../services/bulk_api_data.dart';
 import '../../util/dimensions.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -32,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    BulkApiData.getCategory(context);
     _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
       if (_pageViewController.hasClients) {
         int nextPage =
@@ -80,7 +82,6 @@ class _LoginScreenState extends State<LoginScreen> {
       final responseData = json.decode(response.body);
       if (responseData != null) {
         if (responseData["status"].toString() == "1") {
-          
           Navigator.push(
               context,
               MaterialPageRoute(
