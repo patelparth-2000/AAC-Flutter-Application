@@ -30,6 +30,8 @@ class DataBaseService {
   // Create table dynamically based on API data
   Future<void> createTablesFromApiData({
     required String tableName,
+    required String uniqueType,
+    required String uniqueId,
     required Map<String, dynamic> apiData,
   }) async {
     final db = await database;
@@ -76,7 +78,11 @@ class DataBaseService {
     }
 
     // Insert the data into the table
-    await insertDataIntoTable(tableName: tableName, data: apiData);
+    await insertDataIntoTable(
+        tableName: tableName,
+        data: apiData,
+        uniqueId: uniqueId,
+        uniqueType: uniqueType);
   }
 
 // Check if the table exists in the database
@@ -93,14 +99,53 @@ class DataBaseService {
   }
 
   // Insert API data into the table
-  Future<void> insertDataIntoTable({
+/*   Future<void> insertDataIntoTable({
     required String tableName,
     required Map<String, dynamic> data,
+    required String uniqueType,
+    required String uniqueId,
   }) async {
     final db = await database;
 
     // Insert data into table
     await db.insert(tableName, data);
     print('Data inserted into $tableName: $data');
+  } */
+
+  // Insert API data into the table
+  Future<void> insertDataIntoTable({
+    required String tableName,
+    required Map<String, dynamic> data,
+    required String uniqueType,
+    required String uniqueId,
+  }) async {
+    final db = await database;
+
+    // Check if the data already exists based on the unique column
+    final existingData = await db.query(
+      tableName,
+      where: '$uniqueType = ? AND $uniqueId = ?',
+      whereArgs: [data[uniqueType], data[uniqueId]],
+    );
+
+    if (existingData.isEmpty) {
+      // Insert data into table if it doesn't exist
+      await db.insert(tableName, data);
+      print('Data inserted into $tableName: $data');
+    } else {
+      print('Data already exists in $tableName, skipping insert.');
+    }
+  }
+
+  Future<dynamic> getCategoryTable() async {
+    final db = await database;
+    final result = await db.rawQuery("SELECT * FROM category_table");
+    return result;
+  }
+
+  Future<dynamic> getTablesData(String tableName) async {
+    final db = await database;
+    final result = await db.rawQuery("SELECT * FROM $tableName");
+    return result;
   }
 }

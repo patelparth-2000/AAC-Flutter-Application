@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:avaz_app/common/common.dart';
 import 'package:flutter/material.dart';
 
-import '../API/common_api_call.dart';
+import '../api/common_api_call.dart';
 import 'data_base_service.dart';
 
 class BulkApiData {
@@ -20,7 +20,8 @@ class BulkApiData {
             // Iterate through the list and insert each item
             for (var item in dataToStore) {
               if (item is Map<String, dynamic>) {
-                await _insertApiResponseToDatabase(item, "category_table");
+                await _insertApiResponseToDatabase(
+                    item, "category_table", "type", "id");
               }
             }
             for (var item in dataToStore) {
@@ -53,7 +54,7 @@ class BulkApiData {
             for (var item in dataToStore) {
               if (item is Map<String, dynamic>) {
                 await _insertApiResponseToDatabase(
-                    item, categoryName.replaceAll("-", "_"));
+                    item, categoryName.replaceAll("-", "_"), "type", "id");
               }
             }
             for (var item in dataToStore) {
@@ -93,7 +94,7 @@ class BulkApiData {
             for (var item in dataToStore) {
               if (item is Map<String, dynamic>) {
                 await _insertApiResponseToDatabase(
-                    item, categoryName.replaceAll("-", "_"));
+                    item, categoryName.replaceAll("-", "_"), "type", "id");
               }
             }
           }
@@ -105,13 +106,15 @@ class BulkApiData {
     }
   }
 
-  static Future<void> _insertApiResponseToDatabase(
-      Map<String, dynamic> apiData, String tableName) async {
+  static Future<void> _insertApiResponseToDatabase(Map<String, dynamic> apiData,
+      String tableName, String uniqueType, String uniqueId) async {
     final dbService = DataBaseService.instance;
     // Dynamically create a table based on API data
     await dbService.createTablesFromApiData(
       tableName: tableName, // Define your table name
       apiData: apiData,
+      uniqueType: uniqueType,
+      uniqueId: uniqueId,
     );
   }
 }

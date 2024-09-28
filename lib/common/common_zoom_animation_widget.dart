@@ -6,16 +6,22 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 class CommonZoomAnimationWidget extends StatefulWidget {
   final String text;
-  final String image;
-  final Function(String text, String image) onAdd;
+  final String slug;
+  final String type;
+  final String? image;
+  final Function(String text, String? image) onAdd;
+  // final Function(String tablename) onNavigationChange;
   final FlutterTts flutterTts;
 
   const CommonZoomAnimationWidget({
     super.key,
     required this.text,
-    required this.image,
+    this.image,
     required this.onAdd,
     required this.flutterTts,
+    // required this.onNavigationChange,
+    required this.type,
+    required this.slug,
   });
 
   @override
@@ -59,9 +65,11 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
     return ScaleTransition(
       scale: _animation,
       child: CommonTextToSpeak(
+        slug: widget.slug,
+        onAdd: widget.onAdd,
         flutterTts: widget.flutterTts,
         text: widget.text,
-        onTap: _onTap,
+        onTap: widget.type == "voice" ? _onTap : () {},
         child: CommonImageButton(
           buttonImage: widget.image,
           imageSize: 55,

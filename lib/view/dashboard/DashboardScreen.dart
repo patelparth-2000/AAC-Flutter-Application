@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:avaz_app/common/common.dart';
+import 'package:avaz_app/services/data_base_service.dart';
 import 'package:avaz_app/util/dimensions.dart';
 import 'package:avaz_app/view/test/test2.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
 
 import '../../common/common_image_button.dart';
+import '../../model/get_category_modal.dart';
 import '../../util/app_color_constants.dart';
 import '../grid_data/grid_date_screen.dart';
 import '../keyboard/keyboard_screen.dart';
@@ -28,10 +30,12 @@ class DashboardScreenState extends State<DashboardScreen> {
       TextEditingController();
   final List<Widget> _widgetList = [];
   late ScrollController _scrollController;
+  List<GetCategoryModal> getCategoryModalList = [];
 
   @override
   void initState() {
     super.initState();
+    getDataFromDatabse();
     _scrollController = ScrollController();
     setDefaultEngineAndLanguage();
   }
@@ -57,6 +61,44 @@ class DashboardScreenState extends State<DashboardScreen> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void getDataFromDatabse() async {
+    final dbService = DataBaseService.instance;
+    var categoryData = await dbService.getCategoryTable();
+    if (categoryData != null && categoryData is List) {
+      for (var item in categoryData) {
+        if (item is Map<String, dynamic>) {
+          getCategoryModalList.add(GetCategoryModal.fromJson(item));
+        }
+      }
+    }
+    setState(() {});
+  }
+
+  void getTablesDataFromDatabse(String tableName) async {
+    final dbService = DataBaseService.instance;
+    var categoryData = await dbService.getTablesData(tableName);
+    if (categoryData != null && categoryData is List) {
+      for (var item in categoryData) {
+        if (item is Map<String, dynamic>) {
+          getCategoryModalList.add(GetCategoryModal.fromJson(item));
+        }
+      }
+    }
+    changePageData();
+  }
+
+  void changePageData() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => GridDateScreen(
+          flutterTts: flutterTts,
+          getCategoryModalList: getCategoryModalList,
+          onAdd: _addNewWidget,
+        ), // Replace with your new screen
+      ),
+    );
   }
 
   @override
@@ -189,6 +231,8 @@ class DashboardScreenState extends State<DashboardScreen> {
             ),
             Expanded(
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
                     child: isKeyBoardShow
@@ -199,9 +243,32 @@ class DashboardScreenState extends State<DashboardScreen> {
                             deleteLast: removeLastCharacter,
                             onTextValue: addTextFieldValue,
                           )
-                        : GridDateScreen(
-                            flutterTts: flutterTts,
-                            onAdd: _addNewWidget,
+                        : WillPopScope(
+                            onWillPop: () async {
+                              // Check if the local navigator can pop
+                              final canPop = Navigator.of(context).canPop();
+                              if (canPop) {
+                                // If it can, pop the current route
+                                Navigator.of(context).pop();
+                                return false; // Prevent default back button behavior
+                              }
+                              // If there's nothing to pop, allow the default back button behavior
+                              return true;
+                            },
+                            child: Navigator(
+                              key: GlobalKey<
+                                  NavigatorState>(), // Unique key for this Navigator
+                              onGenerateRoute: (RouteSettings settings) {
+                                // Define initial route and any other routes within this section
+                                return MaterialPageRoute(
+                                  builder: (context) => GridDateScreen(
+                                    flutterTts: flutterTts,
+                                    getCategoryModalList: getCategoryModalList,
+                                    onAdd: _addNewWidget,
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                   ),
                   if (!isKeyBoardShow)

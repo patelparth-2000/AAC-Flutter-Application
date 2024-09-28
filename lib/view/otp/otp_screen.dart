@@ -7,7 +7,7 @@ import 'package:avaz_app/util/app_constants.dart';
 import 'package:avaz_app/view/data_collection/data_collection_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../../API/common_api_call.dart';
+import '../../api/common_api_call.dart';
 import '../../common/common.dart';
 import '../../common/common_button_widget.dart';
 import '../../common/common_flag_text_field_widget.dart';

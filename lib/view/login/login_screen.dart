@@ -6,7 +6,7 @@ import 'package:avaz_app/view/otp/otp_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import '../../API/common_api_call.dart';
+import '../../api/common_api_call.dart';
 import '../../common/common.dart';
 import '../../common/common_button_widget.dart';
 import '../../common/common_flag_text_field_widget.dart';

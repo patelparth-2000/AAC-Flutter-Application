@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print, prefer_typing_uninitialized_variables
 
-import 'package:avaz_app/API/api.dart';
+import 'package:avaz_app/api/api.dart';
 import 'package:http/http.dart' as http;
 
 class CommonApiCall {
