@@ -1,7 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:avaz_app/common/common.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 import '../api/common_api_call.dart';
 import 'data_base_service.dart';
@@ -16,10 +21,14 @@ class BulkApiData {
       if (responseData != null) {
         if (responseData["status"].toString() == "1") {
           final dataToStore = responseData["data"];
+          final imageUrl = responseData["imageURL"];
           if (dataToStore != null && dataToStore is List) {
             // Iterate through the list and insert each item
             for (var item in dataToStore) {
               if (item is Map<String, dynamic>) {
+                if (item["image"] != null) {
+                  await _asyncMethod(imageUrl, item["image"]);
+                }
                 await _insertApiResponseToDatabase(
                     item, "category_table", "type", "id");
               }
@@ -49,10 +58,14 @@ class BulkApiData {
       if (responseData != null) {
         if (responseData["status"].toString() == "1") {
           final dataToStore = responseData["data"];
+          final imageUrl = responseData["imageURL"];
           if (dataToStore != null && dataToStore is List) {
             // Iterate through the list and insert each item
             for (var item in dataToStore) {
               if (item is Map<String, dynamic>) {
+                if (item["image"] != null) {
+                  await _asyncMethod(imageUrl, item["image"]);
+                }
                 await _insertApiResponseToDatabase(
                     item, categoryName.replaceAll("-", "_"), "type", "id");
               }
@@ -89,10 +102,15 @@ class BulkApiData {
       if (responseData != null) {
         if (responseData["status"].toString() == "1") {
           final dataToStore = responseData["data"];
+          final imageUrl = responseData["imageURL"];
           if (dataToStore != null && dataToStore is List) {
             // Iterate through the list and insert each item
             for (var item in dataToStore) {
               if (item is Map<String, dynamic>) {
+                if (item["image"] != null) {
+                  await _asyncMethod(imageUrl, item["image"]);
+                }
+
                 await _insertApiResponseToDatabase(
                     item, categoryName.replaceAll("-", "_"), "type", "id");
               }
@@ -103,6 +121,31 @@ class BulkApiData {
               message: responseData["message"].toString(), context: context);
         }
       }
+    }
+  }
+
+  static Future<void> _asyncMethod(String imageUrl, String imageName) async {
+    try {
+      final url = Uri.parse('$imageUrl$imageName');
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var documentDirectory = await getApplicationDocumentsDirectory();
+        // ignore: avoid_print
+        _insertApiResponseToDatabase({
+          "id": "1",
+          "type": "directoryPath",
+          "path": "${documentDirectory.path}/"
+        }, "directory_path", "id", "type");
+        var filePath = '${documentDirectory.path}/$imageName';
+        File file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
+      } else {
+        // ignore: avoid_print
+        print('Failed to download image: ${response.statusCode}');
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error downloading image: $e');
     }
   }
 

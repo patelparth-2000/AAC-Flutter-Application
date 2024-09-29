@@ -97,10 +97,12 @@ class GridDateScreen extends StatefulWidget {
       {super.key,
       required this.flutterTts,
       required this.onAdd,
-      required this.getCategoryModalList});
+      required this.getCategoryModalList,
+      required this.changeTable});
   final FlutterTts flutterTts;
   final List<GetCategoryModal> getCategoryModalList;
   final Function(String text, String? image) onAdd;
+  final Function(String slug) changeTable;
 
   @override
   State<GridDateScreen> createState() => _GridDateScreenState();
@@ -123,15 +125,12 @@ class _GridDateScreenState extends State<GridDateScreen> {
         shrinkWrap: true,
         itemCount: widget.getCategoryModalList.length,
         itemBuilder: (context, index) {
-          var data = widget.getCategoryModalList[index];
+          var getCategoryData = widget.getCategoryModalList[index];
           return CommonZoomAnimationWidget(
             flutterTts: widget.flutterTts,
-            text: data.name.toString(),
-            image: null,
             onAdd: widget.onAdd,
-            type: data.type.toString(),
-            slug: data.slug.toString(),
-            // onNavigationChange: getDataFromDatabse,
+            changeTable: widget.changeTable,
+            getCategoryModal: getCategoryData,
           );
         },
       ),

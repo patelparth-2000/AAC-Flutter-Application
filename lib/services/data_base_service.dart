@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -85,32 +87,25 @@ class DataBaseService {
         uniqueType: uniqueType);
   }
 
-// Check if the table exists in the database
+  // Check if the table exists in the database
   Future<bool> _checkIfTableExists(Database db, String tableName) async {
     final result = await db.rawQuery(
         "SELECT name FROM sqlite_master WHERE type='table' AND name='$tableName'");
     return result.isNotEmpty;
   }
 
-// Get the columns of an existing table
+  Future<bool> checkIfTableExistsOrNot(String tableName) async {
+    final db = await database;
+    final result = await db.rawQuery(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='$tableName'");
+    return result.isNotEmpty;
+  }
+
+  // Get the columns of an existing table
   Future<List<String>> _getTableColumns(Database db, String tableName) async {
     final result = await db.rawQuery('PRAGMA table_info($tableName)');
     return result.map((row) => row['name'].toString()).toList();
   }
-
-  // Insert API data into the table
-/*   Future<void> insertDataIntoTable({
-    required String tableName,
-    required Map<String, dynamic> data,
-    required String uniqueType,
-    required String uniqueId,
-  }) async {
-    final db = await database;
-
-    // Insert data into table
-    await db.insert(tableName, data);
-    print('Data inserted into $tableName: $data');
-  } */
 
   // Insert API data into the table
   Future<void> insertDataIntoTable({
@@ -148,4 +143,17 @@ class DataBaseService {
     final result = await db.rawQuery("SELECT * FROM $tableName");
     return result;
   }
+
+  Future<dynamic> directoryPath() async {
+    final db = await database;
+    final result = await db.rawQuery("SELECT * FROM directory_path");
+    String path = result.first["path"].toString();
+    return path;
+  }
 }
+
+/* Future<bool> checkFileExists(String filePath) async {
+    File file = File(filePath);
+    bool fileExists = await file.exists();
+    return fileExists;
+  } */

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:avaz_app/util/app_color_constants.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +21,7 @@ class CommonImageButton extends StatelessWidget {
     this.buttonTextColor = AppColorConstants.imageTextColor,
     this.isHorizontal = false,
     this.isImageShow = false,
+    this.isImageAsset = true,
     this.isTextShow = true,
     this.buttonImage,
   });
@@ -37,6 +40,7 @@ class CommonImageButton extends StatelessWidget {
   final Color borderColor;
   final bool isHorizontal;
   final bool isImageShow;
+  final bool isImageAsset;
   final bool isTextShow;
   final Function()? onTap;
   @override
@@ -64,12 +68,20 @@ class CommonImageButton extends StatelessWidget {
                       size: imageSize,
                     ),
                   if (buttonImage != null)
-                    Image.asset(
-                      buttonImage!,
-                      color: buttonIconColor,
-                      height: imageSize,
-                      width: imageSize,
-                    ),
+                    if (isImageAsset)
+                      Image.asset(
+                        buttonImage!,
+                        color: buttonIconColor,
+                        height: imageSize,
+                        width: imageSize,
+                      )
+                    else
+                      Image.file(
+                        File(buttonImage!),
+                        color: buttonIconColor,
+                        height: imageSize,
+                        width: imageSize,
+                      ),
                   const SizedBox(
                     width: 3,
                   ),
@@ -92,12 +104,20 @@ class CommonImageButton extends StatelessWidget {
                       size: imageSize,
                     ),
                   if (buttonImage != null && isImageShow)
-                    Image.asset(
-                      buttonImage!,
-                      color: buttonIconColor,
-                      height: imageSize,
-                      width: imageSize,
-                    ),
+                    if (isImageAsset)
+                      Image.asset(
+                        buttonImage!,
+                        color: buttonIconColor,
+                        height: imageSize,
+                        width: imageSize,
+                      )
+                    else
+                      Image.file(
+                        File(buttonImage!),
+                        color: buttonIconColor,
+                        height: imageSize,
+                        width: imageSize,
+                      ),
                   if (buttonName != null && isTextShow)
                     Text(
                       "$buttonName",

@@ -286,7 +286,7 @@ class DashboardScreenState extends State<DashboardScreen> {
   ];
 }
 
-void speakToText(String text, FlutterTts flutterTts) async {
+void  speakToText(String text, FlutterTts flutterTts) async {
   if (text.isNotEmpty) {
     await flutterTts.speak(text);
   }

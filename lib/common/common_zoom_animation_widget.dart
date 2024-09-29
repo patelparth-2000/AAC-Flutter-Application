@@ -4,24 +4,21 @@ import 'package:avaz_app/util/app_color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
+import '../model/get_category_modal.dart';
+import '../services/data_base_service.dart';
+
 class CommonZoomAnimationWidget extends StatefulWidget {
-  final String text;
-  final String slug;
-  final String type;
-  final String? image;
   final Function(String text, String? image) onAdd;
-  // final Function(String tablename) onNavigationChange;
+  final Function(String slug) changeTable;
+  final GetCategoryModal getCategoryModal;
   final FlutterTts flutterTts;
 
   const CommonZoomAnimationWidget({
     super.key,
-    required this.text,
-    this.image,
     required this.onAdd,
     required this.flutterTts,
-    // required this.onNavigationChange,
-    required this.type,
-    required this.slug,
+    required this.changeTable,
+    required this.getCategoryModal,
   });
 
   @override
@@ -33,10 +30,13 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  String imagePath = "";
+  bool imageExists = false;
 
   @override
   void initState() {
     super.initState();
+    _initialize();
     _controller = AnimationController(
       duration: const Duration(milliseconds: 100),
       vsync: this,
@@ -46,6 +46,16 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
     );
   }
 
+  Future<void> _initialize() async {
+    await directoryPath();
+  }
+
+  Future<void> directoryPath() async {
+    final dbService = DataBaseService.instance;
+    imagePath = await dbService.directoryPath();
+    setState(() {});
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -53,7 +63,8 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
   }
 
   void _onTap() {
-    widget.onAdd(widget.text, widget.image);
+    widget.onAdd(widget.getCategoryModal.name!,
+        "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}");
     _controller.forward();
     Future.delayed(const Duration(seconds: 1), () {
       _controller.reverse();
@@ -65,24 +76,37 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
     return ScaleTransition(
       scale: _animation,
       child: CommonTextToSpeak(
-        slug: widget.slug,
+        changeTable: widget.changeTable,
+        slug: widget.getCategoryModal.slug,
+        type: widget.getCategoryModal.type,
         onAdd: widget.onAdd,
         flutterTts: widget.flutterTts,
-        text: widget.text,
-        onTap: widget.type == "voice" ? _onTap : () {},
+        text: widget.getCategoryModal.name!,
+        onTap: widget.getCategoryModal.type == "voice" ? _onTap : () {},
         child: CommonImageButton(
-          buttonImage: widget.image,
+          isImageAsset: false,
+          buttonImage: widget.getCategoryModal.image != null
+              ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}"
+              : null,
           imageSize: 55,
           isImageShow: true,
-          backgroundColor: AppColorConstants.keyBoardBackColor,
-          borderColor: AppColorConstants.keyBoardBackColor,
+          backgroundColor: widget.getCategoryModal.type == "voice"
+              ? AppColorConstants.keyBoardBackColor
+              : widget.getCategoryModal.type == "sub_categories"
+                  ? AppColorConstants.keyBoardBackColorPink
+                  : AppColorConstants.keyBoardBackColorGreen,
+          borderColor: widget.getCategoryModal.type == "voice"
+              ? AppColorConstants.keyBoardBackColor
+              : widget.getCategoryModal.type == "sub_categories"
+                  ? AppColorConstants.keyBoardBackColorPink
+                  : AppColorConstants.keyBoardBackColorGreen,
           textStyle: const TextStyle(
             color: AppColorConstants.keyBoardTextColor,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
           buttonIconColor: null,
-          buttonName: widget.text,
+          buttonName: widget.getCategoryModal.name,
         ),
       ),
     );

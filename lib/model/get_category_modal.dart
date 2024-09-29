@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_this, prefer_collection_literals, unnecessary_new
+
 class GetCategoryModal {
   String? id;
   String? type;
@@ -7,6 +9,7 @@ class GetCategoryModal {
   String? name;
   String? code;
   String? image;
+  String? imagePath;
   String? slug;
   String? voiceFile;
   String? createdBy;
@@ -25,6 +28,7 @@ class GetCategoryModal {
       this.name,
       this.code,
       this.image,
+      this.imagePath,
       this.slug,
       this.voiceFile,
       this.createdBy,
@@ -43,6 +47,7 @@ class GetCategoryModal {
     name = json['name'];
     code = json['code'];
     image = json['image'];
+    imagePath = json['imagePath'];
     slug = json['slug'];
     voiceFile = json['voice_file'];
     createdBy = json['created_by'];
@@ -72,6 +77,7 @@ class GetCategoryModal {
     data['name'] = this.name;
     data['code'] = this.code;
     data['image'] = this.image;
+    data['imagePath'] = this.imagePath;
     data['slug'] = this.slug;
     data['voice_file'] = this.voiceFile;
     data['created_by'] = this.createdBy;

@@ -87,5 +87,57 @@ class AppColorConstants {
   static const Color keyBoardBackColor = Color(0xFF9CB6F5);
   static const Color keyBoardTextColor = Color(0xFF122A66);
 
+  //-------------------- Green Shades: ----------------------
+  static const Color keyBackgroundGreen = Color(0xFFB3F9D7); // Light Green
+  static const Color keyTextColorGreen = Color(0xFF1E8A4A); // Dark Green
+  static const Color keyRowBackgroundGreen = Color(0xFF5AEF8D); // Vibrant Green
+  static const Color screenBackgroundGreen = Color(0xFFE3FFE8); // Soft Green
+  static const Color topRowBackgroundGreen = Color(0xFF1A7E3D); // Deep Green
+  static const Color specialKeyColorGreen = Color(0xFF34ED64); // Key Green
+  static const Color imageTextColorGreen = Color(0xFFD9FBE6); // Pale Green
+  static const Color imageTextButtonColorGreen =
+      Color(0xFF2B9A57); // Button Green
+  static const Color keyBoardBackColorGreen = Color(0xFF9CF5B6); // Faded Green
+  static const Color keyBoardTextColorGreen = Color(0xFF12664A); // Text Green
+  //-------------------- Red Shades: ----------------------
+  static const Color keyBackgroundRed = Color(0xFFF9B3C7); // Light Red
+  static const Color keyTextColorRed = Color(0xFF8A1E3A); // Dark Red
+  static const Color keyRowBackgroundRed = Color(0xFFEF5A8D); // Vibrant Red
+  static const Color screenBackgroundRed = Color(0xFFFFE3E3); // Soft Red
+  static const Color topRowBackgroundRed = Color(0xFF7E1A3D); // Deep Red
+  static const Color specialKeyColorRed = Color(0xFFED3464); // Key Red
+  static const Color imageTextColorRed = Color(0xFFFBD9E6); // Pale Red
+  static const Color imageTextButtonColorRed = Color(0xFF9A2B57); // Button Red
+  static const Color keyBoardBackColorRed = Color(0xFFF59CB6); // Faded Red
+  static const Color keyBoardTextColorRed = Color(0xFF66122A); // Text Red
+
+  //-------------------- Yellow Shades: ----------------------
+  static const Color keyBackgroundYellow = Color(0xFFF9F3B3); // Light Yellow
+  static const Color keyTextColorYellow = Color(0xFF8A7A1E); // Dark Yellow
+  static const Color keyRowBackgroundYellow =
+      Color(0xFFEFDA5A); // Vibrant Yellow
+  static const Color screenBackgroundYellow = Color(0xFFFFFBE3); // Soft Yellow
+  static const Color topRowBackgroundYellow = Color(0xFF7E6E1A); // Deep Yellow
+  static const Color specialKeyColorYellow = Color(0xFFEDD834); // Key Yellow
+  static const Color imageTextColorYellow = Color(0xFFFBEFD9); // Pale Yellow
+  static const Color imageTextButtonColorYellow =
+      Color(0xFF9A7D2B); // Button Yellow
+  static const Color keyBoardBackColorYellow =
+      Color(0xFFF5E49C); // Faded Yellow
+  static const Color keyBoardTextColorYellow = Color(0xFF665212); // Text Yellow
+
+  //-------------------- Pink Shades: ----------------------
+  static const Color keyBackgroundPink = Color(0xFFF9B3D7); // Light Pink
+  static const Color keyTextColorPink = Color(0xFF8A1E6A); // Dark Pink
+  static const Color keyRowBackgroundPink = Color(0xFFEF5AAF); // Vibrant Pink
+  static const Color screenBackgroundPink = Color(0xFFFFE3F3); // Soft Pink
+  static const Color topRowBackgroundPink = Color(0xFF7E1A5E); // Deep Pink
+  static const Color specialKeyColorPink = Color(0xFFED34A4); // Key Pink
+  static const Color imageTextColorPink = Color(0xFFFBD9F1); // Pale Pink
+  static const Color imageTextButtonColorPink =
+      Color(0xFF9A2B79); // Button Pink
+  static const Color keyBoardBackColorPink = Color(0xFFF59CDB); // Faded Pink
+  static const Color keyBoardTextColorPink = Color(0xFF66124A); // Text Pink
+
   static const Color systemArea = Colors.black;
 }

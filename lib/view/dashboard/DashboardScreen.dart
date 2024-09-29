@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'dart:async';
+import 'dart:io';
 import 'package:avaz_app/common/common.dart';
 import 'package:avaz_app/services/data_base_service.dart';
 import 'package:avaz_app/util/dimensions.dart';
@@ -11,6 +12,7 @@ import 'package:get/get.dart';
 
 import '../../common/common_image_button.dart';
 import '../../model/get_category_modal.dart';
+import '../../services/bulk_api_data.dart';
 import '../../util/app_color_constants.dart';
 import '../grid_data/grid_date_screen.dart';
 import '../keyboard/keyboard_screen.dart';
@@ -24,6 +26,7 @@ class DashboardScreen extends StatefulWidget {
 
 class DashboardScreenState extends State<DashboardScreen> {
   final FlutterTts flutterTts = FlutterTts();
+  final dbService = DataBaseService.instance;
   bool _canExit = false;
   bool isKeyBoardShow = false;
   final TextEditingController _mainTextFieldController =
@@ -31,10 +34,14 @@ class DashboardScreenState extends State<DashboardScreen> {
   final List<Widget> _widgetList = [];
   late ScrollController _scrollController;
   List<GetCategoryModal> getCategoryModalList = [];
+  String firstTableName = "category_table";
+  List<String> tableNames = [];
 
   @override
   void initState() {
     super.initState();
+    BulkApiData.getCategory(context);
+    directoryPath();
     getDataFromDatabse();
     _scrollController = ScrollController();
     setDefaultEngineAndLanguage();
@@ -64,41 +71,72 @@ class DashboardScreenState extends State<DashboardScreen> {
   }
 
   void getDataFromDatabse() async {
-    final dbService = DataBaseService.instance;
+    tableNames.clear();
+    tableNames.add(firstTableName);
     var categoryData = await dbService.getCategoryTable();
-    if (categoryData != null && categoryData is List) {
-      for (var item in categoryData) {
-        if (item is Map<String, dynamic>) {
-          getCategoryModalList.add(GetCategoryModal.fromJson(item));
-        }
-      }
+    adddata(categoryData);
+    setState(() {});
+  }
+
+  void changeTables(String slug) async {
+    bool isExists =
+        await dbService.checkIfTableExistsOrNot(slug.replaceAll("-", "_"));
+    if (isExists) {
+      tableNames.add(slug.replaceAll("-", "_"));
+      var categoryData = await dbService.getTablesData(tableNames.last);
+      adddata(categoryData);
     }
     setState(() {});
   }
 
-  void getTablesDataFromDatabse(String tableName) async {
-    final dbService = DataBaseService.instance;
-    var categoryData = await dbService.getTablesData(tableName);
+  void reversTables() async {
+    if (tableNames.length > 1) {
+      tableNames.removeLast();
+      var categoryData = await dbService.getTablesData(tableNames.last);
+      adddata(categoryData);
+    }
+    setState(() {});
+  }
+
+  void adddata(categoryData) async {
+    bool imageExists = false;
+    getCategoryModalList.clear();
     if (categoryData != null && categoryData is List) {
       for (var item in categoryData) {
         if (item is Map<String, dynamic>) {
-          getCategoryModalList.add(GetCategoryModal.fromJson(item));
+          Map<String, dynamic> modifiableItem = Map<String, dynamic>.from(item);
+          imageExists = await _checkImageExists(modifiableItem);
+          modifiableItem["imagePath"] = imagePath;
+          if (!imageExists) {
+            modifiableItem["image"] = null;
+          }
+          getCategoryModalList.add(GetCategoryModal.fromJson(modifiableItem));
         }
       }
     }
-    changePageData();
   }
 
-  void changePageData() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => GridDateScreen(
-          flutterTts: flutterTts,
-          getCategoryModalList: getCategoryModalList,
-          onAdd: _addNewWidget,
-        ), // Replace with your new screen
-      ),
-    );
+  String imagePath = "";
+
+  Future<void> directoryPath() async {
+    final dbService = DataBaseService.instance;
+    imagePath = await dbService.directoryPath();
+    setState(() {});
+  }
+
+  bool _imageExists = false;
+
+  Future<bool> _checkImageExists(Map<String, dynamic> getCategoryModal) async {
+    if (getCategoryModal["image"] != null &&
+        getCategoryModal["image"] != "null") {
+      String fullPath = "$imagePath${getCategoryModal["image"]}";
+      File file = File(fullPath);
+      _imageExists = await file.exists();
+    } else {
+      _imageExists = false;
+    }
+    setState(() {});
+    return _imageExists;
   }
 
   @override
@@ -243,32 +281,11 @@ class DashboardScreenState extends State<DashboardScreen> {
                             deleteLast: removeLastCharacter,
                             onTextValue: addTextFieldValue,
                           )
-                        : WillPopScope(
-                            onWillPop: () async {
-                              // Check if the local navigator can pop
-                              final canPop = Navigator.of(context).canPop();
-                              if (canPop) {
-                                // If it can, pop the current route
-                                Navigator.of(context).pop();
-                                return false; // Prevent default back button behavior
-                              }
-                              // If there's nothing to pop, allow the default back button behavior
-                              return true;
-                            },
-                            child: Navigator(
-                              key: GlobalKey<
-                                  NavigatorState>(), // Unique key for this Navigator
-                              onGenerateRoute: (RouteSettings settings) {
-                                // Define initial route and any other routes within this section
-                                return MaterialPageRoute(
-                                  builder: (context) => GridDateScreen(
-                                    flutterTts: flutterTts,
-                                    getCategoryModalList: getCategoryModalList,
-                                    onAdd: _addNewWidget,
-                                  ),
-                                );
-                              },
-                            ),
+                        : GridDateScreen(
+                            flutterTts: flutterTts,
+                            getCategoryModalList: getCategoryModalList,
+                            onAdd: _addNewWidget,
+                            changeTable: changeTables,
                           ),
                   ),
                   if (!isKeyBoardShow)
@@ -293,9 +310,22 @@ class DashboardScreenState extends State<DashboardScreen> {
                                       fontSize: 12),
                                   buttonIcon: sideButtonNameList[i]["icon"],
                                   buttonName: sideButtonNameList[i]["name"],
-                                  onTap: () {
-                                    speakToText(sideButtonNameList[i]["name"],
+                                  onTap: () async {
+                                    await speakToText(
+                                        sideButtonNameList[i]["name"],
                                         flutterTts);
+                                    Future.delayed(
+                                            const Duration(milliseconds: 20))
+                                        .whenComplete(() {
+                                      if (sideButtonNameList[i]["name"] ==
+                                          "Go back") {
+                                        reversTables();
+                                      } else if (sideButtonNameList[i]
+                                              ["name"] ==
+                                          "Home") {
+                                        getDataFromDatabse();
+                                      }
+                                    });
                                   },
                                 ),
                                 if (i != 5)
@@ -357,7 +387,7 @@ class DashboardScreenState extends State<DashboardScreen> {
     setState(() {});
   }
 
-  void _addNewWidget(text, String? icon) {
+  void _addNewWidget(text, String? image) {
     setState(() {
       _widgetList.add(Container(
           margin: const EdgeInsets.symmetric(horizontal: 3),
@@ -365,9 +395,9 @@ class DashboardScreenState extends State<DashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (icon != null)
-                Image.asset(
-                  icon,
+              if (image != null)
+                Image.file(
+                  File(image),
                   height: 20,
                   width: 20,
                 ),
