@@ -1,5 +1,4 @@
 import 'package:avaz_app/common/common_image_button.dart';
-import 'package:avaz_app/common/common_text_to_speak.dart';
 import 'package:avaz_app/util/app_color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -75,7 +74,8 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
   Widget build(BuildContext context) {
     return ScaleTransition(
       scale: _animation,
-      child: CommonTextToSpeak(
+      child: CommonImageButton(
+        iscolorChange: false,
         changeTable: widget.changeTable,
         slug: widget.getCategoryModal.slug,
         type: widget.getCategoryModal.type,
@@ -83,31 +83,29 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
         flutterTts: widget.flutterTts,
         text: widget.getCategoryModal.name!,
         onTap: widget.getCategoryModal.type == "voice" ? _onTap : () {},
-        child: CommonImageButton(
-          isImageAsset: false,
-          buttonImage: widget.getCategoryModal.image != null
-              ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}"
-              : null,
-          imageSize: 55,
-          isImageShow: true,
-          backgroundColor: widget.getCategoryModal.type == "voice"
-              ? AppColorConstants.keyBoardBackColor
-              : widget.getCategoryModal.type == "sub_categories"
-                  ? AppColorConstants.keyBoardBackColorPink
-                  : AppColorConstants.keyBoardBackColorGreen,
-          borderColor: widget.getCategoryModal.type == "voice"
-              ? AppColorConstants.keyBoardBackColor
-              : widget.getCategoryModal.type == "sub_categories"
-                  ? AppColorConstants.keyBoardBackColorPink
-                  : AppColorConstants.keyBoardBackColorGreen,
-          textStyle: const TextStyle(
-            color: AppColorConstants.keyBoardTextColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-          buttonIconColor: null,
-          buttonName: widget.getCategoryModal.name,
+        isImageAsset: false,
+        buttonImage: widget.getCategoryModal.image != null
+            ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}"
+            : null,
+        imageSize: 55,
+        isImageShow: true,
+        backgroundColor: widget.getCategoryModal.type == "voice"
+            ? AppColorConstants.keyBoardBackColor
+            : widget.getCategoryModal.type == "sub_categories"
+                ? AppColorConstants.keyBoardBackColorPink
+                : AppColorConstants.keyBoardBackColorGreen,
+        borderColor: widget.getCategoryModal.type == "voice"
+            ? AppColorConstants.keyBoardBackColor
+            : widget.getCategoryModal.type == "sub_categories"
+                ? AppColorConstants.keyBoardBackColorPink
+                : AppColorConstants.keyBoardBackColorGreen,
+        textStyle: const TextStyle(
+          color: AppColorConstants.keyBoardTextColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
         ),
+        buttonIconColor: null,
+        buttonName: widget.getCategoryModal.name,
       ),
     );
   }

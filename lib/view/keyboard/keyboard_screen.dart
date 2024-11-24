@@ -3,7 +3,6 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../common/common.dart';
 import '../../common/common_image_button.dart';
-import '../../common/common_text_to_speak.dart';
 import '../../util/app_color_constants.dart';
 
 class KeyboardScreen extends StatefulWidget {
@@ -103,7 +102,9 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
       children: [
         Row(
           children: [
-            const CommonImageButton(
+            CommonImageButton(
+              flutterTts: widget.flutterTts,
+              text: "back",
               isImageShow: true,
               vertical: 10,
               buttonIcon: Icons.arrow_back,
@@ -123,22 +124,20 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 itemCount: suggestionList.length,
                 itemBuilder: (context, index) {
                   var data = suggestionList[index];
-                  return CommonTextToSpeak(
+                  return CommonImageButton(
                     flutterTts: widget.flutterTts,
                     text: data,
                     onTap: () {
                       widget.onAdd(data, null);
                     },
-                    child: CommonImageButton(
-                      backgroundColor: AppColorConstants.keyBoardBackColor,
-                      borderColor: AppColorConstants.keyBoardBackColor,
-                      textStyle: const TextStyle(
-                          color: AppColorConstants.keyBoardTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                      buttonIconColor: AppColorConstants.keyBoardTextColor,
-                      buttonName: data,
-                    ),
+                    backgroundColor: AppColorConstants.keyBoardBackColor,
+                    borderColor: AppColorConstants.keyBoardBackColor,
+                    textStyle: const TextStyle(
+                        color: AppColorConstants.keyBoardTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
+                    buttonIconColor: AppColorConstants.keyBoardTextColor,
+                    buttonName: data,
                   );
                 },
               ),
@@ -146,7 +145,8 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
             const SizedBox(
               width: 15,
             ),
-            const CommonImageButton(
+            CommonImageButton(
+              text: "forward",
               isImageShow: true,
               vertical: 10,
               buttonIcon: Icons.arrow_forward,
@@ -175,7 +175,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 itemCount: keyBoardList1.length,
                 itemBuilder: (context, index) {
                   var data = keyBoardList1[index];
-                  return CommonTextToSpeak(
+                  return CommonImageButton(
                     flutterTts: widget.flutterTts,
                     text: isNumberOn
                         ? data["number"]
@@ -193,23 +193,21 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                                     ? data["Cname"]
                                     : data["name"]);
                           },
-                    child: CommonImageButton(
-                      isImageShow: data["action"] != null ? true : false,
-                      isTextShow: data["action"] != null ? false : true,
-                      backgroundColor: AppColorConstants.keyBoardBackColor,
-                      borderColor: AppColorConstants.keyBoardBackColor,
-                      textStyle: const TextStyle(
-                          color: AppColorConstants.keyBoardTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                      buttonIconColor: AppColorConstants.keyBoardTextColor,
-                      buttonName: isNumberOn
-                          ? data["number"]
-                          : isCapsOn
-                              ? data["Cname"]
-                              : data["name"],
-                      buttonIcon: data["icon"],
-                    ),
+                    isImageShow: data["action"] != null ? true : false,
+                    isTextShow: data["action"] != null ? false : true,
+                    backgroundColor: AppColorConstants.keyBoardBackColor,
+                    borderColor: AppColorConstants.keyBoardBackColor,
+                    textStyle: const TextStyle(
+                        color: AppColorConstants.keyBoardTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
+                    buttonIconColor: AppColorConstants.keyBoardTextColor,
+                    buttonName: isNumberOn
+                        ? data["number"]
+                        : isCapsOn
+                            ? data["Cname"]
+                            : data["name"],
+                    buttonIcon: data["icon"],
                   );
                 },
               ),
@@ -228,7 +226,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 itemCount: keyBoardList2.length,
                 itemBuilder: (context, index) {
                   var data = keyBoardList2[index];
-                  return CommonTextToSpeak(
+                  return CommonImageButton(
                     text: isNumberOn
                         ? data["number"]
                         : isCapsOn
@@ -246,23 +244,21 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                                     ? data["Cname"]
                                     : data["name"]);
                           },
-                    child: CommonImageButton(
-                      isImageShow: data["action"] != null ? true : false,
-                      isTextShow: data["action"] != null ? false : true,
-                      backgroundColor: AppColorConstants.keyBoardBackColor,
-                      borderColor: AppColorConstants.keyBoardBackColor,
-                      textStyle: const TextStyle(
-                          color: AppColorConstants.keyBoardTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                      buttonIconColor: AppColorConstants.keyBoardTextColor,
-                      buttonName: isNumberOn
-                          ? data["number"]
-                          : isCapsOn
-                              ? data["Cname"]
-                              : data["name"],
-                      buttonIcon: data["icon"],
-                    ),
+                    isImageShow: data["action"] != null ? true : false,
+                    isTextShow: data["action"] != null ? false : true,
+                    backgroundColor: AppColorConstants.keyBoardBackColor,
+                    borderColor: AppColorConstants.keyBoardBackColor,
+                    textStyle: const TextStyle(
+                        color: AppColorConstants.keyBoardTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
+                    buttonIconColor: AppColorConstants.keyBoardTextColor,
+                    buttonName: isNumberOn
+                        ? data["number"]
+                        : isCapsOn
+                            ? data["Cname"]
+                            : data["name"],
+                    buttonIcon: data["icon"],
                   );
                 },
               ),
@@ -281,7 +277,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 itemCount: keyBoardList3.length,
                 itemBuilder: (context, index) {
                   var data = keyBoardList3[index];
-                  return CommonTextToSpeak(
+                  return CommonImageButton(
                     onTap: data["action"] != null
                         ? () {
                             if (data["action"] != null) {
@@ -308,23 +304,21 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                         : isCapsOn
                             ? data["Cname"]
                             : data["name"],
-                    child: CommonImageButton(
-                      isImageShow: data["action"] != null ? true : false,
-                      isTextShow: data["action"] != null ? false : true,
-                      backgroundColor: AppColorConstants.keyBoardBackColor,
-                      borderColor: AppColorConstants.keyBoardBackColor,
-                      textStyle: const TextStyle(
-                          color: AppColorConstants.keyBoardTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                      buttonIconColor: AppColorConstants.keyBoardTextColor,
-                      buttonName: isNumberOn
-                          ? data["number"]
-                          : isCapsOn
-                              ? data["Cname"]
-                              : data["name"],
-                      buttonIcon: data["icon"],
-                    ),
+                    isImageShow: data["action"] != null ? true : false,
+                    isTextShow: data["action"] != null ? false : true,
+                    backgroundColor: AppColorConstants.keyBoardBackColor,
+                    borderColor: AppColorConstants.keyBoardBackColor,
+                    textStyle: const TextStyle(
+                        color: AppColorConstants.keyBoardTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
+                    buttonIconColor: AppColorConstants.keyBoardTextColor,
+                    buttonName: isNumberOn
+                        ? data["number"]
+                        : isCapsOn
+                            ? data["Cname"]
+                            : data["name"],
+                    buttonIcon: data["icon"],
                   );
                 },
               ),

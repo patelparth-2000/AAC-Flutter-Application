@@ -14,6 +14,7 @@ import '../../common/common_image_button.dart';
 import '../../model/get_category_modal.dart';
 import '../../services/bulk_api_data.dart';
 import '../../util/app_color_constants.dart';
+import '../drawer/drawer_screen.dart';
 import '../grid_data/grid_date_screen.dart';
 import '../keyboard/keyboard_screen.dart';
 
@@ -25,6 +26,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class DashboardScreenState extends State<DashboardScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FlutterTts flutterTts = FlutterTts();
   final dbService = DataBaseService.instance;
   bool _canExit = false;
@@ -158,6 +160,16 @@ class DashboardScreenState extends State<DashboardScreen> {
         }
       },
       child: Scaffold(
+        key: _scaffoldKey,
+        endDrawer: Drawer(
+          backgroundColor: Colors.transparent,
+          shape: const BeveledRectangleBorder(),
+          width: Dimensions.screenWidth * 0.6,
+          child: DrawerScreen(
+            flutterTts: flutterTts,
+            scaffoldKey: _scaffoldKey,
+          ),
+        ),
         backgroundColor: AppColorConstants.topRowBackground,
         body: Column(
           children: [
@@ -258,6 +270,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                     buttonIcon: Icons.menu,
                     buttonName: "Menu",
                     onTap: () {
+                      _scaffoldKey.currentState?.openEndDrawer();
                       speakToText("Menu", flutterTts);
                     },
                   ),
