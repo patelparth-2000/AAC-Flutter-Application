@@ -33,8 +33,15 @@ bool textFieldValidation(TextEditingController controller, String text,
   return true;
 }
 
-  Future<void> speakToText(String text,final FlutterTts flutterTts) async {
-    if (text.isNotEmpty) {
-      await flutterTts.speak(text);
-    }
+Future<void> speakToText(String text, final FlutterTts flutterTts) async {
+  if (text.isNotEmpty) {
+    await flutterTts.speak(text);
   }
+}
+
+Widget dividerWidget({double height = 1}) {
+  return Container(
+    height: height,
+    color: AppColorConstants.black,
+  );
+}

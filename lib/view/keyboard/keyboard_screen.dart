@@ -145,7 +145,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
             const SizedBox(
               width: 15,
             ),
-            CommonImageButton(
+            const CommonImageButton(
               text: "forward",
               isImageShow: true,
               vertical: 10,

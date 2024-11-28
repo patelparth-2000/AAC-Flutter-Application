@@ -27,6 +27,8 @@ class DashboardScreen extends StatefulWidget {
 
 class DashboardScreenState extends State<DashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<NavigatorState> _dashboradNavigatorKey =
+      GlobalKey<NavigatorState>();
   final FlutterTts flutterTts = FlutterTts();
   final dbService = DataBaseService.instance;
   bool _canExit = false;
@@ -166,193 +168,221 @@ class DashboardScreenState extends State<DashboardScreen> {
           shape: const BeveledRectangleBorder(),
           width: Dimensions.screenWidth * 0.6,
           child: DrawerScreen(
+            isKeyBoardShow: !isKeyBoardShow,
             flutterTts: flutterTts,
             scaffoldKey: _scaffoldKey,
+            dashboradNavigatorKey: _dashboradNavigatorKey,
           ),
         ),
         backgroundColor: AppColorConstants.topRowBackground,
-        body: Column(
+        body: Row(
           children: [
-            Container(
-              color: AppColorConstants.topRowBackground,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  CommonImageButton(
-                    isImageShow: true,
-                    isTextShow: true,
-                    vertical: 0,
-                    height: 50,
-                    onTap: () {
-                      isKeyBoardShow = !isKeyBoardShow;
-                      setState(() {});
-                      Future.delayed(const Duration(milliseconds: 10))
-                          .whenComplete(() {
-                        speakToText(!isKeyBoardShow ? "Pictures" : "Keyboard",
-                            flutterTts);
-                      });
-                    },
-                    horizontal: 2,
-                    width: 75,
-                    buttonName: isKeyBoardShow ? "Pictures" : "Keyboard",
-                    buttonIcon:
-                        isKeyBoardShow ? Icons.photo : Icons.keyboard_alt,
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                          color: AppColorConstants.white,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              height: 50,
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                controller: _scrollController,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: _widgetList.length,
-                                itemBuilder: (context, index) {
-                                  return Center(child: _widgetList[index]);
+            Expanded(
+              child: Navigator(
+                key: _dashboradNavigatorKey,
+                onGenerateRoute: (settings) {
+                  return MaterialPageRoute(
+                    builder: (_) => Column(
+                      children: [
+                        Container(
+                          color: AppColorConstants.topRowBackground,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              CommonImageButton(
+                                isImageShow: true,
+                                isTextShow: true,
+                                vertical: 0,
+                                height: 50,
+                                onTap: () {
+                                  isKeyBoardShow = !isKeyBoardShow;
+                                  setState(() {});
+                                  Future.delayed(
+                                          const Duration(milliseconds: 10))
+                                      .whenComplete(() {
+                                    speakToText(
+                                        !isKeyBoardShow
+                                            ? "Pictures"
+                                            : "Keyboard",
+                                        flutterTts);
+                                  });
                                 },
+                                horizontal: 2,
+                                width: 75,
+                                buttonName:
+                                    isKeyBoardShow ? "Pictures" : "Keyboard",
+                                buttonIcon: isKeyBoardShow
+                                    ? Icons.photo
+                                    : Icons.keyboard_alt,
                               ),
-                            ),
-                          ),
-                          if (_widgetList.isNotEmpty)
-                            for (int i = 0; i < 4; i++)
-                              Row(
-                                children: [
-                                  CommonImageButton(
-                                    isImageShow: true,
-                                    isTextShow: true,
-                                    vertical: 0,
-                                    horizontal: 0,
-                                    width: 45,
-                                    height: 45,
-                                    backgroundColor: AppColorConstants.white,
-                                    buttonIconColor:
-                                        AppColorConstants.imageTextButtonColor,
-                                    buttonIcon: textFieldButtonNameList[i]
-                                        ["icon"],
-                                    imageSize: 25,
-                                    buttonName: textFieldButtonNameList[i]
-                                        ["name"],
-                                    textStyle: const TextStyle(
-                                        color: AppColorConstants
-                                            .imageTextButtonColor,
-                                        fontSize: 10),
-                                    onTap: () {
-                                      onTextfieldButton(i);
-                                    },
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: Container(
+                                  height: 50,
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 0, vertical: 5),
+                                  decoration: BoxDecoration(
+                                      color: AppColorConstants.white,
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: SizedBox(
+                                          height: 50,
+                                          child: ListView.builder(
+                                            shrinkWrap: true,
+                                            controller: _scrollController,
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount: _widgetList.length,
+                                            itemBuilder: (context, index) {
+                                              return Center(
+                                                  child: _widgetList[index]);
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      if (_widgetList.isNotEmpty)
+                                        for (int i = 0; i < 4; i++)
+                                          Row(
+                                            children: [
+                                              CommonImageButton(
+                                                isImageShow: true,
+                                                isTextShow: true,
+                                                vertical: 0,
+                                                horizontal: 0,
+                                                width: 45,
+                                                height: 45,
+                                                backgroundColor:
+                                                    AppColorConstants.white,
+                                                buttonIconColor:
+                                                    AppColorConstants
+                                                        .imageTextButtonColor,
+                                                buttonIcon:
+                                                    textFieldButtonNameList[i]
+                                                        ["icon"],
+                                                imageSize: 25,
+                                                buttonName:
+                                                    textFieldButtonNameList[i]
+                                                        ["name"],
+                                                textStyle: const TextStyle(
+                                                    color: AppColorConstants
+                                                        .imageTextButtonColor,
+                                                    fontSize: 10),
+                                                onTap: () {
+                                                  onTextfieldButton(i);
+                                                },
+                                              ),
+                                              SizedBox(
+                                                width: Dimensions.screenWidth *
+                                                    0.004,
+                                              )
+                                            ],
+                                          ),
+                                    ],
                                   ),
-                                  SizedBox(
-                                    width: Dimensions.screenWidth * 0.004,
-                                  )
-                                ],
+                                ),
                               ),
-                        ],
-                      ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: isKeyBoardShow
+                                    ? KeyboardScreen(
+                                        flutterTts: flutterTts,
+                                        onAdd: _addNewWidget,
+                                        onSpace: onSpace,
+                                        deleteLast: removeLastCharacter,
+                                        onTextValue: addTextFieldValue,
+                                      )
+                                    : GridDateScreen(
+                                        flutterTts: flutterTts,
+                                        getCategoryModalList:
+                                            getCategoryModalList,
+                                        onAdd: _addNewWidget,
+                                        changeTable: changeTables,
+                                      ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
                     ),
-                  ),
-                  CommonImageButton(
-                    isImageShow: true,
-                    isTextShow: true,
-                    vertical: 0,
-                    height: 50,
-                    width: 75,
-                    buttonIcon: Icons.menu,
-                    buttonName: "Menu",
-                    onTap: () {
-                      _scaffoldKey.currentState?.openEndDrawer();
-                      speakToText("Menu", flutterTts);
-                    },
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                ],
+                  );
+                },
               ),
             ),
-            Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: isKeyBoardShow
-                        ? KeyboardScreen(
-                            flutterTts: flutterTts,
-                            onAdd: _addNewWidget,
-                            onSpace: onSpace,
-                            deleteLast: removeLastCharacter,
-                            onTextValue: addTextFieldValue,
-                          )
-                        : GridDateScreen(
-                            flutterTts: flutterTts,
-                            getCategoryModalList: getCategoryModalList,
-                            onAdd: _addNewWidget,
-                            changeTable: changeTables,
-                          ),
-                  ),
-                  if (!isKeyBoardShow)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 3),
-                      color: AppColorConstants.topRowBackground,
-                      child: Column(
+            if (!isKeyBoardShow)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                color: AppColorConstants.topRowBackground,
+                child: Column(
+                  children: [
+                    CommonImageButton(
+                      isImageShow: true,
+                      isTextShow: true,
+                      vertical: 0,
+                      height: 50,
+                      width: 75,
+                      buttonIcon: Icons.menu,
+                      buttonName: "Menu",
+                      onTap: () {
+                        _scaffoldKey.currentState?.openEndDrawer();
+                        speakToText("Menu", flutterTts);
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    for (int i = 0; i < 6; i++)
+                      Column(
                         children: [
-                          for (int i = 0; i < 6; i++)
-                            Column(
-                              children: [
-                                CommonImageButton(
-                                  isImageShow: true,
-                                  isTextShow: true,
-                                  vertical: 0,
-                                  height: Dimensions.screenHeight * 0.12,
-                                  width: 75,
-                                  imageSize: 25,
-                                  textStyle: const TextStyle(
-                                      color: AppColorConstants.imageTextColor,
-                                      fontSize: 12),
-                                  buttonIcon: sideButtonNameList[i]["icon"],
-                                  buttonName: sideButtonNameList[i]["name"],
-                                  onTap: () async {
-                                    await speakToText(
-                                        sideButtonNameList[i]["name"],
-                                        flutterTts);
-                                    Future.delayed(
-                                            const Duration(milliseconds: 20))
-                                        .whenComplete(() {
-                                      if (sideButtonNameList[i]["name"] ==
-                                          "Go back") {
-                                        reversTables();
-                                      } else if (sideButtonNameList[i]
-                                              ["name"] ==
-                                          "Home") {
-                                        getDataFromDatabse();
-                                      }
-                                    });
-                                  },
-                                ),
-                                if (i != 5)
-                                  SizedBox(
-                                    height: Dimensions.screenHeight * 0.012,
-                                  )
-                              ],
-                            ),
+                          CommonImageButton(
+                            isImageShow: true,
+                            isTextShow: true,
+                            vertical: 0,
+                            height: Dimensions.screenHeight * 0.125,
+                            width: 75,
+                            imageSize: 25,
+                            textStyle: const TextStyle(
+                                color: AppColorConstants.imageTextColor,
+                                fontSize: 12),
+                            buttonIcon: sideButtonNameList[i]["icon"],
+                            buttonName: sideButtonNameList[i]["name"],
+                            onTap: () async {
+                              await speakToText(
+                                  sideButtonNameList[i]["name"], flutterTts);
+                              Future.delayed(const Duration(milliseconds: 20))
+                                  .whenComplete(() {
+                                if (sideButtonNameList[i]["name"] ==
+                                    "Go back") {
+                                  reversTables();
+                                } else if (sideButtonNameList[i]["name"] ==
+                                    "Home") {
+                                  getDataFromDatabse();
+                                }
+                              });
+                            },
+                          ),
+                          if (i != 5)
+                            SizedBox(
+                              height: Dimensions.screenHeight * 0.012,
+                            )
                         ],
                       ),
-                    )
-                ],
-              ),
-            )
+                  ],
+                ),
+              )
           ],
         ),
       ),

@@ -35,12 +35,19 @@ class CommonImageButton extends StatefulWidget {
     this.flutterTts,
     this.onAdd,
     this.changeTable,
+    this.betweenGap,
+    this.fontWeight = FontWeight.normal,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
+    this.mainAxisAlignment = MainAxisAlignment.center,
+    this.fontSize,
   });
   final double? vertical;
   final double? horizontal;
   final double? imageSize;
   final double? height;
   final double? width;
+  final double? betweenGap;
+  final double? fontSize;
   final BorderRadiusGeometry? borderRadius;
   final TextStyle? textStyle;
   final String? buttonName;
@@ -58,7 +65,10 @@ class CommonImageButton extends StatefulWidget {
   final String? text;
   final String? slug;
   final String? type;
+  final FontWeight fontWeight;
   final FlutterTts? flutterTts;
+  final MainAxisAlignment mainAxisAlignment;
+  final CrossAxisAlignment crossAxisAlignment;
   final Function(String text, String? image)? onAdd;
   final Function(String slug)? changeTable;
   final Function()? onTap;
@@ -86,10 +96,10 @@ class _CommonImageButtonState extends State<CommonImageButton> {
     setState(() {
       _currentBackgroundColor = widget.backgroundColor; // Reset on release
     });
-    if (widget.onTap != null) {
-      if (widget.text != null && widget.flutterTts != null) {
-        speckbutton();
-      } else {
+    if (widget.text != null && widget.flutterTts != null) {
+      speckbutton();
+    } else {
+      if (widget.onTap != null) {
         widget.onTap!();
       }
     }
@@ -105,7 +115,9 @@ class _CommonImageButtonState extends State<CommonImageButton> {
       // ignore: avoid_print
       print("text == > ${widget.text}");
       speakToText(widget.text!, widget.flutterTts!);
-      widget.onTap!();
+      if (widget.onTap != null) {
+        widget.onTap!();
+      }
     }
   }
 
@@ -135,8 +147,8 @@ class _CommonImageButtonState extends State<CommonImageButton> {
             borderRadius: widget.borderRadius ?? BorderRadius.circular(5)),
         child: widget.isHorizontal
             ? Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: widget.crossAxisAlignment,
+                mainAxisAlignment: widget.mainAxisAlignment,
                 children: [
                   if (widget.buttonIcon != null)
                     Icon(
@@ -159,20 +171,23 @@ class _CommonImageButtonState extends State<CommonImageButton> {
                         height: widget.imageSize,
                         width: widget.imageSize,
                       ),
-                  const SizedBox(
-                    width: 3,
+                  SizedBox(
+                    width: widget.betweenGap ?? 3,
                   ),
                   if (widget.buttonName != null)
                     Text(
                       "${widget.buttonName}",
                       style: widget.textStyle ??
-                          TextStyle(color: widget.buttonTextColor),
+                          TextStyle(
+                              color: widget.buttonTextColor,
+                              fontWeight: widget.fontWeight,
+                              fontSize: widget.fontSize),
                     )
                 ],
               )
             : Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: widget.crossAxisAlignment,
+                mainAxisAlignment: widget.mainAxisAlignment,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (widget.buttonIcon != null && widget.isImageShow)
@@ -196,11 +211,17 @@ class _CommonImageButtonState extends State<CommonImageButton> {
                         height: widget.imageSize,
                         width: widget.imageSize,
                       ),
+                  SizedBox(
+                    width: widget.betweenGap ?? 0,
+                  ),
                   if (widget.buttonName != null && widget.isTextShow)
                     Text(
                       "${widget.buttonName}",
                       style: widget.textStyle ??
-                          TextStyle(color: widget.buttonTextColor),
+                          TextStyle(
+                              color: widget.buttonTextColor,
+                              fontWeight: widget.fontWeight,
+                              fontSize: widget.fontSize),
                     )
                 ],
               ),
