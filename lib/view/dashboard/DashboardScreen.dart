@@ -438,7 +438,7 @@ class DashboardScreenState extends State<DashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (image != null)
+              if (image != null && image != "null")
                 Image.file(
                   File(image),
                   height: 20,

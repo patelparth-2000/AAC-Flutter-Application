@@ -62,8 +62,11 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
   }
 
   void _onTap() {
-    widget.onAdd(widget.getCategoryModal.name!,
-        "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}");
+    widget.onAdd(
+        widget.getCategoryModal.name!,
+        widget.getCategoryModal.image != null
+            ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}"
+            : null);
     _controller.forward();
     Future.delayed(const Duration(seconds: 1), () {
       _controller.reverse();

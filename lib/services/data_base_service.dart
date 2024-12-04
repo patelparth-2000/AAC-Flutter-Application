@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -126,9 +127,42 @@ class DataBaseService {
     if (existingData.isEmpty) {
       // Insert data into table if it doesn't exist
       await db.insert(tableName, data);
+      await deleteNullData(tableName: tableName);
       print('Data inserted into $tableName: $data');
     } else {
       print('Data already exists in $tableName, skipping insert.');
+    }
+  }
+
+  Future<void> deleteNullData({required String tableName}) async {
+    final db = await database;
+    await db.execute("DELETE FROM $tableName WHERE id IS NULL");
+  }
+
+  Future<void> insertDataIntoTableManual({
+    required String tableName,
+    required Map<String, dynamic> data,
+  }) async {
+    final db = await database;
+    final tableExists = await _checkIfTableExists(db, tableName);
+    if (tableExists) {
+      await db.insert(tableName, data);
+    } else {
+      final columns = data.keys
+          .map((key) =>
+              '$key TEXT') // Assuming all values are TEXT (can be adjusted)
+          .join(', ');
+
+      final createTableQuery = '''
+      CREATE TABLE IF NOT EXISTS $tableName (
+        row_number INTEGER PRIMARY KEY AUTOINCREMENT,
+        $columns
+      )
+    ''';
+      // Execute the query
+      await db.execute(createTableQuery);
+      print('Table $tableName created with columns: $columns');
+      await db.insert(tableName, data);
     }
   }
 
@@ -142,6 +176,24 @@ class DataBaseService {
     final db = await database;
     final result = await db.rawQuery("SELECT * FROM $tableName");
     return result;
+  }
+
+  Future<dynamic> getTablesSubCatageryData(String tableName) async {
+    try {
+      final db = await database;
+      final tableExists = await _checkIfTableExists(db, tableName);
+      if (tableExists) {
+        print("SELECT * FROM $tableName WHERE type = 'sub_categories'");
+        final result = await db
+            .rawQuery("SELECT * FROM $tableName WHERE type = 'sub_categories'");
+        return result;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      debugPrint("Database query failed for table: $tableName. Error: $e");
+      return [];
+    }
   }
 
   Future<dynamic> directoryPath() async {

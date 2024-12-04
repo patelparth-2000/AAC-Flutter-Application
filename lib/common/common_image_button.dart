@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:audioplayers/audioplayers.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:avaz_app/util/app_color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -79,6 +81,8 @@ class CommonImageButton extends StatefulWidget {
 
 class _CommonImageButtonState extends State<CommonImageButton> {
   late Color _currentBackgroundColor;
+  final player = AudioPlayer();
+  String? audioPath;
 
   @override
   void initState() {
@@ -125,6 +129,25 @@ class _CommonImageButtonState extends State<CommonImageButton> {
     setState(() {
       _currentBackgroundColor = widget.backgroundColor; // Reset if canceled
     });
+  }
+
+  Future<void> playAudio() async {
+    await stopAudio();
+    if (audioPath != null) {
+      await player.play(DeviceFileSource(audioPath!));
+    }
+  }
+
+  Future<void> stopAudio() async {
+    if (player.state == PlayerState.playing) {
+      await player.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    player.dispose();
   }
 
   @override
@@ -175,14 +198,28 @@ class _CommonImageButtonState extends State<CommonImageButton> {
                     width: widget.betweenGap ?? 3,
                   ),
                   if (widget.buttonName != null)
-                    Text(
-                      "${widget.buttonName}",
+                    AutoSizeText(
+                      widget.buttonName!, // The text to display
                       style: widget.textStyle ??
                           TextStyle(
                               color: widget.buttonTextColor,
                               fontWeight: widget.fontWeight,
-                              fontSize: widget.fontSize),
+                              fontSize: widget.fontSize ??
+                                  14), // Default font size if not provided
+                      maxLines: 1, // Limit to a single line
+                      minFontSize:
+                          10, // Minimum font size when text is too long
+                      overflow:
+                          TextOverflow.ellipsis, // Adds "..." if text overflows
                     )
+                  // Text(
+                  //   "${widget.buttonName}",
+                  //   style: widget.textStyle ??
+                  //       TextStyle(
+                  //           color: widget.buttonTextColor,
+                  //           fontWeight: widget.fontWeight,
+                  //           fontSize: widget.fontSize),
+                  // )
                 ],
               )
             : Column(
@@ -215,14 +252,28 @@ class _CommonImageButtonState extends State<CommonImageButton> {
                     width: widget.betweenGap ?? 0,
                   ),
                   if (widget.buttonName != null && widget.isTextShow)
-                    Text(
-                      "${widget.buttonName}",
+                    AutoSizeText(
+                      widget.buttonName!, // The text to display
                       style: widget.textStyle ??
                           TextStyle(
                               color: widget.buttonTextColor,
                               fontWeight: widget.fontWeight,
-                              fontSize: widget.fontSize),
+                              fontSize: widget.fontSize ??
+                                  14), // Default font size if not provided
+                      maxLines: 1, // Limit to a single line
+                      minFontSize:
+                          10, // Minimum font size when text is too long
+                      overflow:
+                          TextOverflow.ellipsis, // Adds "..." if text overflows
                     )
+                  // Text(
+                  //   "${widget.buttonName}",
+                  //   style: widget.textStyle ??
+                  //       TextStyle(
+                  //           color: widget.buttonTextColor,
+                  //           fontWeight: widget.fontWeight,
+                  //           fontSize: widget.fontSize),
+                  // )
                 ],
               ),
       ),

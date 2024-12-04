@@ -110,7 +110,6 @@ class BulkApiData {
                 if (item["image"] != null) {
                   await _asyncMethod(imageUrl, item["image"]);
                 }
-
                 await _insertApiResponseToDatabase(
                     item, categoryName.replaceAll("-", "_"), "type", "id");
               }

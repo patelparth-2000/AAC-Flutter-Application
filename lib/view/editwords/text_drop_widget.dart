@@ -1,3 +1,4 @@
+import 'package:avaz_app/view/editwords/edit_words_screen.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 
@@ -13,14 +14,16 @@ class TextDropWidget extends StatelessWidget {
       required this.text,
       this.isTextField = false,
       this.value,
-      this.items = const []});
+      this.items = const [],
+      this.dropDownOnChanged});
   final TextEditingController? controller;
   final ValueChanged<String?>? onChanged;
+  final ValueChanged<DropDownModel?>? dropDownOnChanged;
   final String hintText;
   final String text;
   final bool isTextField;
-  final String? value;
-  final List<String> items;
+  final DropDownModel? value;
+  final List<DropDownModel> items;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +43,7 @@ class TextDropWidget extends StatelessWidget {
         if (isTextField)
           CommonTextFieldWidget(
             textFieldiwidth: 253,
-            textFieldHeight: 35,
+            textFieldHeight: 38,
             controller: controller!,
             hintText: hintText,
             onChanged: onChanged,
@@ -52,7 +55,7 @@ class TextDropWidget extends StatelessWidget {
                 border: Border.all(color: AppColorConstants.black),
                 borderRadius: BorderRadius.circular(5)),
             child: DropdownButtonHideUnderline(
-              child: DropdownButton2<String>(
+              child: DropdownButton2<DropDownModel>(
                 isExpanded: false,
                 hint: Text(
                   hintText,
@@ -62,18 +65,19 @@ class TextDropWidget extends StatelessWidget {
                   ),
                 ),
                 items: items
-                    .map((String item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                        ))
+                    .map(
+                        (DropDownModel item) => DropdownMenuItem<DropDownModel>(
+                              value: item,
+                              child: Text(
+                                item.name,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ))
                     .toList(),
                 value: value,
-                onChanged: onChanged,
+                onChanged: dropDownOnChanged,
                 buttonStyleData: const ButtonStyleData(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   height: 35,
