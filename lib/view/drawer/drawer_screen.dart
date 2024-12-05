@@ -196,7 +196,11 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                           _drawerNavigatorKey.currentState
                                               ?.push(MaterialPageRoute(
                                             builder: (context) =>
-                                                const SettingsScreen(),
+                                                SettingsScreen(
+                                              dashboradNavigatorKey:
+                                                  widget.dashboradNavigatorKey,
+                                              scaffoldKey: widget.scaffoldKey,
+                                            ),
                                           ))
                                               .whenComplete(
                                             () {
@@ -220,7 +224,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                             },
                                           );
                                         } else if (drawerData[i].name ==
-                                            "Support") {}
+                                            "Support") {
+                                          isNavigated = false;
+                                        }
                                       },
                                     ),
                                     const SizedBox(

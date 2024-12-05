@@ -29,6 +29,7 @@ dependencies:
   audioplayers: ^6.1.0
   flutter_sound: ^9.17.5
   auto_size_text: ^3.0.0
+  toggle_switch: ^2.3.0
 
 dev_dependencies:
   flutter_test:

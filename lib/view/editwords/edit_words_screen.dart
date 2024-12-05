@@ -277,20 +277,91 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: AppColorConstants.keyBoardBackColor,
+        surfaceTintColor: AppColorConstants.keyBoardBackColor,
+        shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(5)),
         title: const Text("Permission Denied"),
         content: const Text(
             "The required permission was not granted. Please allow permissions in app settings."),
+        actionsAlignment: MainAxisAlignment.center,
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("OK"),
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                  color: AppColorConstants.imageTextButtonColor,
+                  borderRadius: BorderRadius.circular(5)),
+              child: const Text(
+                "Close",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColorConstants.white),
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
+  void showErrorDialog({required String text}) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColorConstants.keyBoardBackColor,
+        surfaceTintColor: AppColorConstants.keyBoardBackColor,
+        shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        title: const Text("Field Required"),
+        content: Text("$text field is Required"),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                  color: AppColorConstants.imageTextButtonColor,
+                  borderRadius: BorderRadius.circular(5)),
+              child: const Text(
+                "Close",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColorConstants.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool isValid() {
+    if (selectedLang == null) {
+      showErrorDialog(text: "Language");
+      return false;
+    }
+    if (selectedCategory == null) {
+      showErrorDialog(text: "Category");
+      return false;
+    }
+    if (voiceController.text.isEmpty) {
+      showErrorDialog(text: "Voice");
+      return false;
+    }
+    return true;
+  }
+
   void addData(BuildContext context) async {
+    if (!isValid()) {
+      return;
+    }
     String tableName = "";
     Map<String, dynamic> data = {
       "id": null,

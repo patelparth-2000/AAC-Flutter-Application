@@ -280,13 +280,32 @@ class DashboardScreenState extends State<DashboardScreen> {
                                               SizedBox(
                                                 width: Dimensions.screenWidth *
                                                     0.004,
-                                              )
+                                              ),
                                             ],
                                           ),
                                     ],
                                   ),
                                 ),
                               ),
+                              if (isKeyBoardShow)
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: CommonImageButton(
+                                    isImageShow: true,
+                                    isTextShow: true,
+                                    vertical: 0,
+                                    height: 50,
+                                    width: 75,
+                                    buttonIcon: Icons.menu,
+                                    buttonName: "Menu",
+                                    onTap: () {
+                                      _scaffoldKey.currentState
+                                          ?.openEndDrawer();
+                                      speakToText("Menu", flutterTts);
+                                    },
+                                  ),
+                                ),
                             ],
                           ),
                         ),
