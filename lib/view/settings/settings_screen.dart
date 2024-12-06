@@ -1,22 +1,48 @@
-import 'package:avaz_app/view/settings/setting_widget.dart';
-import 'package:avaz_app/view/settings/title_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../../util/app_color_constants.dart';
 import '../subscription/subscription_screen.dart';
+import 'setting_widget.dart';
+import 'settings_page/acc_support.dart';
+import 'settings_page/account_details.dart';
+import 'settings_page/backup_restore.dart';
+import 'settings_page/color_coding.dart';
+import 'settings_page/grammar.dart';
+import 'settings_page/keys_on_selection.dart';
+import 'settings_page/layout.dart';
+import 'settings_page/password_protection.dart';
+import 'settings_page/pictures_grid_size.dart';
+import 'settings_page/prediction.dart';
+import 'settings_page/share_messages.dart';
+import 'settings_page/side_navigation_bar.dart';
+import 'settings_page/test_size.dart';
+import 'settings_page/touch_accommodation.dart';
+import 'settings_page/vocabulary_screen.dart';
+import 'settings_page/voice.dart';
+import 'settings_page/what_to_speak.dart';
+import 'settings_page/word_on_selection.dart';
+import 'title_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen(
       {super.key,
       required this.scaffoldKey,
-      required this.dashboradNavigatorKey});
+      required this.dashboradNavigatorKey,
+      required this.drawerNavigatorKey});
   final GlobalKey<ScaffoldState> scaffoldKey;
   final GlobalKey<NavigatorState> dashboradNavigatorKey;
+  final GlobalKey<NavigatorState> drawerNavigatorKey;
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  void nextpage(Widget nextWidget) {
+    widget.drawerNavigatorKey.currentState?.push(MaterialPageRoute(
+      builder: (context) => nextWidget,
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,7 +68,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const TitleWidget(
                     text: "MY ACCOUNT",
                   ),
-                  SettingWidget(text: "Account Details", onTap: () {}),
+                  SettingWidget(
+                      text: "Account Details",
+                      onTap: () {
+                        nextpage(const AccountDetails());
+                      }),
                   SettingWidget(
                       text: "Purchese Subscription",
                       onTap: () {
@@ -69,22 +99,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onSwitchChanged: (value) {},
                   ),
                   SettingWidget(
-                      text: "Pictures per Screen (Grid Size)", onTap: () {}),
-                  SettingWidget(text: "Text Size", onTap: () {}),
+                      text: "Pictures per Screen (Grid Size)",
+                      onTap: () {
+                        nextpage(const PicturesGridSize());
+                      }),
+                  SettingWidget(
+                      text: "Text Size",
+                      onTap: () {
+                        nextpage(const TestSize());
+                      }),
                   SettingWidget(
                       text: "Text Position",
                       isToggle: true,
                       initialLabelIndex: 0,
                       onToggleChanged: (index) {}),
                   SettingWidget(
-                      text: "Change Side Navigation Bar", onTap: () {}),
-                  SettingWidget(text: "Colour Coding", onTap: () {}),
+                      text: "Change Side Navigation Bar",
+                      onTap: () {
+                        nextpage(const SideNavigationBar());
+                      }),
+                  SettingWidget(
+                      text: "Colour Coding",
+                      onTap: () {
+                        nextpage(const ColorCoding());
+                      }),
                   const TitleWidget(
                     text: "PICTURE SETTINGS (BEHAVIOUR)",
                   ),
                   SettingWidget(
-                      text: "Enlarge Word on Selection", onTap: () {}),
-                  SettingWidget(text: "Home Screen vocabulary", onTap: () {}),
+                      text: "Enlarge Word on Selection",
+                      onTap: () {
+                        nextpage(const WordOnSelection());
+                      }),
+                  SettingWidget(
+                      text: "Home Screen vocabulary",
+                      onTap: () {
+                        nextpage(const VocabularyScreen());
+                      }),
                   SettingWidget(
                     text: "Auto-home each time",
                     isSwitch: true,
@@ -97,19 +148,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     switchValue: true,
                     onSwitchChanged: (value) {},
                   ),
-                  SettingWidget(text: "Grammar", onTap: () {}),
+                  SettingWidget(
+                      text: "Grammar",
+                      onTap: () {
+                        nextpage(const Grammar());
+                      }),
                   const TitleWidget(
                     text: "KEYBOARD SETTING",
                   ),
-                  SettingWidget(text: "Layout", onTap: () {}),
-                  SettingWidget(text: "Prediction", onTap: () {}),
                   SettingWidget(
-                      text: "Enlarge Keys on Selection", onTap: () {}),
+                      text: "Layout",
+                      onTap: () {
+                        nextpage(const Layout());
+                      }),
+                  SettingWidget(
+                      text: "Prediction",
+                      onTap: () {
+                        nextpage(const Prediction());
+                      }),
+                  SettingWidget(
+                      text: "Enlarge Keys on Selection",
+                      onTap: () {
+                        nextpage(const KeysOnSelection());
+                      }),
                   const TitleWidget(
                     text: "AUDIO SETTING",
                   ),
-                  SettingWidget(text: "Voice", onTap: () {}),
-                  SettingWidget(text: "What to Speak", onTap: () {}),
+                  SettingWidget(
+                      text: "Voice",
+                      onTap: () {
+                        nextpage(const Voice());
+                      }),
+                  SettingWidget(
+                      text: "What to Speak",
+                      onTap: () {
+                        nextpage(const WhatToSpeak());
+                      }),
                   SettingWidget(
                     text: "Speak action keys",
                     isSwitch: true,
@@ -119,23 +193,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const TitleWidget(
                     text: "GENERAL",
                   ),
-                  SettingWidget(text: "Share Messages", onTap: () {}),
-                  SettingWidget(text: "Password Protection", onTap: () {}),
+                  SettingWidget(
+                      text: "Share Messages",
+                      onTap: () {
+                        nextpage(const ShareMessages());
+                      }),
+                  SettingWidget(
+                      text: "Password Protection",
+                      onTap: () {
+                        nextpage(const PasswordProtection());
+                      }),
                   SettingWidget(
                     text: "Auto Clear Message Box",
                     isSwitch: true,
                     switchValue: true,
                     onSwitchChanged: (value) {},
                   ),
-                  SettingWidget(text: "Backup & Restore", onTap: () {}),
+                  SettingWidget(
+                      text: "Backup & Restore",
+                      onTap: () {
+                        nextpage(const BackupRestore());
+                      }),
                   const TitleWidget(
                     text: "ACCESSIBILITY",
                   ),
-                  SettingWidget(text: "Touch Accommodation", onTap: () {}),
+                  SettingWidget(
+                      text: "Touch Accommodation",
+                      onTap: () {
+                        nextpage(const TouchAccommodation());
+                      }),
                   const TitleWidget(
                     text: "SUPPORT",
                   ),
-                  SettingWidget(text: "Avaz Support", onTap: () {}),
+                  SettingWidget(
+                      text: "Avaz Support",
+                      onTap: () {
+                        nextpage(const AccSupport());
+                      }),
                 ],
               ),
             ),

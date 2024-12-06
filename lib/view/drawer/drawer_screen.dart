@@ -29,6 +29,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
   final GlobalKey<NavigatorState> _drawerNavigatorKey =
       GlobalKey<NavigatorState>();
   bool isNavigated = false;
+  bool isMute = false;
   double _volumeListenerValue = 0;
   double _setVolumeValue = 0;
   List<DrawerModel> drawerData = [
@@ -200,6 +201,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                               dashboradNavigatorKey:
                                                   widget.dashboradNavigatorKey,
                                               scaffoldKey: widget.scaffoldKey,
+                                              drawerNavigatorKey:
+                                                  _drawerNavigatorKey,
                                             ),
                                           ))
                                               .whenComplete(
@@ -213,8 +216,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                             "Tools") {
                                           _drawerNavigatorKey.currentState
                                               ?.push(MaterialPageRoute(
-                                            builder: (context) =>
-                                                const ToolsScreen(),
+                                            builder: (context) => ToolsScreen(
+                                              drawerNavigatorKey:
+                                                  _drawerNavigatorKey,
+                                            ),
                                           ))
                                               .whenComplete(
                                             () {
@@ -283,7 +288,14 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                               .setVolume(_setVolumeValue);
                                           setState(() {});
                                         } else {
-                                          VolumeController().muteVolume();
+                                          if (isMute) {
+                                            VolumeController()
+                                                .setVolume(_setVolumeValue);
+                                            isMute = false;
+                                          } else {
+                                            VolumeController().muteVolume();
+                                            isMute = true;
+                                          }
                                         }
                                       },
                                     ),

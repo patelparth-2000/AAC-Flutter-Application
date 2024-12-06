@@ -39,9 +39,9 @@ Future<void> speakToText(String text, final FlutterTts flutterTts) async {
   }
 }
 
-Widget dividerWidget({double height = 1}) {
+Widget dividerWidget({double height = 1, Color? color}) {
   return Container(
     height: height,
-    color: AppColorConstants.black,
+    color: color ?? AppColorConstants.black,
   );
 }

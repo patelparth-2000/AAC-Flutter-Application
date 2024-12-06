@@ -14,14 +14,22 @@ class SettingWidget extends StatelessWidget {
       this.onToggleChanged,
       this.switchValue = false,
       this.initialLabelIndex,
-      this.onTap});
+      this.onTap,
+      this.togglelabels,
+      this.isArrow = true,
+      this.isTextTitle = false,
+      this.icon});
   final String text;
   final bool isSwitch;
   final bool isToggle;
+  final bool isArrow;
+  final bool isTextTitle;
   final ValueChanged<bool>? onSwitchChanged;
   final OnToggle? onToggleChanged;
   final bool switchValue;
   final int? initialLabelIndex;
+  final IconData? icon;
+  final List<String>? togglelabels;
   final Function()? onTap;
 
   @override
@@ -32,11 +40,25 @@ class SettingWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              text,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
+            if (!isTextTitle)
+              Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColorConstants.keyTextColor,
+                ),
+              )
+            else
+              Text(
+                text,
+                style: const TextStyle(
+                    color: AppColorConstants.imageTextButtonColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
+              ),
             if (isSwitch)
               CustomSwitch(value: switchValue, onChanged: onSwitchChanged!)
             else if (isToggle)
@@ -45,21 +67,21 @@ class SettingWidget extends StatelessWidget {
                 minHeight: 25.0,
                 fontSize: 10.0,
                 initialLabelIndex: initialLabelIndex,
-                activeBgColor: const [AppColorConstants.imageTextButtonColor],
+                activeBgColor: const [AppColorConstants.keyTextColor],
                 activeFgColor: AppColorConstants.white,
                 inactiveBgColor: AppColorConstants.white,
-                inactiveFgColor: AppColorConstants.imageTextButtonColor,
+                inactiveFgColor: AppColorConstants.keyTextColor,
                 totalSwitches: 2,
                 cornerRadius: 2,
                 dividerMargin: 0,
-                labels: const ['Above', 'Below'],
+                labels: togglelabels ?? const ['Above', 'Below'],
                 onToggle: onToggleChanged,
               )
-            else
-              const Icon(
-                Icons.arrow_forward_ios_rounded,
+            else if (isArrow)
+              Icon(
+                icon ?? Icons.arrow_forward_ios_rounded,
                 size: 16,
-                color: AppColorConstants.imageTextButtonColor,
+                color: AppColorConstants.keyTextColor,
               ),
           ],
         ),
