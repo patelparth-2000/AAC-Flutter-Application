@@ -1,10 +1,18 @@
 import 'package:avaz_app/util/app_color_constants.dart';
 import 'package:flutter/material.dart';
 
+import '../../../services/data_base_service.dart';
 import '../radio_button.dart';
+import '../setting_model.dart/picture_appearance_setting_model.dart';
 
+// ignore: must_be_immutable
 class TestSize extends StatefulWidget {
-  const TestSize({super.key});
+  TestSize(
+      {super.key,
+      required this.dataBaseService,
+      this.pictureAppearanceSettingModel});
+  final DataBaseService dataBaseService;
+  PictureAppearanceSettingModel? pictureAppearanceSettingModel;
 
   @override
   State<TestSize> createState() => _TestSizeState();
@@ -18,6 +26,27 @@ class _TestSizeState extends State<TestSize> {
     RadioButtonModel(name: "Large"),
     RadioButtonModel(name: "Only text (no picture)"),
   ];
+
+  void radioData(String value) {
+    value = value.toLowerCase().replaceAll(" ", "_");
+    for (var item in radioList) {
+      item.select = item.name.toLowerCase().replaceAll(" ", "_") == value;
+
+      if (item.select) {
+        widget.pictureAppearanceSettingModel!.textSize = value;
+        widget.dataBaseService
+            .pictureAppearanceSettingUpdate( widget.pictureAppearanceSettingModel!);
+      }
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    radioData(widget.pictureAppearanceSettingModel!.textSize!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,7 +64,8 @@ class _TestSizeState extends State<TestSize> {
                 height: 20,
               ),
               RadioButton(
-                  onTap: () {
+                  onTap: (value) {
+                    radioData(value);
                     setState(() {});
                   },
                   radioList: radioList),

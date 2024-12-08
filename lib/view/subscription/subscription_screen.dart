@@ -3,9 +3,16 @@ import 'package:avaz_app/util/dimensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class SubscriptionScreen extends StatefulWidget {
-  const SubscriptionScreen({super.key});
+import '../../common/common.dart';
+import '../../services/data_base_service.dart';
+import '../settings/setting_model.dart/account_setting_model.dart';
 
+// ignore: must_be_immutable
+class SubscriptionScreen extends StatefulWidget {
+  SubscriptionScreen(
+      {super.key, required this.dataBaseService, this.accountSettingModel});
+  final DataBaseService dataBaseService;
+  AccountSettingModel? accountSettingModel;
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
 }
@@ -49,22 +56,24 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       const SizedBox(
                         height: 15,
                       ),
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
-                              Text(
+                              const Text(
                                 "You're on a ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 16),
                               ),
-                              Text("free trial ",
-                                  style: TextStyle(
+                              Text(
+                                  widget
+                                      .accountSettingModel!.subscriptionDetail!,
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                       color: AppColorConstants.blue60)),
-                              Text("plan",
+                              const Text(" plan",
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16)),
@@ -72,13 +81,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           ),
                           Row(
                             children: [
-                              Text(
-                                "Expired on:",
+                              const Text(
+                                "Expired on: ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 12),
                               ),
-                              Text(" 04-Jun-2024",
-                                  style: TextStyle(
+                              Text(
+                                  changeDateFormat(
+                                      widget.accountSettingModel!.expireDate!),
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12,
                                       color: AppColorConstants.blue60)),

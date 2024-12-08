@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:avaz_app/common/common_text_field_widget.dart';
+import 'package:avaz_app/services/data_base_service.dart';
 import 'package:avaz_app/util/app_color_constants.dart';
 import 'package:avaz_app/util/app_constants.dart';
 import 'package:avaz_app/view/data_collection/data_collection_screen.dart';
+import 'package:avaz_app/view/settings/setting_model.dart/account_setting_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../api/common_api_call.dart';
@@ -17,6 +19,7 @@ import '../../util/dimensions.dart';
 class OtpScreen extends StatefulWidget {
   const OtpScreen(
       {super.key, required this.phoneNumber, required this.countryCode});
+
   final String phoneNumber;
   final String countryCode;
 
@@ -25,6 +28,7 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
+  final DataBaseService dataBaseService = DataBaseService.instance;
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
   FocusNode phoneNumberFocusNode = FocusNode();
@@ -67,6 +71,10 @@ class _OtpScreenState extends State<OtpScreen> {
       final responseData = json.decode(response.body);
       if (responseData != null) {
         if (responseData["status"].toString() == "1") {
+          String oneMonthAhead = DateTime.now().add(const Duration(days: 30)).toIso8601String();
+          dataBaseService.accountSettingUpdate(AccountSettingModel(
+              number: "+91${responseData["data"]["mobile"]}",
+              expireDate: oneMonthAhead));
           setStringData(AppConstants.isOtpFinish, "yes");
           Navigator.pushAndRemoveUntil(
             context,

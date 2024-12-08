@@ -20,7 +20,7 @@ class _BackupRestoreState extends State<BackupRestore> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text("Password Protection Settings",
+            Text("Backup & Restore Settings",
                 style: TextStyle(
                     color: AppColorConstants.buttonColorBlue2,
                     fontSize: 18,

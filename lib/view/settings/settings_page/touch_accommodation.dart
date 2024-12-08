@@ -1,11 +1,16 @@
+import 'package:avaz_app/view/settings/setting_model.dart/touch_setting.dart';
 import 'package:avaz_app/view/settings/setting_widget.dart';
 import 'package:flutter/material.dart';
 
+import '../../../services/data_base_service.dart';
 import '../../../util/app_color_constants.dart';
 
+// ignore: must_be_immutable
 class TouchAccommodation extends StatefulWidget {
-  const TouchAccommodation({super.key});
-
+  TouchAccommodation(
+      {super.key, required this.dataBaseService, this.touchSettingModel});
+  final DataBaseService dataBaseService;
+  TouchSettingModel? touchSettingModel;
   @override
   State<TouchAccommodation> createState() => _TouchAccommodationState();
 }
@@ -30,8 +35,13 @@ class _TouchAccommodationState extends State<TouchAccommodation> {
               SettingWidget(
                 text: "Enable Touch Accommodations",
                 isSwitch: true,
-                switchValue: false,
-                onSwitchChanged: (value) {},
+                switchValue: widget.touchSettingModel!.enableTouch!,
+                onSwitchChanged: (value) {
+                  widget.touchSettingModel!.enableTouch = value;
+                  widget.dataBaseService
+                      .touchSettingUpdate(widget.touchSettingModel!);
+                  setState(() {});
+                },
               )
             ]));
   }

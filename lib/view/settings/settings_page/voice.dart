@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../../services/data_base_service.dart';
 import '../../../util/app_color_constants.dart';
+import '../setting_model.dart/audio_setting.dart';
 import '../setting_widget.dart';
 import '../title_widget.dart';
 
+// ignore: must_be_immutable
 class Voice extends StatefulWidget {
-  const Voice({super.key});
-
+Voice(
+      {super.key, this.audioSettingModel, required this.dataBaseService});
+  final DataBaseService dataBaseService;
+  AudioSettingModel? audioSettingModel;
   @override
   State<Voice> createState() => _VoiceState();
 }

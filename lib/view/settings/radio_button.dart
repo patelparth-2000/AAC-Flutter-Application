@@ -10,7 +10,7 @@ class RadioButton extends StatefulWidget {
       this.physics,
       this.flex = 1});
   final List<RadioButtonModel> radioList;
-  final Function() onTap;
+  final Function(String item) onTap;
   final bool isMultipal;
   final ScrollPhysics? physics;
   final int flex;
@@ -23,14 +23,23 @@ class _RadioButtonState extends State<RadioButton> {
   void _onItemTapped(int index) {
     setState(() {
       if (widget.isMultipal) {
+        List<String> multipalSelect = [];
         widget.radioList[index].select = !widget.radioList[index].select;
+        for (int i = 0; i < widget.radioList.length; i++) {
+          if (widget.radioList[i].select) {
+            multipalSelect.add(widget.radioList[i].name.replaceAll(" ", "_"));
+          }
+        }
+        widget.onTap(multipalSelect.join(","));
       } else {
         for (int i = 0; i < widget.radioList.length; i++) {
+          if (i == index) {
+            widget.onTap(widget.radioList[i].name.replaceAll(" ", "_"));
+          }
           widget.radioList[i].select = (i == index);
         }
       }
     });
-    widget.onTap();
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../util/app_color_constants.dart';
@@ -44,4 +45,11 @@ Widget dividerWidget({double height = 1, Color? color}) {
     height: height,
     color: color ?? AppColorConstants.black,
   );
+}
+
+String changeDateFormat(String datetime) {
+  DateTime parsedDate = DateTime.parse(datetime);
+  String formattedDate =
+      DateFormat('dd-MMM-yyyy').format(parsedDate).toLowerCase();
+  return formattedDate;
 }

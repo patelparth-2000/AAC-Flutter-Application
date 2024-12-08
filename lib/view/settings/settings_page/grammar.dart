@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../../../services/data_base_service.dart';
 import '../../../util/app_color_constants.dart';
+import '../setting_model.dart/picture_behaviour_setting_model.dart';
 import '../setting_widget.dart';
 import '../title_widget.dart';
 
+// ignore: must_be_immutable
 class Grammar extends StatefulWidget {
-  const Grammar({super.key});
-
+  Grammar(
+      {super.key,
+      this.pictureBehaviourSettingModel,
+      required this.dataBaseService});
+  final DataBaseService dataBaseService;
+  PictureBehaviourSettingModel? pictureBehaviourSettingModel;
   @override
   State<Grammar> createState() => _GrammarState();
 }
@@ -32,17 +39,27 @@ class _GrammarState extends State<Grammar> {
               text: "GRAMMAR SETTING",
             ),
             SettingWidget(
-              text: "Grammar",
-              isSwitch: true,
-              switchValue: false,
-              onSwitchChanged: (value) {},
-            ),
+                text: "Grammar",
+                isSwitch: true,
+                switchValue: widget.pictureBehaviourSettingModel!.grammar!,
+                onSwitchChanged: (value) {
+                  widget.pictureBehaviourSettingModel!.grammar = value;
+                  widget.dataBaseService.pictureBehaviourSettingUpdate(
+                     widget.pictureBehaviourSettingModel!);
+                  setState(() {});
+                }),
             SettingWidget(
-              text: "Show Word froms in Picture Grid",
-              isSwitch: true,
-              switchValue: true,
-              onSwitchChanged: (value) {},
-            ),
+                text: "Show Word froms in Picture Grid",
+                isSwitch: true,
+                switchValue:
+                    widget.pictureBehaviourSettingModel!.grammarPictureGrid!,
+                onSwitchChanged: (value) {
+                  widget.pictureBehaviourSettingModel!.grammarPictureGrid =
+                      value;
+                  widget.dataBaseService.pictureBehaviourSettingUpdate(
+                      widget.pictureBehaviourSettingModel!);
+                  setState(() {});
+                }),
           ],
         ));
   }

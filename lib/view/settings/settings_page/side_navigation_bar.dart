@@ -2,28 +2,69 @@ import 'package:avaz_app/view/settings/setting_widget.dart';
 import 'package:avaz_app/view/settings/title_widget.dart';
 import 'package:flutter/material.dart';
 
+import '../../../services/data_base_service.dart';
 import '../../../util/app_color_constants.dart';
 import '../radio_button.dart';
+import '../setting_model.dart/picture_appearance_setting_model.dart';
 
+// ignore: must_be_immutable
 class SideNavigationBar extends StatefulWidget {
-  const SideNavigationBar({super.key});
-
+  SideNavigationBar(
+      {super.key,
+      required this.dataBaseService,
+      this.pictureAppearanceSettingModel});
+  final DataBaseService dataBaseService;
+  PictureAppearanceSettingModel? pictureAppearanceSettingModel;
   @override
   State<SideNavigationBar> createState() => _SideNavigationBarState();
 }
 
 class _SideNavigationBarState extends State<SideNavigationBar> {
   List<RadioButtonModel> radioList = [
-    RadioButtonModel(name: "Go Back", select: true),
-    RadioButtonModel(name: "Home", select: true),
-    RadioButtonModel(name: "Quick", select: true),
+    RadioButtonModel(name: "Go Back"),
+    RadioButtonModel(name: "Home"),
+    RadioButtonModel(name: "Quick"),
     RadioButtonModel(name: "Core Words"),
-    RadioButtonModel(name: "Next Page", select: true),
-    RadioButtonModel(name: "Previous Page", select: true),
-    RadioButtonModel(name: "Search Words", select: true),
+    RadioButtonModel(name: "Next Page"),
+    RadioButtonModel(name: "Previous Page"),
+    RadioButtonModel(name: "Search Words"),
     RadioButtonModel(name: "Alert"),
     RadioButtonModel(name: "I Made A Mistake"),
   ];
+
+  List<String> sideNavigtion = ["Left", "Right"];
+  int initialLabelIndexSide = 0;
+
+  void radioData(String value) {
+    value = value.toLowerCase().replaceAll(" ", "_");
+    List<String> sideButton = value.split(",");
+    for (var item in radioList) {
+      for (var side in sideButton) {
+        if (item.name.toLowerCase().replaceAll(" ", "_") == side) {
+          item.select = true;
+        }
+      }
+    }
+    widget.pictureAppearanceSettingModel!.sideNavigationBarButton = value;
+    widget.dataBaseService
+        .pictureAppearanceSettingUpdate( widget.pictureAppearanceSettingModel!);
+    setState(() {});
+  }
+
+  void sideNavigation() {
+    String currentTextPosition =
+        widget.pictureAppearanceSettingModel!.sideNavigationBarPosition!;
+    initialLabelIndexSide = sideNavigtion.indexWhere((element) =>
+        element.toLowerCase().replaceAll(" ", "_") == currentTextPosition);
+    if (initialLabelIndexSide == -1) initialLabelIndexSide = 0;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    sideNavigation();
+    radioData(widget.pictureAppearanceSettingModel!.sideNavigationBarButton!);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,22 +92,42 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                       SettingWidget(
                         text: "Side navigation bar",
                         isSwitch: true,
-                        switchValue: true,
-                        onSwitchChanged: (value) {},
+                        switchValue: widget
+                            .pictureAppearanceSettingModel!.sideNavigationBar!,
+                        onSwitchChanged: (value) {
+                          widget.pictureAppearanceSettingModel!
+                              .sideNavigationBar = value;
+                          widget.dataBaseService.pictureAppearanceSettingUpdate(
+                              PictureAppearanceSettingModel(
+                                  sideNavigationBar: value));
+                          setState(() {});
+                        },
                       ),
                       SettingWidget(
-                        text: "Side navigation bar",
+                        text: "Side navigation bar position",
                         isToggle: true,
-                        initialLabelIndex: 1,
-                        togglelabels: const ["Left", "Right"],
-                        onToggleChanged: (index) {},
+                        initialLabelIndex: initialLabelIndexSide,
+                        togglelabels: sideNavigtion,
+                        onToggleChanged: (index) {
+                          initialLabelIndexSide = index!;
+                          String selectedData = sideNavigtion[index]
+                              .toLowerCase()
+                              .replaceAll(" ", "_");
+                          widget.pictureAppearanceSettingModel!
+                              .sideNavigationBarPosition = selectedData;
+                          widget.dataBaseService.pictureAppearanceSettingUpdate(
+                              PictureAppearanceSettingModel(
+                                  sideNavigationBarPosition: selectedData));
+                          setState(() {});
+                        },
                       ),
                       const TitleWidget(text: "CHOOSE ATLEAST 4 BUTTONS"),
                       RadioButton(
                           flex: 0,
                           physics: const NeverScrollableScrollPhysics(),
                           isMultipal: true,
-                          onTap: () {
+                          onTap: (value) {
+                            radioData(value);
                             setState(() {});
                           },
                           radioList: radioList),

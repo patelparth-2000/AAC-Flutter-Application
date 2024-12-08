@@ -74,7 +74,7 @@ class SettingWidget extends StatelessWidget {
                 totalSwitches: 2,
                 cornerRadius: 2,
                 dividerMargin: 0,
-                labels: togglelabels ?? const ['Above', 'Below'],
+                labels: togglelabels,
                 onToggle: onToggleChanged,
               )
             else if (isArrow)

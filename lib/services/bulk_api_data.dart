@@ -14,7 +14,7 @@ import 'data_base_service.dart';
 class BulkApiData {
   static void getCategory(BuildContext context) async {
     var response = await CommonApiCall.postApiCall(action: "get_category");
-
+    _settingDataInsert();
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
 
@@ -158,5 +158,10 @@ class BulkApiData {
       uniqueType: uniqueType,
       uniqueId: uniqueId,
     );
+  }
+
+  static Future<void> _settingDataInsert() async {
+    final dbService = DataBaseService.instance;
+    await dbService.createSettingTables();
   }
 }

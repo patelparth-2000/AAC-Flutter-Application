@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../../services/data_base_service.dart';
 import '../../../util/app_color_constants.dart';
 import '../radio_button.dart';
+import '../setting_model.dart/keyboard_setting.dart';
 
+// ignore: must_be_immutable
 class KeysOnSelection extends StatefulWidget {
-  const KeysOnSelection({super.key});
-
+  KeysOnSelection(
+      {super.key, this.keyboardSettingModel, required this.dataBaseService});
+  final DataBaseService dataBaseService;
+  KeyboardSettingModel? keyboardSettingModel;
   @override
   State<KeysOnSelection> createState() => _KeysOnSelectionState();
 }
@@ -17,6 +22,27 @@ class _KeysOnSelectionState extends State<KeysOnSelection> {
     RadioButtonModel(name: "Enlarge at normal speed"),
     RadioButtonModel(name: "Enlarge quickly"),
   ];
+
+  void radioData(String value) {
+    value = value.toLowerCase().replaceAll(" ", "_");
+    for (var item in radioList) {
+      item.select = item.name.toLowerCase().replaceAll(" ", "_") == value;
+
+      if (item.select) {
+        widget.keyboardSettingModel!.enlargeSpeed = value;
+        widget.dataBaseService
+            .keyboardSettingUpdate(widget.keyboardSettingModel!);
+      }
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    radioData(widget.keyboardSettingModel!.enlargeSpeed!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,7 +60,8 @@ class _KeysOnSelectionState extends State<KeysOnSelection> {
                 height: 20,
               ),
               RadioButton(
-                  onTap: () {
+                  onTap: (value) {
+                    radioData(value);
                     setState(() {});
                   },
                   radioList: radioList),

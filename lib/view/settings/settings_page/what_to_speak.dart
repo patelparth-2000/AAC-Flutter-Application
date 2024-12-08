@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../../services/data_base_service.dart';
 import '../../../util/app_color_constants.dart';
 import '../radio_button.dart';
+import '../setting_model.dart/audio_setting.dart';
 
+// ignore: must_be_immutable
 class WhatToSpeak extends StatefulWidget {
-  const WhatToSpeak({super.key});
-
+  WhatToSpeak(
+      {super.key, this.audioSettingModel, required this.dataBaseService});
+  final DataBaseService dataBaseService;
+  AudioSettingModel? audioSettingModel;
   @override
   State<WhatToSpeak> createState() => _WhatToSpeakState();
 }
@@ -16,6 +21,26 @@ class _WhatToSpeakState extends State<WhatToSpeak> {
     RadioButtonModel(name: "Speak Words"),
     RadioButtonModel(name: "Speak only message box"),
   ];
+
+  void radioData(String value) {
+    value = value.toLowerCase().replaceAll(" ", "_");
+    for (var item in radioList) {
+      item.select = item.name.toLowerCase().replaceAll(" ", "_") == value;
+
+      if (item.select) {
+        widget.audioSettingModel!.whatToSpeak = value;
+        widget.dataBaseService.audioSettingUpdate(widget.audioSettingModel!);
+      }
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    radioData(widget.audioSettingModel!.whatToSpeak!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -33,7 +58,8 @@ class _WhatToSpeakState extends State<WhatToSpeak> {
                 height: 20,
               ),
               RadioButton(
-                  onTap: () {
+                  onTap: (value) {
+                    radioData(value);
                     setState(() {});
                   },
                   radioList: radioList),

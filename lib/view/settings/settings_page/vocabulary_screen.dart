@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../../../services/data_base_service.dart';
 import '../../../util/app_color_constants.dart';
 import '../radio_button.dart';
+import '../setting_model.dart/picture_behaviour_setting_model.dart';
 
+// ignore: must_be_immutable
 class VocabularyScreen extends StatefulWidget {
-  const VocabularyScreen({super.key});
-
+  VocabularyScreen(
+      {super.key,
+      this.pictureBehaviourSettingModel,
+      required this.dataBaseService});
+  final DataBaseService dataBaseService;
+  PictureBehaviourSettingModel? pictureBehaviourSettingModel;
   @override
   State<VocabularyScreen> createState() => _VocabularyScreenState();
 }
@@ -20,6 +27,27 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
     RadioButtonModel(name: "CORE WORDS"),
     RadioButtonModel(name: "OTHER LANGUAGES"),
   ];
+
+  void radioData(String value) {
+    value = value.toLowerCase().replaceAll(" ", "_");
+    for (var item in radioList) {
+      item.select = item.name.toLowerCase().replaceAll(" ", "_") == value;
+
+      if (item.select) {
+        widget.pictureBehaviourSettingModel!.vocabularyHome = value;
+        widget.dataBaseService
+            .pictureBehaviourSettingUpdate(widget.pictureBehaviourSettingModel!);
+      }
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    radioData(widget.pictureBehaviourSettingModel!.vocabularyHome!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -37,7 +65,8 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                 height: 20,
               ),
               RadioButton(
-                  onTap: () {
+                  onTap: (value) {
+                    radioData(value);
                     setState(() {});
                   },
                   radioList: radioList),

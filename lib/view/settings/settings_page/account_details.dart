@@ -2,11 +2,17 @@ import 'package:avaz_app/common/common.dart';
 import 'package:avaz_app/view/settings/setting_widget.dart';
 import 'package:flutter/material.dart';
 
+import '../../../services/data_base_service.dart';
 import '../../../util/app_color_constants.dart';
+import '../setting_model.dart/account_setting_model.dart';
 import '../title_widget.dart';
 
+// ignore: must_be_immutable
 class AccountDetails extends StatefulWidget {
-  const AccountDetails({super.key});
+  AccountDetails(
+      {super.key, this.accountSettingModel, required this.dataBaseService});
+  final DataBaseService dataBaseService;
+  AccountSettingModel? accountSettingModel;
 
   @override
   State<AccountDetails> createState() => _AccountDetailsState();
@@ -38,9 +44,14 @@ class _AccountDetailsState extends State<AccountDetails> {
                         const TitleWidget(
                           text: "ACCOUNT DETAILS",
                         ),
-                        textData("Registered Number: ", "+911234567890"),
-                        textData("Subscription Plan: ", "Free trial"),
-                        textData("Expired on: ", "04-jun-2024"),
+                        textData("Registered Number: ",
+                            widget.accountSettingModel!.number!),
+                        textData("Subscription Plan: ",
+                            widget.accountSettingModel!.subscriptionDetail!),
+                        textData(
+                            "Expired on: ",
+                            changeDateFormat(
+                                widget.accountSettingModel!.expireDate!)),
                         const SizedBox(
                           height: 10,
                         ),
@@ -56,8 +67,14 @@ class _AccountDetailsState extends State<AccountDetails> {
                         SettingWidget(
                           text: "Upload Crash Reports",
                           isSwitch: true,
-                          switchValue: true,
-                          onSwitchChanged: (value) {},
+                          switchValue: widget.accountSettingModel!.uploadCrash!,
+                          onSwitchChanged: (value) {
+                            setState(() {
+                              widget.accountSettingModel!.uploadCrash = value;
+                            });
+                            widget.dataBaseService.accountSettingUpdate(
+                                AccountSettingModel(uploadCrash: value));
+                          },
                         )
                       ]),
                 ),

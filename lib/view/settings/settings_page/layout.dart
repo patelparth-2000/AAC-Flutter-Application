@@ -1,12 +1,16 @@
+import 'package:avaz_app/view/settings/setting_model.dart/keyboard_setting.dart';
 import 'package:flutter/material.dart';
 
+import '../../../services/data_base_service.dart';
 import '../../../util/app_color_constants.dart';
 import '../radio_button.dart';
 import '../setting_widget.dart';
 
+// ignore: must_be_immutable
 class Layout extends StatefulWidget {
-  const Layout({super.key});
-
+  Layout({super.key, this.keyboardSettingModel, required this.dataBaseService});
+  final DataBaseService dataBaseService;
+  KeyboardSettingModel? keyboardSettingModel;
   @override
   State<Layout> createState() => _LayoutState();
 }
@@ -16,6 +20,27 @@ class _LayoutState extends State<Layout> {
     RadioButtonModel(name: "ENGLISH (QWE)", select: true),
     RadioButtonModel(name: "ENGLISH (ABC)"),
   ];
+
+  void radioData(String value) {
+    value = value.toLowerCase().replaceAll(" ", "_");
+    for (var item in radioList) {
+      item.select = item.name.toLowerCase().replaceAll(" ", "_") == value;
+
+      if (item.select) {
+        widget.keyboardSettingModel!.layout = value;
+        widget.dataBaseService
+            .keyboardSettingUpdate(widget.keyboardSettingModel!);
+      }
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    radioData(widget.keyboardSettingModel!.layout!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,7 +59,8 @@ class _LayoutState extends State<Layout> {
               ),
               RadioButton(
                   physics: const NeverScrollableScrollPhysics(),
-                  onTap: () {
+                  onTap: (value) {
+                    radioData(value);
                     setState(() {});
                   },
                   radioList: radioList),
@@ -43,11 +69,16 @@ class _LayoutState extends State<Layout> {
                 child: Container(
                   margin: const EdgeInsets.all(10),
                   child: SettingWidget(
-                    text: "HIGHLIGHT VOWELS",
-                    isSwitch: true,
-                    switchValue: false,
-                    onSwitchChanged: (value) {},
-                  ),
+                      text: "HIGHLIGHT VOWELS",
+                      isSwitch: true,
+                      switchValue:
+                          widget.keyboardSettingModel!.highlightVowels!,
+                      onSwitchChanged: (value) {
+                        widget.keyboardSettingModel!.highlightVowels = value;
+                        widget.dataBaseService.keyboardSettingUpdate(
+                            widget.keyboardSettingModel!);
+                        setState(() {});
+                      }),
                 ),
               ),
             ]));

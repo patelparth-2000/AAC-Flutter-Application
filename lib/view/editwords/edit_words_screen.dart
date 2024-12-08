@@ -86,7 +86,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
   void addSubCategory(String tableName) async {
     getSubCategoryModalList.clear();
     subCategoryList.clear();
-    var subcategoryData = await dbService.getTablesSubCatageryData(tableName);
+    var subcategoryData = await dbService.getTablesSubCategoryData(tableName);
     for (var subitem in subcategoryData) {
       if (subitem is Map<String, dynamic>) {
         Map<String, dynamic> modifiableSubItem =

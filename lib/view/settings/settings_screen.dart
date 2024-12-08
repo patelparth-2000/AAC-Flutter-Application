@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../../services/data_base_service.dart';
 import '../../util/app_color_constants.dart';
 import '../subscription/subscription_screen.dart';
+import 'setting_model.dart/account_setting_model.dart';
+import 'setting_model.dart/audio_setting.dart';
+import 'setting_model.dart/general_setting.dart';
+import 'setting_model.dart/keyboard_setting.dart';
+import 'setting_model.dart/picture_appearance_setting_model.dart';
+import 'setting_model.dart/picture_behaviour_setting_model.dart';
+import 'setting_model.dart/touch_setting.dart';
 import 'setting_widget.dart';
 import 'settings_page/acc_support.dart';
 import 'settings_page/account_details.dart';
@@ -37,6 +45,50 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  DataBaseService dataBaseService = DataBaseService.instance;
+  bool isLoading = false;
+  AccountSettingModel? accountSettingModel = AccountSettingModel();
+  PictureAppearanceSettingModel? pictureAppearanceSettingModel =
+      PictureAppearanceSettingModel();
+  PictureBehaviourSettingModel? pictureBehaviourSettingModel =
+      PictureBehaviourSettingModel();
+  KeyboardSettingModel? keyboardSettingModel = KeyboardSettingModel();
+  AudioSettingModel? audioSettingModel = AudioSettingModel();
+  GeneralSettingModel? generalSettingModel = GeneralSettingModel();
+  TouchSettingModel? touchSettingModel = TouchSettingModel();
+  List<String> textPosition = ['Above', 'Below'];
+  int initialLabelIndexText = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    getSettingData();
+  }
+
+  void getSettingData() async {
+    setState(() {
+      isLoading = true;
+    });
+    accountSettingModel = await dataBaseService.accountSettingFetch();
+    pictureAppearanceSettingModel =
+        await dataBaseService.pictureAppearanceSettingFetch();
+    pictureBehaviourSettingModel =
+        await dataBaseService.pictureBehaviourSettingFetch();
+    keyboardSettingModel = await dataBaseService.keyboardSettingFetch();
+    audioSettingModel = await dataBaseService.audioSettingFetch();
+    generalSettingModel = await dataBaseService.generalSettingFetch();
+    touchSettingModel = await dataBaseService.touchSettingFetch();
+
+    String currentTextPosition = pictureAppearanceSettingModel!.textPosition!;
+    initialLabelIndexText = textPosition.indexWhere((element) =>
+        element.toLowerCase().replaceAll(" ", "_") == currentTextPosition);
+    if (initialLabelIndexText == -1) initialLabelIndexText = 0;
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   void nextpage(Widget nextWidget) {
     widget.drawerNavigatorKey.currentState?.push(MaterialPageRoute(
       builder: (context) => nextWidget,
@@ -47,195 +99,323 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(15),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const Text("Settings",
-              style: TextStyle(
-                  color: AppColorConstants.buttonColorBlue2,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold)),
-          const SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: SingleChildScrollView(
+      child: isLoading
+          ? const Center(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const TitleWidget(
-                    text: "MY ACCOUNT",
+                  CircularProgressIndicator(
+                    color: AppColorConstants.imageTextButtonColor,
+                    semanticsLabel: 'Circular progress indicator',
                   ),
-                  SettingWidget(
-                      text: "Account Details",
-                      onTap: () {
-                        nextpage(const AccountDetails());
-                      }),
-                  SettingWidget(
-                      text: "Purchese Subscription",
-                      onTap: () {
-                        widget.scaffoldKey.currentState?.closeEndDrawer();
-                        Navigator.push(
-                            widget.scaffoldKey.currentContext!,
-                            MaterialPageRoute(
-                              builder: (context) => const SubscriptionScreen(),
-                            ));
-                      }),
-                  const TitleWidget(
-                    text: "PICTURE SETTINGS (APPEARANVE)",
+                  SizedBox(
+                    height: 20,
                   ),
-                  SettingWidget(
-                    text: "Message Box",
-                    isSwitch: true,
-                    switchValue: true,
-                    onSwitchChanged: (value) {},
-                  ),
-                  SettingWidget(
-                    text: "Pictures in Message box",
-                    isSwitch: true,
-                    switchValue: true,
-                    onSwitchChanged: (value) {},
-                  ),
-                  SettingWidget(
-                      text: "Pictures per Screen (Grid Size)",
-                      onTap: () {
-                        nextpage(const PicturesGridSize());
-                      }),
-                  SettingWidget(
-                      text: "Text Size",
-                      onTap: () {
-                        nextpage(const TestSize());
-                      }),
-                  SettingWidget(
-                      text: "Text Position",
-                      isToggle: true,
-                      initialLabelIndex: 0,
-                      onToggleChanged: (index) {}),
-                  SettingWidget(
-                      text: "Change Side Navigation Bar",
-                      onTap: () {
-                        nextpage(const SideNavigationBar());
-                      }),
-                  SettingWidget(
-                      text: "Colour Coding",
-                      onTap: () {
-                        nextpage(const ColorCoding());
-                      }),
-                  const TitleWidget(
-                    text: "PICTURE SETTINGS (BEHAVIOUR)",
-                  ),
-                  SettingWidget(
-                      text: "Enlarge Word on Selection",
-                      onTap: () {
-                        nextpage(const WordOnSelection());
-                      }),
-                  SettingWidget(
-                      text: "Home Screen vocabulary",
-                      onTap: () {
-                        nextpage(const VocabularyScreen());
-                      }),
-                  SettingWidget(
-                    text: "Auto-home each time",
-                    isSwitch: true,
-                    switchValue: false,
-                    onSwitchChanged: (value) {},
-                  ),
-                  SettingWidget(
-                    text: "Swipe action to navigation",
-                    isSwitch: true,
-                    switchValue: true,
-                    onSwitchChanged: (value) {},
-                  ),
-                  SettingWidget(
-                      text: "Grammar",
-                      onTap: () {
-                        nextpage(const Grammar());
-                      }),
-                  const TitleWidget(
-                    text: "KEYBOARD SETTING",
-                  ),
-                  SettingWidget(
-                      text: "Layout",
-                      onTap: () {
-                        nextpage(const Layout());
-                      }),
-                  SettingWidget(
-                      text: "Prediction",
-                      onTap: () {
-                        nextpage(const Prediction());
-                      }),
-                  SettingWidget(
-                      text: "Enlarge Keys on Selection",
-                      onTap: () {
-                        nextpage(const KeysOnSelection());
-                      }),
-                  const TitleWidget(
-                    text: "AUDIO SETTING",
-                  ),
-                  SettingWidget(
-                      text: "Voice",
-                      onTap: () {
-                        nextpage(const Voice());
-                      }),
-                  SettingWidget(
-                      text: "What to Speak",
-                      onTap: () {
-                        nextpage(const WhatToSpeak());
-                      }),
-                  SettingWidget(
-                    text: "Speak action keys",
-                    isSwitch: true,
-                    switchValue: true,
-                    onSwitchChanged: (value) {},
-                  ),
-                  const TitleWidget(
-                    text: "GENERAL",
-                  ),
-                  SettingWidget(
-                      text: "Share Messages",
-                      onTap: () {
-                        nextpage(const ShareMessages());
-                      }),
-                  SettingWidget(
-                      text: "Password Protection",
-                      onTap: () {
-                        nextpage(const PasswordProtection());
-                      }),
-                  SettingWidget(
-                    text: "Auto Clear Message Box",
-                    isSwitch: true,
-                    switchValue: true,
-                    onSwitchChanged: (value) {},
-                  ),
-                  SettingWidget(
-                      text: "Backup & Restore",
-                      onTap: () {
-                        nextpage(const BackupRestore());
-                      }),
-                  const TitleWidget(
-                    text: "ACCESSIBILITY",
-                  ),
-                  SettingWidget(
-                      text: "Touch Accommodation",
-                      onTap: () {
-                        nextpage(const TouchAccommodation());
-                      }),
-                  const TitleWidget(
-                    text: "SUPPORT",
-                  ),
-                  SettingWidget(
-                      text: "Avaz Support",
-                      onTap: () {
-                        nextpage(const AccSupport());
-                      }),
+                  Text("Loading....",
+                      style: TextStyle(
+                          color: AppColorConstants.buttonColorBlue2,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold)),
                 ],
               ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text("Settings",
+                    style: TextStyle(
+                        color: AppColorConstants.buttonColorBlue2,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(
+                  height: 20,
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const TitleWidget(
+                          text: "MY ACCOUNT",
+                        ),
+                        SettingWidget(
+                            text: "Account Details",
+                            onTap: () {
+                              nextpage(AccountDetails(
+                                dataBaseService: dataBaseService,
+                                accountSettingModel: accountSettingModel,
+                              ));
+                            }),
+                        SettingWidget(
+                            text: "Purchase Subscription",
+                            onTap: () {
+                              widget.scaffoldKey.currentState?.closeEndDrawer();
+                              Navigator.push(
+                                  widget.scaffoldKey.currentContext!,
+                                  MaterialPageRoute(
+                                    builder: (context) => SubscriptionScreen(
+                                      dataBaseService: dataBaseService,
+                                      accountSettingModel: accountSettingModel,
+                                    ),
+                                  ));
+                            }),
+                        const TitleWidget(
+                          text: "PICTURE SETTINGS (APPEARANCE)",
+                        ),
+                        SettingWidget(
+                          text: "Message Box",
+                          isSwitch: true,
+                          switchValue:
+                              pictureAppearanceSettingModel!.massageBox!,
+                          onSwitchChanged: (value) {
+                            pictureAppearanceSettingModel!.massageBox = value;
+                            dataBaseService.pictureAppearanceSettingUpdate(
+                                pictureAppearanceSettingModel!);
+                            setState(() {});
+                          },
+                        ),
+                        SettingWidget(
+                          text: "Pictures in Message box",
+                          isSwitch: true,
+                          switchValue:
+                              pictureAppearanceSettingModel!.pictureMassageBox!,
+                          onSwitchChanged: (value) {
+                            pictureAppearanceSettingModel!.pictureMassageBox =
+                                value;
+                            dataBaseService.pictureAppearanceSettingUpdate(
+                                pictureAppearanceSettingModel!);
+                            setState(() {});
+                          },
+                        ),
+                        SettingWidget(
+                            text: "Pictures per Screen (Grid Size)",
+                            onTap: () async {
+                              nextpage(PicturesGridSize(
+                                dataBaseService: dataBaseService,
+                                pictureAppearanceSettingModel:
+                                    pictureAppearanceSettingModel,
+                              ));
+                            }),
+                        SettingWidget(
+                            text: "Text Size",
+                            onTap: () {
+                              nextpage(TestSize(
+                                dataBaseService: dataBaseService,
+                                pictureAppearanceSettingModel:
+                                    pictureAppearanceSettingModel,
+                              ));
+                            }),
+                        SettingWidget(
+                            text: "Text Position",
+                            isToggle: true,
+                            initialLabelIndex: initialLabelIndexText,
+                            togglelabels: textPosition,
+                            onToggleChanged: (index) {
+                              initialLabelIndexText = index!;
+                              String selectedData = textPosition[index]
+                                  .toLowerCase()
+                                  .replaceAll(" ", "_");
+                              pictureAppearanceSettingModel!.textPosition =
+                                  selectedData;
+                              dataBaseService.pictureAppearanceSettingUpdate(
+                                  pictureAppearanceSettingModel!);
+                              setState(() {});
+                            }),
+                        SettingWidget(
+                            text: "Change Side Navigation Bar",
+                            onTap: () {
+                              nextpage(SideNavigationBar(
+                                dataBaseService: dataBaseService,
+                                pictureAppearanceSettingModel:
+                                    pictureAppearanceSettingModel,
+                              ));
+                            }),
+                        SettingWidget(
+                            text: "Colour Coding",
+                            onTap: () {
+                              nextpage(ColorCoding(
+                                dataBaseService: dataBaseService,
+                                pictureAppearanceSettingModel:
+                                    pictureAppearanceSettingModel,
+                              ));
+                            }),
+                        const TitleWidget(
+                          text: "PICTURE SETTINGS (BEHAVIOUR)",
+                        ),
+                        SettingWidget(
+                            text: "Enlarge Word on Selection",
+                            onTap: () {
+                              nextpage(WordOnSelection(
+                                dataBaseService: dataBaseService,
+                                pictureBehaviourSettingModel:
+                                    pictureBehaviourSettingModel,
+                              ));
+                            }),
+                        SettingWidget(
+                            text: "Home Screen vocabulary",
+                            onTap: () {
+                              nextpage(VocabularyScreen(
+                                dataBaseService: dataBaseService,
+                                pictureBehaviourSettingModel:
+                                    pictureBehaviourSettingModel,
+                              ));
+                            }),
+                        SettingWidget(
+                          text: "Auto-home each time",
+                          isSwitch: true,
+                          switchValue:
+                              pictureBehaviourSettingModel!.autoHomeEachTime!,
+                          onSwitchChanged: (value) {
+                            pictureBehaviourSettingModel!.autoHomeEachTime =
+                                value;
+                            dataBaseService.pictureBehaviourSettingUpdate(
+                                pictureBehaviourSettingModel!);
+                            setState(() {});
+                          },
+                        ),
+                        SettingWidget(
+                          text: "Swipe action to navigation",
+                          isSwitch: true,
+                          switchValue:
+                              pictureBehaviourSettingModel!.actionToNavigation!,
+                          onSwitchChanged: (value) {
+                            pictureBehaviourSettingModel!.actionToNavigation =
+                                value;
+                            dataBaseService.pictureBehaviourSettingUpdate(
+                                pictureBehaviourSettingModel!);
+                            setState(() {});
+                          },
+                        ),
+                        SettingWidget(
+                            text: "Grammar",
+                            onTap: () {
+                              nextpage(Grammar(
+                                dataBaseService: dataBaseService,
+                                pictureBehaviourSettingModel:
+                                    pictureBehaviourSettingModel,
+                              ));
+                            }),
+                        const TitleWidget(
+                          text: "KEYBOARD SETTING",
+                        ),
+                        SettingWidget(
+                            text: "Layout",
+                            onTap: () {
+                              nextpage(Layout(
+                                dataBaseService: dataBaseService,
+                                keyboardSettingModel: keyboardSettingModel,
+                              ));
+                            }),
+                        SettingWidget(
+                            text: "Prediction",
+                            onTap: () {
+                              nextpage(Prediction(
+                                dataBaseService: dataBaseService,
+                                keyboardSettingModel: keyboardSettingModel,
+                              ));
+                            }),
+                        SettingWidget(
+                            text: "Enlarge Keys on Selection",
+                            onTap: () {
+                              nextpage(KeysOnSelection(
+                                dataBaseService: dataBaseService,
+                                keyboardSettingModel: keyboardSettingModel,
+                              ));
+                            }),
+                        const TitleWidget(
+                          text: "AUDIO SETTING",
+                        ),
+                        SettingWidget(
+                            text: "Voice",
+                            onTap: () {
+                              nextpage(Voice(
+                                dataBaseService: dataBaseService,
+                                audioSettingModel: audioSettingModel,
+                              ));
+                            }),
+                        SettingWidget(
+                            text: "What to Speak",
+                            onTap: () {
+                              nextpage(WhatToSpeak(
+                                dataBaseService: dataBaseService,
+                                audioSettingModel: audioSettingModel,
+                              ));
+                            }),
+                        SettingWidget(
+                          text: "Speak action keys",
+                          isSwitch: true,
+                          switchValue: audioSettingModel!.speakAction!,
+                          onSwitchChanged: (value) {
+                            audioSettingModel!.speakAction = value;
+                            dataBaseService
+                                .audioSettingUpdate(audioSettingModel!);
+                            setState(() {});
+                          },
+                        ),
+                        const TitleWidget(
+                          text: "GENERAL",
+                        ),
+                        SettingWidget(
+                            text: "Share Messages",
+                            onTap: () {
+                              nextpage(ShareMessages(
+                                dataBaseService: dataBaseService,
+                                generalSettingModel: generalSettingModel,
+                              ));
+                            }),
+                        SettingWidget(
+                            text: "Password Protection",
+                            onTap: () {
+                              nextpage(PasswordProtection(
+                                dataBaseService: dataBaseService,
+                                generalSettingModel: generalSettingModel,
+                              ));
+                            }),
+                        SettingWidget(
+                          text: "Auto Clear Message Box",
+                          isSwitch: true,
+                          switchValue:
+                              generalSettingModel!.autoClearMassageBox!,
+                          onSwitchChanged: (value) {
+                            generalSettingModel!.autoClearMassageBox = value;
+                            dataBaseService
+                                .generalSettingUpdate(generalSettingModel!);
+                            setState(() {});
+                          },
+                        ),
+                        SettingWidget(
+                            text: "Backup & Restore",
+                            onTap: () {
+                              nextpage(const BackupRestore());
+                            }),
+                        const TitleWidget(
+                          text: "ACCESSIBILITY",
+                        ),
+                        SettingWidget(
+                            text: "Touch Accommodation",
+                            onTap: () {
+                              nextpage(TouchAccommodation(
+                                dataBaseService: dataBaseService,
+                                touchSettingModel: touchSettingModel,
+                              ));
+                            }),
+                        const TitleWidget(
+                          text: "SUPPORT",
+                        ),
+                        SettingWidget(
+                            text: "Avaz Support",
+                            onTap: () {
+                              nextpage(const AccSupport());
+                            }),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
