@@ -11,10 +11,10 @@ class CommonApiCall {
       '${Api.baseUrl}$action',
     );
     try {
-      print('$action request ===> $body');
-      print('$action ===> $url');
+      // print('$action request ===> $body');
+      // print('$action ===> $url');
       response = await http.post(url, body: body, headers: headers);
-      print("response.body $action ==== > ${response.body}");
+      // print("response.body $action ==== > ${response.body}");
     } catch (e) {
       print('error api: $e');
     }
@@ -29,9 +29,9 @@ class CommonApiCall {
       // ${getParams(params)}',
     );
     try {
-      print('$action $params ===> $url');
+      // print('$action $params ===> $url');
       response = await http.get(url, headers: headers);
-      print('$action response.body ===> ${response.body}');
+      // print('$action response.body ===> ${response.body}');
     } catch (e) {
       print('error api: $e');
     }

@@ -12,9 +12,11 @@ class SideNavigationBar extends StatefulWidget {
   SideNavigationBar(
       {super.key,
       required this.dataBaseService,
-      this.pictureAppearanceSettingModel});
+      this.pictureAppearanceSettingModel,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   PictureAppearanceSettingModel? pictureAppearanceSettingModel;
+  final Function() refreshSettingData;
   @override
   State<SideNavigationBar> createState() => _SideNavigationBarState();
 }
@@ -47,8 +49,9 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     }
     widget.pictureAppearanceSettingModel!.sideNavigationBarButton = value;
     widget.dataBaseService
-        .pictureAppearanceSettingUpdate( widget.pictureAppearanceSettingModel!);
+        .pictureAppearanceSettingUpdate(widget.pictureAppearanceSettingModel!);
     setState(() {});
+    widget.refreshSettingData();
   }
 
   void sideNavigation() {
@@ -98,39 +101,46 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                           widget.pictureAppearanceSettingModel!
                               .sideNavigationBar = value;
                           widget.dataBaseService.pictureAppearanceSettingUpdate(
-                              PictureAppearanceSettingModel(
-                                  sideNavigationBar: value));
+                              widget.pictureAppearanceSettingModel!);
+                          widget.refreshSettingData();
                           setState(() {});
                         },
                       ),
-                      SettingWidget(
-                        text: "Side navigation bar position",
-                        isToggle: true,
-                        initialLabelIndex: initialLabelIndexSide,
-                        togglelabels: sideNavigtion,
-                        onToggleChanged: (index) {
-                          initialLabelIndexSide = index!;
-                          String selectedData = sideNavigtion[index]
-                              .toLowerCase()
-                              .replaceAll(" ", "_");
-                          widget.pictureAppearanceSettingModel!
-                              .sideNavigationBarPosition = selectedData;
-                          widget.dataBaseService.pictureAppearanceSettingUpdate(
-                              PictureAppearanceSettingModel(
-                                  sideNavigationBarPosition: selectedData));
-                          setState(() {});
-                        },
-                      ),
-                      const TitleWidget(text: "CHOOSE ATLEAST 4 BUTTONS"),
-                      RadioButton(
-                          flex: 0,
-                          physics: const NeverScrollableScrollPhysics(),
-                          isMultipal: true,
-                          onTap: (value) {
-                            radioData(value);
+                      if (widget
+                          .pictureAppearanceSettingModel!.sideNavigationBar!)
+                        SettingWidget(
+                          text: "Side navigation bar position",
+                          isToggle: true,
+                          initialLabelIndex: initialLabelIndexSide,
+                          togglelabels: sideNavigtion,
+                          onToggleChanged: (index) {
+                            initialLabelIndexSide = index!;
+                            String selectedData = sideNavigtion[index]
+                                .toLowerCase()
+                                .replaceAll(" ", "_");
+                            widget.pictureAppearanceSettingModel!
+                                .sideNavigationBarPosition = selectedData;
+                            widget.dataBaseService
+                                .pictureAppearanceSettingUpdate(
+                                    widget.pictureAppearanceSettingModel!);
+                            widget.refreshSettingData();
                             setState(() {});
                           },
-                          radioList: radioList),
+                        ),
+                      if (widget
+                          .pictureAppearanceSettingModel!.sideNavigationBar!)
+                        const TitleWidget(text: "CHOOSE ATLEAST 4 BUTTONS"),
+                      if (widget
+                          .pictureAppearanceSettingModel!.sideNavigationBar!)
+                        RadioButton(
+                            flex: 0,
+                            physics: const NeverScrollableScrollPhysics(),
+                            isMultipal: true,
+                            onTap: (value) {
+                              radioData(value);
+                              setState(() {});
+                            },
+                            radioList: radioList),
                     ]),
               ),
             ),

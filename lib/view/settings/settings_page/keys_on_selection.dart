@@ -8,9 +8,13 @@ import '../setting_model.dart/keyboard_setting.dart';
 // ignore: must_be_immutable
 class KeysOnSelection extends StatefulWidget {
   KeysOnSelection(
-      {super.key, this.keyboardSettingModel, required this.dataBaseService});
+      {super.key,
+      this.keyboardSettingModel,
+      required this.dataBaseService,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   KeyboardSettingModel? keyboardSettingModel;
+  final Function() refreshSettingData;
   @override
   State<KeysOnSelection> createState() => _KeysOnSelectionState();
 }
@@ -35,6 +39,7 @@ class _KeysOnSelectionState extends State<KeysOnSelection> {
       }
     }
     setState(() {});
+    widget.refreshSettingData();
   }
 
   @override

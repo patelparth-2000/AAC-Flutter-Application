@@ -8,9 +8,10 @@ import '../setting_widget.dart';
 // ignore: must_be_immutable
 class PasswordProtection extends StatefulWidget {
 PasswordProtection(
-      {super.key, this.generalSettingModel, required this.dataBaseService});
+      {super.key, this.generalSettingModel, required this.dataBaseService, required this.refreshSettingData});
   final DataBaseService dataBaseService;
   GeneralSettingModel? generalSettingModel;
+  final Function() refreshSettingData;
   @override
   State<PasswordProtection> createState() => _PasswordProtectionState();
 }

@@ -16,11 +16,15 @@ class DrawerScreen extends StatefulWidget {
       required this.scaffoldKey,
       required this.flutterTts,
       required this.isKeyBoardShow,
-      required this.dashboradNavigatorKey});
+      required this.dashboradNavigatorKey,
+      required this.refreshSettingData,
+      required this.refreshGirdData});
   final GlobalKey<ScaffoldState> scaffoldKey;
   final GlobalKey<NavigatorState> dashboradNavigatorKey;
   final FlutterTts flutterTts;
   final bool isKeyBoardShow;
+  final Function() refreshSettingData;
+  final Function() refreshGirdData;
   @override
   State<DrawerScreen> createState() => _DrawerScreenState();
 }
@@ -67,10 +71,13 @@ class _DrawerScreenState extends State<DrawerScreen> {
         imageData: Icons.search,
       ),
       DrawerModel(
-          name: "Settings",
-          imageData: Icons.settings,
+        name: "Settings",
+        imageData: Icons.settings,
+      ),
+      DrawerModel(
+          name: "Tools",
+          imageData: Icons.build_rounded,
           isShow: widget.isKeyBoardShow),
-      DrawerModel(name: "Tools", imageData: Icons.build_rounded),
       DrawerModel(name: "Support", imageData: Icons.support_agent_outlined)
     ];
   }
@@ -176,7 +183,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const EditWordsScreen(),
+                                                    EditWordsScreen(
+                                                  refreshGirdData:
+                                                      widget.refreshGirdData,
+                                                ),
                                               ));
                                         } else if (drawerData[i].name ==
                                             "Search") {
@@ -203,6 +213,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                               scaffoldKey: widget.scaffoldKey,
                                               drawerNavigatorKey:
                                                   _drawerNavigatorKey,
+                                              refreshSettingData:
+                                                  widget.refreshSettingData,
                                             ),
                                           ))
                                               .whenComplete(

@@ -8,9 +8,13 @@ import '../../../util/app_color_constants.dart';
 // ignore: must_be_immutable
 class TouchAccommodation extends StatefulWidget {
   TouchAccommodation(
-      {super.key, required this.dataBaseService, this.touchSettingModel});
+      {super.key,
+      required this.dataBaseService,
+      this.touchSettingModel,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   TouchSettingModel? touchSettingModel;
+  final Function() refreshSettingData;
   @override
   State<TouchAccommodation> createState() => _TouchAccommodationState();
 }
@@ -41,6 +45,7 @@ class _TouchAccommodationState extends State<TouchAccommodation> {
                   widget.dataBaseService
                       .touchSettingUpdate(widget.touchSettingModel!);
                   setState(() {});
+                  widget.refreshSettingData();
                 },
               )
             ]));

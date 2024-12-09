@@ -10,9 +10,10 @@ import '../settings/setting_model.dart/account_setting_model.dart';
 // ignore: must_be_immutable
 class SubscriptionScreen extends StatefulWidget {
   SubscriptionScreen(
-      {super.key, required this.dataBaseService, this.accountSettingModel});
+      {super.key, required this.dataBaseService, this.accountSettingModel, required this.refreshSettingData});
   final DataBaseService dataBaseService;
   AccountSettingModel? accountSettingModel;
+  final Function() refreshSettingData;
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
 }

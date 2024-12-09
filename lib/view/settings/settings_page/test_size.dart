@@ -10,9 +10,11 @@ class TestSize extends StatefulWidget {
   TestSize(
       {super.key,
       required this.dataBaseService,
-      this.pictureAppearanceSettingModel});
+      this.pictureAppearanceSettingModel,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   PictureAppearanceSettingModel? pictureAppearanceSettingModel;
+  final Function() refreshSettingData;
 
   @override
   State<TestSize> createState() => _TestSizeState();
@@ -34,11 +36,12 @@ class _TestSizeState extends State<TestSize> {
 
       if (item.select) {
         widget.pictureAppearanceSettingModel!.textSize = value;
-        widget.dataBaseService
-            .pictureAppearanceSettingUpdate( widget.pictureAppearanceSettingModel!);
+        widget.dataBaseService.pictureAppearanceSettingUpdate(
+            widget.pictureAppearanceSettingModel!);
       }
     }
     setState(() {});
+    widget.refreshSettingData();
   }
 
   @override

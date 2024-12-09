@@ -8,10 +8,14 @@ import '../title_widget.dart';
 
 // ignore: must_be_immutable
 class Voice extends StatefulWidget {
-Voice(
-      {super.key, this.audioSettingModel, required this.dataBaseService});
+  Voice(
+      {super.key,
+      this.audioSettingModel,
+      required this.dataBaseService,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   AudioSettingModel? audioSettingModel;
+  final Function() refreshSettingData;
   @override
   State<Voice> createState() => _VoiceState();
 }
@@ -62,7 +66,9 @@ class _VoiceState extends State<Voice> {
                         isSwitch: true,
                         switchValue: false,
                         isTextTitle: true,
-                        onSwitchChanged: (value) {},
+                        onSwitchChanged: (value) {
+                          widget.refreshSettingData();
+                        },
                       ),
                     ]),
               ),

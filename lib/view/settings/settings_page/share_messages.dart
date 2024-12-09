@@ -9,9 +9,13 @@ import '../setting_widget.dart';
 // ignore: must_be_immutable
 class ShareMessages extends StatefulWidget {
   ShareMessages(
-      {super.key, this.generalSettingModel, required this.dataBaseService});
+      {super.key,
+      this.generalSettingModel,
+      required this.dataBaseService,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   GeneralSettingModel? generalSettingModel;
+  final Function() refreshSettingData;
   @override
   State<ShareMessages> createState() => _ShareMessagesState();
 }
@@ -34,6 +38,7 @@ class _ShareMessagesState extends State<ShareMessages> {
       }
     }
     setState(() {});
+    widget.refreshSettingData();
   }
 
   @override
@@ -69,6 +74,7 @@ class _ShareMessagesState extends State<ShareMessages> {
                     widget.dataBaseService
                         .generalSettingUpdate(widget.generalSettingModel!);
                     setState(() {});
+                    widget.refreshSettingData();
                   },
                 ),
               ),

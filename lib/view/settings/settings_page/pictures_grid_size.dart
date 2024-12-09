@@ -10,9 +10,11 @@ class PicturesGridSize extends StatefulWidget {
   PicturesGridSize(
       {super.key,
       required this.dataBaseService,
-      this.pictureAppearanceSettingModel});
+      this.pictureAppearanceSettingModel,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   PictureAppearanceSettingModel? pictureAppearanceSettingModel;
+  final Function() refreshSettingData;
 
   @override
   State<PicturesGridSize> createState() => _PicturesGridSizeState();
@@ -44,12 +46,12 @@ class _PicturesGridSizeState extends State<PicturesGridSize> {
         widget.pictureAppearanceSettingModel!.picturePerScreen = value;
         widget.pictureAppearanceSettingModel!.picturePerScreenCount =
             pictureCount;
-        widget.dataBaseService
-            .pictureAppearanceSettingUpdate( widget.pictureAppearanceSettingModel!);
+        widget.dataBaseService.pictureAppearanceSettingUpdate(
+            widget.pictureAppearanceSettingModel!);
       }
     }
-
     setState(() {});
+    widget.refreshSettingData();
   }
 
   @override

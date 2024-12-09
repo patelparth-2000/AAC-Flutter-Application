@@ -18,7 +18,8 @@ import '../../services/permission_manager.dart';
 import 'text_drop_widget.dart';
 
 class EditWordsScreen extends StatefulWidget {
-  const EditWordsScreen({super.key});
+  const EditWordsScreen({super.key, required this.refreshGirdData});
+  final Function() refreshGirdData;
 
   @override
   State<EditWordsScreen> createState() => _EditWordsScreenState();
@@ -400,6 +401,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
         }
       }
     }
+    widget.refreshGirdData();
     // ignore: use_build_context_synchronously
     addAPiData(context);
     // ignore: use_build_context_synchronously

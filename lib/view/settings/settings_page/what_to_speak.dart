@@ -8,9 +8,13 @@ import '../setting_model.dart/audio_setting.dart';
 // ignore: must_be_immutable
 class WhatToSpeak extends StatefulWidget {
   WhatToSpeak(
-      {super.key, this.audioSettingModel, required this.dataBaseService});
+      {super.key,
+      this.audioSettingModel,
+      required this.dataBaseService,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   AudioSettingModel? audioSettingModel;
+  final Function() refreshSettingData;
   @override
   State<WhatToSpeak> createState() => _WhatToSpeakState();
 }
@@ -33,6 +37,7 @@ class _WhatToSpeakState extends State<WhatToSpeak> {
       }
     }
     setState(() {});
+    widget.refreshSettingData();
   }
 
   @override

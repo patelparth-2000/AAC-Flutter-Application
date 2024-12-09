@@ -36,10 +36,12 @@ class SettingsScreen extends StatefulWidget {
       {super.key,
       required this.scaffoldKey,
       required this.dashboradNavigatorKey,
-      required this.drawerNavigatorKey});
+      required this.drawerNavigatorKey,
+      required this.refreshSettingData});
   final GlobalKey<ScaffoldState> scaffoldKey;
   final GlobalKey<NavigatorState> dashboradNavigatorKey;
   final GlobalKey<NavigatorState> drawerNavigatorKey;
+  final Function() refreshSettingData;
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
@@ -147,6 +149,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               nextpage(AccountDetails(
                                 dataBaseService: dataBaseService,
                                 accountSettingModel: accountSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         SettingWidget(
@@ -159,6 +162,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     builder: (context) => SubscriptionScreen(
                                       dataBaseService: dataBaseService,
                                       accountSettingModel: accountSettingModel,
+                                      refreshSettingData:
+                                          widget.refreshSettingData,
                                     ),
                                   ));
                             }),
@@ -174,6 +179,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             pictureAppearanceSettingModel!.massageBox = value;
                             dataBaseService.pictureAppearanceSettingUpdate(
                                 pictureAppearanceSettingModel!);
+                            widget.refreshSettingData();
                             setState(() {});
                           },
                         ),
@@ -187,6 +193,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 value;
                             dataBaseService.pictureAppearanceSettingUpdate(
                                 pictureAppearanceSettingModel!);
+                            widget.refreshSettingData();
                             setState(() {});
                           },
                         ),
@@ -197,6 +204,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 dataBaseService: dataBaseService,
                                 pictureAppearanceSettingModel:
                                     pictureAppearanceSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         SettingWidget(
@@ -206,6 +214,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 dataBaseService: dataBaseService,
                                 pictureAppearanceSettingModel:
                                     pictureAppearanceSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         SettingWidget(
@@ -222,6 +231,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   selectedData;
                               dataBaseService.pictureAppearanceSettingUpdate(
                                   pictureAppearanceSettingModel!);
+                              widget.refreshSettingData();
                               setState(() {});
                             }),
                         SettingWidget(
@@ -231,6 +241,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 dataBaseService: dataBaseService,
                                 pictureAppearanceSettingModel:
                                     pictureAppearanceSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         SettingWidget(
@@ -240,6 +251,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 dataBaseService: dataBaseService,
                                 pictureAppearanceSettingModel:
                                     pictureAppearanceSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         const TitleWidget(
@@ -252,6 +264,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 dataBaseService: dataBaseService,
                                 pictureBehaviourSettingModel:
                                     pictureBehaviourSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         SettingWidget(
@@ -261,6 +274,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 dataBaseService: dataBaseService,
                                 pictureBehaviourSettingModel:
                                     pictureBehaviourSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         SettingWidget(
@@ -273,6 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 value;
                             dataBaseService.pictureBehaviourSettingUpdate(
                                 pictureBehaviourSettingModel!);
+                            widget.refreshSettingData();
                             setState(() {});
                           },
                         ),
@@ -286,6 +301,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 value;
                             dataBaseService.pictureBehaviourSettingUpdate(
                                 pictureBehaviourSettingModel!);
+                            widget.refreshSettingData();
                             setState(() {});
                           },
                         ),
@@ -296,6 +312,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 dataBaseService: dataBaseService,
                                 pictureBehaviourSettingModel:
                                     pictureBehaviourSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         const TitleWidget(
@@ -307,6 +324,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               nextpage(Layout(
                                 dataBaseService: dataBaseService,
                                 keyboardSettingModel: keyboardSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         SettingWidget(
@@ -315,6 +333,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               nextpage(Prediction(
                                 dataBaseService: dataBaseService,
                                 keyboardSettingModel: keyboardSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         SettingWidget(
@@ -323,6 +342,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               nextpage(KeysOnSelection(
                                 dataBaseService: dataBaseService,
                                 keyboardSettingModel: keyboardSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         const TitleWidget(
@@ -334,6 +354,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               nextpage(Voice(
                                 dataBaseService: dataBaseService,
                                 audioSettingModel: audioSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         SettingWidget(
@@ -342,6 +363,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               nextpage(WhatToSpeak(
                                 dataBaseService: dataBaseService,
                                 audioSettingModel: audioSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         SettingWidget(
@@ -352,6 +374,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             audioSettingModel!.speakAction = value;
                             dataBaseService
                                 .audioSettingUpdate(audioSettingModel!);
+                            widget.refreshSettingData();
                             setState(() {});
                           },
                         ),
@@ -364,6 +387,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               nextpage(ShareMessages(
                                 dataBaseService: dataBaseService,
                                 generalSettingModel: generalSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         SettingWidget(
@@ -372,6 +396,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               nextpage(PasswordProtection(
                                 dataBaseService: dataBaseService,
                                 generalSettingModel: generalSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         SettingWidget(
@@ -383,6 +408,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             generalSettingModel!.autoClearMassageBox = value;
                             dataBaseService
                                 .generalSettingUpdate(generalSettingModel!);
+                            widget.refreshSettingData();
                             setState(() {});
                           },
                         ),
@@ -400,6 +426,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               nextpage(TouchAccommodation(
                                 dataBaseService: dataBaseService,
                                 touchSettingModel: touchSettingModel,
+                                refreshSettingData: widget.refreshSettingData,
                               ));
                             }),
                         const TitleWidget(

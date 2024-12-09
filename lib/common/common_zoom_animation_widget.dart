@@ -5,20 +5,44 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 import '../model/get_category_modal.dart';
 import '../services/data_base_service.dart';
+import '../view/settings/setting_model.dart/account_setting_model.dart';
+import '../view/settings/setting_model.dart/audio_setting.dart';
+import '../view/settings/setting_model.dart/general_setting.dart';
+import '../view/settings/setting_model.dart/keyboard_setting.dart';
+import '../view/settings/setting_model.dart/picture_appearance_setting_model.dart';
+import '../view/settings/setting_model.dart/picture_behaviour_setting_model.dart';
+import '../view/settings/setting_model.dart/touch_setting.dart';
 
 class CommonZoomAnimationWidget extends StatefulWidget {
   final Function(String text, String? image) onAdd;
   final Function(String slug) changeTable;
   final GetCategoryModal getCategoryModal;
   final FlutterTts flutterTts;
+  final AccountSettingModel? accountSettingModel;
+  final PictureAppearanceSettingModel? pictureAppearanceSettingModel;
+  final PictureBehaviourSettingModel? pictureBehaviourSettingModel;
+  final KeyboardSettingModel? keyboardSettingModel;
+  final AudioSettingModel? audioSettingModel;
+  final GeneralSettingModel? generalSettingModel;
+  final TouchSettingModel? touchSettingModel;
+  final double imageSize;
+  final double textSize;
 
-  const CommonZoomAnimationWidget({
-    super.key,
-    required this.onAdd,
-    required this.flutterTts,
-    required this.changeTable,
-    required this.getCategoryModal,
-  });
+  const CommonZoomAnimationWidget(
+      {super.key,
+      required this.onAdd,
+      required this.flutterTts,
+      required this.changeTable,
+      required this.getCategoryModal,
+      this.accountSettingModel,
+      this.pictureAppearanceSettingModel,
+      this.pictureBehaviourSettingModel,
+      this.keyboardSettingModel,
+      this.audioSettingModel,
+      this.generalSettingModel,
+      this.touchSettingModel,
+      required this.imageSize,
+      required this.textSize});
 
   @override
   State<CommonZoomAnimationWidget> createState() =>
@@ -85,13 +109,15 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
         onAdd: widget.onAdd,
         flutterTts: widget.flutterTts,
         text: widget.getCategoryModal.name!,
+        textPostion: widget.pictureAppearanceSettingModel!.textPosition!,
         onTap: widget.getCategoryModal.type == "voice" ? _onTap : () {},
         isImageAsset: false,
         buttonImage: widget.getCategoryModal.image != null
             ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}"
             : null,
-        imageSize: 55,
-        isImageShow: true,
+        imageSize: widget.imageSize,
+        isImageShow: !(widget.pictureAppearanceSettingModel!.textSize! ==
+            "only_text_(no_picture)"),
         backgroundColor: widget.getCategoryModal.type == "voice"
             ? AppColorConstants.keyBoardBackColor
             : widget.getCategoryModal.type == "sub_categories"
@@ -102,12 +128,21 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
             : widget.getCategoryModal.type == "sub_categories"
                 ? AppColorConstants.keyBoardBackColorPink
                 : AppColorConstants.keyBoardBackColorGreen,
-        textStyle: const TextStyle(
+        isTextShow: !(widget.pictureAppearanceSettingModel!.textSize! ==
+            "no_text_(only_picture)"),
+        textStyle: TextStyle(
           color: AppColorConstants.keyBoardTextColor,
           fontWeight: FontWeight.bold,
-          fontSize: 18,
+          fontSize: (widget.pictureAppearanceSettingModel!.textSize! == "small")
+              ? widget.textSize / 1.5
+              : (widget.pictureAppearanceSettingModel!.textSize! == "medium")
+                  ? widget.textSize / 1.2
+                  : widget.textSize,
         ),
         buttonIconColor: null,
+        voiceFile: widget.getCategoryModal.voiceFile != null
+            ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.voiceFile}"
+            : null,
         buttonName: widget.getCategoryModal.name,
       ),
     );

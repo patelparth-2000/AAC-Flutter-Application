@@ -10,9 +10,11 @@ class WordOnSelection extends StatefulWidget {
   WordOnSelection(
       {super.key,
       this.pictureBehaviourSettingModel,
-      required this.dataBaseService});
+      required this.dataBaseService,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   PictureBehaviourSettingModel? pictureBehaviourSettingModel;
+  final Function() refreshSettingData;
 
   @override
   State<WordOnSelection> createState() => _WordOnSelectionState();
@@ -33,11 +35,12 @@ class _WordOnSelectionState extends State<WordOnSelection> {
 
       if (item.select) {
         widget.pictureBehaviourSettingModel!.wordOnSelection = value;
-        widget.dataBaseService
-            .pictureBehaviourSettingUpdate(widget.pictureBehaviourSettingModel!);
+        widget.dataBaseService.pictureBehaviourSettingUpdate(
+            widget.pictureBehaviourSettingModel!);
       }
     }
     setState(() {});
+    widget.refreshSettingData();
   }
 
   @override

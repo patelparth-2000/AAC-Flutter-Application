@@ -10,9 +10,13 @@ import '../title_widget.dart';
 // ignore: must_be_immutable
 class AccountDetails extends StatefulWidget {
   AccountDetails(
-      {super.key, this.accountSettingModel, required this.dataBaseService});
+      {super.key,
+      this.accountSettingModel,
+      required this.dataBaseService,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   AccountSettingModel? accountSettingModel;
+  final Function() refreshSettingData;
 
   @override
   State<AccountDetails> createState() => _AccountDetailsState();
@@ -74,6 +78,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                             });
                             widget.dataBaseService.accountSettingUpdate(
                                 AccountSettingModel(uploadCrash: value));
+                            widget.refreshSettingData();
                           },
                         )
                       ]),

@@ -10,9 +10,11 @@ class ColorCoding extends StatefulWidget {
   ColorCoding(
       {super.key,
       required this.dataBaseService,
-      this.pictureAppearanceSettingModel});
+      this.pictureAppearanceSettingModel,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   PictureAppearanceSettingModel? pictureAppearanceSettingModel;
+  final Function() refreshSettingData;
   @override
   State<ColorCoding> createState() => _ColorCodingState();
 }
@@ -31,11 +33,12 @@ class _ColorCodingState extends State<ColorCoding> {
 
       if (item.select) {
         widget.pictureAppearanceSettingModel!.colorCoding = value;
-        widget.dataBaseService
-            .pictureAppearanceSettingUpdate( widget.pictureAppearanceSettingModel!);
+        widget.dataBaseService.pictureAppearanceSettingUpdate(
+            widget.pictureAppearanceSettingModel!);
       }
     }
     setState(() {});
+    widget.refreshSettingData();
   }
 
   @override

@@ -8,9 +8,14 @@ import '../setting_widget.dart';
 
 // ignore: must_be_immutable
 class Layout extends StatefulWidget {
-  Layout({super.key, this.keyboardSettingModel, required this.dataBaseService});
+  Layout(
+      {super.key,
+      this.keyboardSettingModel,
+      required this.dataBaseService,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   KeyboardSettingModel? keyboardSettingModel;
+  final Function() refreshSettingData;
   @override
   State<Layout> createState() => _LayoutState();
 }
@@ -61,6 +66,7 @@ class _LayoutState extends State<Layout> {
                   physics: const NeverScrollableScrollPhysics(),
                   onTap: (value) {
                     radioData(value);
+                    widget.refreshSettingData();
                     setState(() {});
                   },
                   radioList: radioList),
@@ -78,6 +84,7 @@ class _LayoutState extends State<Layout> {
                         widget.dataBaseService.keyboardSettingUpdate(
                             widget.keyboardSettingModel!);
                         setState(() {});
+                        widget.refreshSettingData();
                       }),
                 ),
               ),

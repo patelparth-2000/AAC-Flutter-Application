@@ -9,9 +9,13 @@ import '../title_widget.dart';
 // ignore: must_be_immutable
 class Prediction extends StatefulWidget {
   Prediction(
-      {super.key, this.keyboardSettingModel, required this.dataBaseService});
+      {super.key,
+      this.keyboardSettingModel,
+      required this.dataBaseService,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   KeyboardSettingModel? keyboardSettingModel;
+  final Function() refreshSettingData;
   @override
   State<Prediction> createState() => _PredictionState();
 }
@@ -49,6 +53,7 @@ class _PredictionState extends State<Prediction> {
                             widget.dataBaseService.keyboardSettingUpdate(
                                 widget.keyboardSettingModel!);
                             setState(() {});
+                            widget.refreshSettingData();
                           }),
                       SettingWidget(
                           text: "Predict with pictures",
@@ -61,6 +66,7 @@ class _PredictionState extends State<Prediction> {
                             widget.dataBaseService.keyboardSettingUpdate(
                                 widget.keyboardSettingModel!);
                             setState(() {});
+                            widget.refreshSettingData();
                           }),
                       const TitleWidget(text: "WHAT TO PREDICT"),
                       SettingWidget(
@@ -72,6 +78,7 @@ class _PredictionState extends State<Prediction> {
                             widget.dataBaseService.keyboardSettingUpdate(
                                 widget.keyboardSettingModel!);
                             setState(() {});
+                            widget.refreshSettingData();
                           }),
                       SettingWidget(
                           text: "Current word",
@@ -83,6 +90,7 @@ class _PredictionState extends State<Prediction> {
                             widget.dataBaseService.keyboardSettingUpdate(
                                 widget.keyboardSettingModel!);
                             setState(() {});
+                            widget.refreshSettingData();
                           }),
                       SettingWidget(
                           text: "Phonetic match",
@@ -94,6 +102,7 @@ class _PredictionState extends State<Prediction> {
                             widget.dataBaseService.keyboardSettingUpdate(
                                 widget.keyboardSettingModel!);
                             setState(() {});
+                            widget.refreshSettingData();
                           }),
                     ]),
               ),

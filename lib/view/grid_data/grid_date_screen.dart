@@ -91,6 +91,14 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../common/common_zoom_animation_widget.dart';
 import '../../model/get_category_modal.dart';
+import '../../util/dimensions.dart';
+import '../settings/setting_model.dart/account_setting_model.dart';
+import '../settings/setting_model.dart/audio_setting.dart';
+import '../settings/setting_model.dart/general_setting.dart';
+import '../settings/setting_model.dart/keyboard_setting.dart';
+import '../settings/setting_model.dart/picture_appearance_setting_model.dart';
+import '../settings/setting_model.dart/picture_behaviour_setting_model.dart';
+import '../settings/setting_model.dart/touch_setting.dart';
 
 class GridDateScreen extends StatefulWidget {
   const GridDateScreen(
@@ -98,28 +106,144 @@ class GridDateScreen extends StatefulWidget {
       required this.flutterTts,
       required this.onAdd,
       required this.getCategoryModalList,
-      required this.changeTable});
+      required this.changeTable,
+      this.accountSettingModel,
+      this.pictureAppearanceSettingModel,
+      this.pictureBehaviourSettingModel,
+      this.keyboardSettingModel,
+      this.audioSettingModel,
+      this.generalSettingModel,
+      this.touchSettingModel});
   final FlutterTts flutterTts;
   final List<GetCategoryModal> getCategoryModalList;
   final Function(String text, String? image) onAdd;
   final Function(String slug) changeTable;
+  final AccountSettingModel? accountSettingModel;
+  final PictureAppearanceSettingModel? pictureAppearanceSettingModel;
+  final PictureBehaviourSettingModel? pictureBehaviourSettingModel;
+  final KeyboardSettingModel? keyboardSettingModel;
+  final AudioSettingModel? audioSettingModel;
+  final GeneralSettingModel? generalSettingModel;
+  final TouchSettingModel? touchSettingModel;
 
   @override
   State<GridDateScreen> createState() => _GridDateScreenState();
 }
 
 class _GridDateScreenState extends State<GridDateScreen> {
+  List<dynamic> gridList = [
+    {
+      "count": 77,
+      "item": 11,
+      "ratio": 1.3,
+      "image": Dimensions.screenHeight * 0.05,
+      "text": Dimensions.screenHeight * 0.01
+    },
+    {
+      "count": 60,
+      "item": 10,
+      "ratio": 1.3,
+      "image": Dimensions.screenHeight * 0.05,
+      "text": Dimensions.screenHeight * 0.01
+    },
+    {
+      "count": 40,
+      "item": 8,
+      "ratio": 1.3,
+      "image": Dimensions.screenHeight * 0.08,
+      "text": Dimensions.screenHeight * 0.03
+    },
+    {
+      "count": 24,
+      "item": 6,
+      "ratio": 1.3,
+      "image": Dimensions.screenHeight * 0.1,
+      "text": Dimensions.screenHeight * 0.05
+    },
+    {
+      "count": 15,
+      "item": 5,
+      "ratio": 1.3,
+      "image": Dimensions.screenHeight * 0.1,
+      "text": Dimensions.screenHeight * 0.05
+    },
+    {
+      "count": 8,
+      "item": 4,
+      "ratio": 1.2,
+      "image": Dimensions.screenHeight * 0.2,
+      "text": Dimensions.screenHeight * 0.07
+    },
+    {
+      "count": 4,
+      "item": 2,
+      "ratio": 2.4,
+      "image": Dimensions.screenHeight * 0.2,
+      "text": Dimensions.screenHeight * 0.07
+    },
+    {
+      "count": 3,
+      "item": 3,
+      "ratio": 0.8,
+      "image": Dimensions.screenHeight * 0.3,
+      "text": Dimensions.screenHeight * 0.1
+    },
+    {
+      "count": 2,
+      "item": 2,
+      "ratio": 1.2,
+      "image": Dimensions.screenHeight * 0.3,
+      "text": Dimensions.screenHeight * 0.1
+    },
+    {
+      "count": 1,
+      "item": 1,
+      "ratio": 2.4,
+      "image": Dimensions.screenHeight * 0.3,
+      "text": Dimensions.screenHeight * 0.1
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
+    double ratio = gridList.firstWhere(
+      (element) =>
+          element["count"] ==
+          widget.pictureAppearanceSettingModel!.picturePerScreenCount!,
+      orElse: () =>
+          {"ratio": 1.0}, // Provide a default value if no match is found
+    )["ratio"];
+    int count = gridList.firstWhere(
+      (element) =>
+          element["count"] ==
+          widget.pictureAppearanceSettingModel!.picturePerScreenCount!,
+      orElse: () => {"item": 6}, // Provide a default value if no match is found
+    )["item"];
+    double imageSize = gridList.firstWhere(
+      (element) =>
+          element["count"] ==
+          widget.pictureAppearanceSettingModel!.picturePerScreenCount!,
+      orElse: () => {
+        "image": Dimensions.screenHeight * 0.1
+      }, // Provide a default value if no match is found
+    )["image"];
+    double textSize = gridList.firstWhere(
+      (element) =>
+          element["count"] ==
+          widget.pictureAppearanceSettingModel!.picturePerScreenCount!,
+      orElse: () => {
+        "text": Dimensions.screenHeight * 0.05
+      }, // Provide a default value if no match is found
+    )["text"];
     return Container(
       height: double.infinity,
       padding: const EdgeInsets.only(top: 5, bottom: 5),
       color: AppColorConstants.white,
       child: GridView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 5),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 6, // Number of columns in the grid
-            childAspectRatio: 6 / 5, // Aspect ratio of the grid items
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: count, // Number of columns in the grid
+            childAspectRatio: ratio, // Aspect ratio of the grid items
             mainAxisSpacing: 5,
             crossAxisSpacing: 5),
         shrinkWrap: true,
@@ -127,6 +251,15 @@ class _GridDateScreenState extends State<GridDateScreen> {
         itemBuilder: (context, index) {
           var getCategoryData = widget.getCategoryModalList[index];
           return CommonZoomAnimationWidget(
+            imageSize: imageSize,
+            textSize: textSize,
+            accountSettingModel: widget.accountSettingModel,
+            audioSettingModel: widget.audioSettingModel,
+            generalSettingModel: widget.generalSettingModel,
+            keyboardSettingModel: widget.keyboardSettingModel,
+            pictureAppearanceSettingModel: widget.pictureAppearanceSettingModel,
+            pictureBehaviourSettingModel: widget.pictureBehaviourSettingModel,
+            touchSettingModel: widget.touchSettingModel,
             flutterTts: widget.flutterTts,
             onAdd: widget.onAdd,
             changeTable: widget.changeTable,

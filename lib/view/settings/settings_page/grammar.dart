@@ -11,9 +11,11 @@ class Grammar extends StatefulWidget {
   Grammar(
       {super.key,
       this.pictureBehaviourSettingModel,
-      required this.dataBaseService});
+      required this.dataBaseService,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   PictureBehaviourSettingModel? pictureBehaviourSettingModel;
+  final Function() refreshSettingData;
   @override
   State<Grammar> createState() => _GrammarState();
 }
@@ -45,8 +47,9 @@ class _GrammarState extends State<Grammar> {
                 onSwitchChanged: (value) {
                   widget.pictureBehaviourSettingModel!.grammar = value;
                   widget.dataBaseService.pictureBehaviourSettingUpdate(
-                     widget.pictureBehaviourSettingModel!);
+                      widget.pictureBehaviourSettingModel!);
                   setState(() {});
+                  widget.refreshSettingData();
                 }),
             SettingWidget(
                 text: "Show Word froms in Picture Grid",
@@ -59,6 +62,7 @@ class _GrammarState extends State<Grammar> {
                   widget.dataBaseService.pictureBehaviourSettingUpdate(
                       widget.pictureBehaviourSettingModel!);
                   setState(() {});
+                  widget.refreshSettingData();
                 }),
           ],
         ));

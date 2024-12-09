@@ -10,9 +10,11 @@ class VocabularyScreen extends StatefulWidget {
   VocabularyScreen(
       {super.key,
       this.pictureBehaviourSettingModel,
-      required this.dataBaseService});
+      required this.dataBaseService,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   PictureBehaviourSettingModel? pictureBehaviourSettingModel;
+  final Function() refreshSettingData;
   @override
   State<VocabularyScreen> createState() => _VocabularyScreenState();
 }
@@ -35,11 +37,12 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
 
       if (item.select) {
         widget.pictureBehaviourSettingModel!.vocabularyHome = value;
-        widget.dataBaseService
-            .pictureBehaviourSettingUpdate(widget.pictureBehaviourSettingModel!);
+        widget.dataBaseService.pictureBehaviourSettingUpdate(
+            widget.pictureBehaviourSettingModel!);
       }
     }
     setState(() {});
+    widget.refreshSettingData();
   }
 
   @override

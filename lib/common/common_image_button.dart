@@ -42,6 +42,8 @@ class CommonImageButton extends StatefulWidget {
     this.crossAxisAlignment = CrossAxisAlignment.center,
     this.mainAxisAlignment = MainAxisAlignment.center,
     this.fontSize,
+    this.textPostion = "below",
+    this.voiceFile,
   });
   final double? vertical;
   final double? horizontal;
@@ -54,6 +56,7 @@ class CommonImageButton extends StatefulWidget {
   final TextStyle? textStyle;
   final String? buttonName;
   final String? buttonImage;
+  final String? voiceFile;
   final IconData? buttonIcon;
   final Color? buttonIconColor;
   final Color buttonTextColor;
@@ -67,6 +70,7 @@ class CommonImageButton extends StatefulWidget {
   final String? text;
   final String? slug;
   final String? type;
+  final String textPostion;
   final FontWeight fontWeight;
   final FlutterTts? flutterTts;
   final MainAxisAlignment mainAxisAlignment;
@@ -81,7 +85,7 @@ class CommonImageButton extends StatefulWidget {
 
 class _CommonImageButtonState extends State<CommonImageButton> {
   late Color _currentBackgroundColor;
-  final player = AudioPlayer();
+  final AudioPlayer player = AudioPlayer();
   String? audioPath;
 
   @override
@@ -96,13 +100,34 @@ class _CommonImageButtonState extends State<CommonImageButton> {
     });
   }
 
-  void _handleTapUp(TapUpDetails details) {
+  // void _handleTapUp(TapUpDetails details) {
+  //   setState(() {
+  //     _currentBackgroundColor = widget.backgroundColor; // Reset on release
+  //   });
+  //   if (widget.text != null && widget.flutterTts != null) {
+  //     speckbutton();
+  //   } else {
+  //     if (widget.onTap != null) {
+  //       widget.onTap!();
+  //     }
+  //   }
+  // }
+
+  void _handleTapUp(TapUpDetails details) async {
     setState(() {
       _currentBackgroundColor = widget.backgroundColor; // Reset on release
     });
-    if (widget.text != null && widget.flutterTts != null) {
+
+    if (widget.voiceFile != null && widget.voiceFile!.isNotEmpty) {
+      // Play audio file if voiceFile is provided
+      audioPath = widget.voiceFile; // Set the audioPath to the voiceFile
+      widget.onTap!();
+      await playAudio(); // Play the audio
+    } else if (widget.text != null && widget.flutterTts != null) {
+      // Speak text only if voiceFile is null
       speckbutton();
     } else {
+      // Default onTap behavior
       if (widget.onTap != null) {
         widget.onTap!();
       }
@@ -132,9 +157,17 @@ class _CommonImageButtonState extends State<CommonImageButton> {
   }
 
   Future<void> playAudio() async {
-    await stopAudio();
-    if (audioPath != null) {
-      await player.play(DeviceFileSource(audioPath!));
+    try {
+      // Always stop the current audio
+      await player.stop();
+
+      // Play the new audio if the path is not null
+      if (audioPath != null) {
+        await player.play(DeviceFileSource(audioPath!));
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print("Error playing audio: $e");
     }
   }
 
@@ -227,6 +260,23 @@ class _CommonImageButtonState extends State<CommonImageButton> {
                 mainAxisAlignment: widget.mainAxisAlignment,
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (widget.buttonName != null &&
+                      widget.isTextShow &&
+                      widget.textPostion == "above")
+                    AutoSizeText(
+                      widget.buttonName!, // The text to display
+                      style: widget.textStyle ??
+                          TextStyle(
+                              color: widget.buttonTextColor,
+                              fontWeight: widget.fontWeight,
+                              fontSize: widget.fontSize ??
+                                  14), // Default font size if not provided
+                      maxLines: 1, // Limit to a single line
+                      minFontSize:
+                          10, // Minimum font size when text is too long
+                      overflow:
+                          TextOverflow.ellipsis, // Adds "..." if text overflows
+                    ),
                   if (widget.buttonIcon != null && widget.isImageShow)
                     Icon(
                       widget.buttonIcon,
@@ -251,7 +301,9 @@ class _CommonImageButtonState extends State<CommonImageButton> {
                   SizedBox(
                     width: widget.betweenGap ?? 0,
                   ),
-                  if (widget.buttonName != null && widget.isTextShow)
+                  if (widget.buttonName != null &&
+                      widget.isTextShow &&
+                      widget.textPostion == "below")
                     AutoSizeText(
                       widget.buttonName!, // The text to display
                       style: widget.textStyle ??
