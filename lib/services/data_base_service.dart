@@ -1,18 +1,29 @@
 // ignore_for_file: avoid_print
 
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../view/settings/setting_model.dart/account_setting_model.dart';
+import '../view/settings/setting_model.dart/audio_setting.dart';
+import '../view/settings/setting_model.dart/general_setting.dart';
+import '../view/settings/setting_model.dart/keyboard_setting.dart';
+import '../view/settings/setting_model.dart/picture_appearance_setting_model.dart';
+import '../view/settings/setting_model.dart/picture_behaviour_setting_model.dart';
+import '../view/settings/setting_model.dart/touch_setting.dart';
+
 class DataBaseService {
   static Database? _db;
   static final DataBaseService instance = DataBaseService._constructor();
+
   DataBaseService._constructor();
 
   Future<Database> get database async {
     if (_db != null) {
       return _db!;
     }
+    // createSettingTables();
     _db = await getDatabase();
     return _db!;
   }
@@ -26,7 +37,179 @@ class DataBaseService {
       databasePath,
       version: 1,
     );
+
     return database;
+  }
+
+  Future<void> createSettingTables() async {
+    final db = await database;
+
+    // List of all SQL CREATE TABLE statements
+    const tableCreationQueries = [
+      '''
+      CREATE TABLE IF NOT EXISTS account_setting (
+        row_number INTEGER PRIMARY KEY AUTOINCREMENT,
+        number TEXT,
+        subscription_detail TEXT,
+        expire_date DATE,
+        delete_account INTEGER,
+        upload_crash BOOLEAN,
+        subscription_type TEXT,
+        subscription_price TEXT,
+        update_date DATE
+      )
+    ''',
+      '''
+      CREATE TABLE IF NOT EXISTS picture_appearance_setting (
+        row_number INTEGER PRIMARY KEY AUTOINCREMENT,
+        massage_box BOOLEAN,
+        picture_massage_box BOOLEAN,
+        picture_per_screen TEXT,
+        picture_per_screen_count INTEGER,
+        text_size TEXT,
+        text_position TEXT,
+        side_navigation_bar BOOLEAN,
+        side_navigation_bar_position TEXT,
+        side_navigation_bar_button TEXT,
+        color_coding TEXT,
+        update_date DATE
+      )
+    ''',
+      '''
+      CREATE TABLE IF NOT EXISTS picture_behaviour_setting (
+        row_number INTEGER PRIMARY KEY AUTOINCREMENT,
+        word_on_selection TEXT,
+        vocabulary_home TEXT,
+        auto_home_each_time BOOLEAN,
+        action_to_navigation BOOLEAN,
+        grammar BOOLEAN,
+        grammar_picture_grid BOOLEAN,
+        update_date DATE
+      )
+    ''',
+      '''
+      CREATE TABLE IF NOT EXISTS keyboard_setting (
+        row_number INTEGER PRIMARY KEY AUTOINCREMENT,
+        layout TEXT,
+        highlight_vowels BOOLEAN,
+        prediction BOOLEAN,
+        prediction_with_pictures BOOLEAN,
+        next_word BOOLEAN,
+        current_word BOOLEAN,
+        phonetic_match BOOLEAN,
+        enlarge_speed TEXT,
+        update_date DATE
+      )
+    ''',
+      '''
+      CREATE TABLE IF NOT EXISTS audio_setting (
+        row_number INTEGER PRIMARY KEY AUTOINCREMENT,
+        what_to_speak TEXT,
+        speak_action BOOLEAN,
+        update_date DATE
+      )
+    ''',
+      '''
+      CREATE TABLE IF NOT EXISTS general_setting (
+        row_number INTEGER PRIMARY KEY AUTOINCREMENT,
+        share_massage BOOLEAN,
+        share_massage_type TEXT,
+        password TEXT,
+        is_password BOOLEAN,
+        auto_clear_massage_box BOOLEAN,
+        update_date DATE
+      )
+    ''',
+      '''
+      CREATE TABLE IF NOT EXISTS touch_setting (
+        row_number INTEGER PRIMARY KEY AUTOINCREMENT,
+        enable_touch BOOLEAN,
+        update_date DATE
+      )
+    '''
+    ];
+
+    for (String query in tableCreationQueries) {
+      await db.execute(query);
+    }
+
+    print("All tables created successfully!");
+
+    // Helper function to check if a table is empty
+    Future<bool> isTableEmpty(String tableName) async {
+      final result =
+          await db.rawQuery('SELECT COUNT(*) AS count FROM $tableName');
+      final count = Sqflite.firstIntValue(result) ?? 0;
+      return count == 0;
+    }
+
+    if (await isTableEmpty('account_setting')) {
+      accountSettingInsert(AccountSettingModel(
+          number: "+911234567890",
+          subscriptionDetail: "free trial",
+          expireDate: null,
+          deleteAccount: 0,
+          uploadCrash: true,
+          subscriptionType: null,
+          subscriptionPrice: null));
+    }
+
+    if (await isTableEmpty('picture_appearance_setting')) {
+      pictureAppearanceSettingInsert(PictureAppearanceSettingModel(
+          massageBox: true,
+          pictureMassageBox: true,
+          picturePerScreen: "small_(40_pictures)",
+          picturePerScreenCount: 40,
+          textSize: "large",
+          textPosition: "above",
+          sideNavigationBar: true,
+          sideNavigationBarPosition: "right",
+          sideNavigationBarButton:
+              "go_back,home,quick,next_page,previous_page,search_words",
+          colorCoding: "colour_code_background"));
+    }
+
+    if (await isTableEmpty('picture_behaviour_setting')) {
+      pictureBehaviourSettingInsert(PictureBehaviourSettingModel(
+          wordOnSelection: "enlarge_at_normal_speed",
+          vocabularyHome: "root_screen",
+          autoHomeEachTime: false,
+          actionToNavigation: true,
+          grammar: true,
+          grammarPictureGrid: true));
+    }
+
+    if (await isTableEmpty('keyboard_setting')) {
+      keyboardSettingInsert(KeyboardSettingModel(
+          layout: "english_(qwe)",
+          highlightVowels: false,
+          prediction: true,
+          predictionWithPictures: true,
+          nextWord: true,
+          currentWord: true,
+          phoneticMatch: true,
+          enlargeSpeed: "don't_enlarge"));
+    }
+
+    if (await isTableEmpty('audio_setting')) {
+      audioSettingInsert(AudioSettingModel(
+          whatToSpeak: "speak_everything", speakAction: true));
+    }
+
+    if (await isTableEmpty('general_setting')) {
+      generalSettingInsert(GeneralSettingModel(
+          shareMassage: true,
+          shareMassageType: "image",
+          password: null,
+          isPassword: false,
+          autoClearMassageBox: false));
+    }
+
+    if (await isTableEmpty('touch_setting')) {
+      touchSettingInsert(TouchSettingModel(enableTouch: false));
+    }
+
+    print("All tables created and default data inserted if necessary!");
   }
 
   // Create table dynamically based on API data
@@ -126,9 +309,42 @@ class DataBaseService {
     if (existingData.isEmpty) {
       // Insert data into table if it doesn't exist
       await db.insert(tableName, data);
+      await deleteNullData(tableName: tableName);
       print('Data inserted into $tableName: $data');
     } else {
       print('Data already exists in $tableName, skipping insert.');
+    }
+  }
+
+  Future<void> deleteNullData({required String tableName}) async {
+    final db = await database;
+    await db.execute("DELETE FROM $tableName WHERE id IS NULL");
+  }
+
+  Future<void> insertDataIntoTableManual({
+    required String tableName,
+    required Map<String, dynamic> data,
+  }) async {
+    final db = await database;
+    final tableExists = await _checkIfTableExists(db, tableName);
+    if (tableExists) {
+      await db.insert(tableName, data);
+    } else {
+      final columns = data.keys
+          .map((key) =>
+              '$key TEXT') // Assuming all values are TEXT (can be adjusted)
+          .join(', ');
+
+      final createTableQuery = '''
+      CREATE TABLE IF NOT EXISTS $tableName (
+        row_number INTEGER PRIMARY KEY AUTOINCREMENT,
+        $columns
+      )
+    ''';
+      // Execute the query
+      await db.execute(createTableQuery);
+      print('Table $tableName created with columns: $columns');
+      await db.insert(tableName, data);
     }
   }
 
@@ -144,11 +360,221 @@ class DataBaseService {
     return result;
   }
 
+  Future<dynamic> getTablesSubCategoryData(String tableName) async {
+    try {
+      final db = await database;
+      final tableExists = await _checkIfTableExists(db, tableName);
+      if (tableExists) {
+        print("SELECT * FROM $tableName WHERE type = 'sub_categories'");
+        final result = await db
+            .rawQuery("SELECT * FROM $tableName WHERE type = 'sub_categories'");
+        return result;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      debugPrint("Database query failed for table: $tableName. Error: $e");
+      return [];
+    }
+  }
+
   Future<dynamic> directoryPath() async {
     final db = await database;
     final result = await db.rawQuery("SELECT * FROM directory_path");
     String path = result.first["path"].toString();
     return path;
+  }
+
+  // Account Setting
+  void accountSettingInsert(AccountSettingModel accountSetting) async {
+    final db = await database;
+    final accountDb = AccountSettingDatabase(db);
+
+    final newAccount = accountSetting;
+
+    await accountDb.insertAccountSetting(newAccount);
+    print("New account setting added!");
+  }
+
+  void accountSettingUpdate(AccountSettingModel accountSetting) async {
+    final db = await database;
+    final accountDb = AccountSettingDatabase(db);
+    final updateFields = accountSetting;
+
+    await accountDb.updateAccountSetting(1, updateFields);
+    print("Account setting updated!");
+  }
+
+  Future<AccountSettingModel?> accountSettingFetch() async {
+    final db = await database;
+    final accountDb = AccountSettingDatabase(db);
+    final account = await accountDb.getAccountSetting(1);
+    // if (account != null) {
+    //   print(
+    //       "Account Setting: ${account.subscriptionType}, ${account.subscriptionPrice}");
+    // }
+
+    // final allAccounts = await accountDb.getAllAccountSettings();
+    // for (var acc in allAccounts) {
+    //   print(acc.toMap());
+    // }
+    return account;
+  }
+
+  // Picture Appearance Setting
+  void pictureAppearanceSettingInsert(
+      PictureAppearanceSettingModel pictureAppearanceSetting) async {
+    final db = await database;
+    final accountDb = PictureAppearanceSettingDatabase(db);
+    final newPictureAppearance = pictureAppearanceSetting;
+    await accountDb.insertPictureAppearanceSetting(newPictureAppearance);
+    print("New Picture Appearance setting added!");
+  }
+
+  void pictureAppearanceSettingUpdate(
+      PictureAppearanceSettingModel pictureAppearanceSetting) async {
+    final db = await database;
+    final pictureAppearanceDb = PictureAppearanceSettingDatabase(db);
+    final updateFields = pictureAppearanceSetting;
+
+    await pictureAppearanceDb.updatePictureAppearanceSetting(1, updateFields);
+    print("Picture Appearance setting updated!");
+  }
+
+  Future<PictureAppearanceSettingModel?> pictureAppearanceSettingFetch() async {
+    final db = await database;
+    final pictureAppearanceDb = PictureAppearanceSettingDatabase(db);
+    final pictureAppearance =
+        await pictureAppearanceDb.getPictureAppearanceSetting(1);
+    return pictureAppearance;
+  }
+
+  // Picture Behaviour Setting
+  void pictureBehaviourSettingInsert(
+      PictureBehaviourSettingModel pictureBehaviourSetting) async {
+    final db = await database;
+    final pictureBehaviourDb = PictureBehaviourSettingDatabase(db);
+    final newPictureBehaviour = pictureBehaviourSetting;
+    await pictureBehaviourDb.insertPictureBehaviourSetting(newPictureBehaviour);
+    print("New Picture Behaviour setting added!");
+  }
+
+  void pictureBehaviourSettingUpdate(
+      PictureBehaviourSettingModel pictureBehaviourSetting) async {
+    final db = await database;
+    final pictureBehaviourDb = PictureBehaviourSettingDatabase(db);
+    final updateFields = pictureBehaviourSetting;
+
+    await pictureBehaviourDb.updatePictureBehaviourSetting(1, updateFields);
+    print("Picture Behaviour setting updated!");
+  }
+
+  Future<PictureBehaviourSettingModel?> pictureBehaviourSettingFetch() async {
+    final db = await database;
+    final pictureBehaviourDb = PictureBehaviourSettingDatabase(db);
+    final pictureBehaviour =
+        await pictureBehaviourDb.getPictureBehaviourSetting(1);
+    return pictureBehaviour;
+  }
+
+  // Keyboard Setting
+  void keyboardSettingInsert(KeyboardSettingModel keyboardSetting) async {
+    final db = await database;
+    final keyboardDb = KeyboardSettingDatabase(db);
+    final newKeyboard = keyboardSetting;
+    await keyboardDb.insertKeyboardSetting(newKeyboard);
+    print("New Keyboard setting added!");
+  }
+
+  void keyboardSettingUpdate(KeyboardSettingModel keyboardSetting) async {
+    final db = await database;
+    final keyboardDb = KeyboardSettingDatabase(db);
+    final updateFields = keyboardSetting;
+
+    await keyboardDb.updateKeyboardSetting(1, updateFields);
+    print("Keyboard setting updated!");
+  }
+
+  Future<KeyboardSettingModel?> keyboardSettingFetch() async {
+    final db = await database;
+    final keyboardDb = KeyboardSettingDatabase(db);
+    final keyboard = await keyboardDb.getKeyboardSetting(1);
+    return keyboard;
+  }
+
+  // Audio Setting
+  void audioSettingInsert(AudioSettingModel audioSetting) async {
+    final db = await database;
+    final audioDb = AudioSettingDatabase(db);
+    final newAudio = audioSetting;
+    await audioDb.insertAudioSetting(newAudio);
+    print("New Audio setting added!");
+  }
+
+  void audioSettingUpdate(AudioSettingModel audioSetting) async {
+    final db = await database;
+    final audioDb = AudioSettingDatabase(db);
+    final updateFields = audioSetting;
+
+    await audioDb.updateAudioSetting(1, updateFields);
+    print("Audio setting updated!");
+  }
+
+  Future<AudioSettingModel?> audioSettingFetch() async {
+    final db = await database;
+    final audioDb = AudioSettingDatabase(db);
+    final audio = await audioDb.getAudioSetting(1);
+    return audio;
+  }
+
+  // General Setting
+  void generalSettingInsert(GeneralSettingModel generalSetting) async {
+    final db = await database;
+    final generalDb = GeneralSettingDatabase(db);
+    final newGeneral = generalSetting;
+    await generalDb.insertGeneralSetting(newGeneral);
+    print("New General setting added!");
+  }
+
+  void generalSettingUpdate(GeneralSettingModel generalSetting) async {
+    final db = await database;
+    final generalDb = GeneralSettingDatabase(db);
+    final updateFields = generalSetting;
+
+    await generalDb.updateGeneralSetting(1, updateFields);
+    print("General setting updated!");
+  }
+
+  Future<GeneralSettingModel?> generalSettingFetch() async {
+    final db = await database;
+    final generalDb = GeneralSettingDatabase(db);
+    final general = await generalDb.getGeneralSetting(1);
+    return general;
+  }
+
+  // Touch Setting
+  void touchSettingInsert(TouchSettingModel touchSetting) async {
+    final db = await database;
+    final touchDb = TouchSettingDatabase(db);
+    final newTouch = touchSetting;
+    await touchDb.insertTouchSetting(newTouch);
+    print("New Touch setting added!");
+  }
+
+  void touchSettingUpdate(TouchSettingModel touchSetting) async {
+    final db = await database;
+    final touchDb = TouchSettingDatabase(db);
+    final updateFields = touchSetting;
+
+    await touchDb.updateTouchSetting(1, updateFields);
+    print("Touch setting updated!");
+  }
+
+  Future<TouchSettingModel?> touchSettingFetch() async {
+    final db = await database;
+    final touchDb = TouchSettingDatabase(db);
+    final touch = await touchDb.getTouchSetting(1);
+    return touch;
   }
 }
 

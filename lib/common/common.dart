@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../util/app_color_constants.dart';
@@ -33,8 +34,22 @@ bool textFieldValidation(TextEditingController controller, String text,
   return true;
 }
 
-  Future<void> speakToText(String text,final FlutterTts flutterTts) async {
-    if (text.isNotEmpty) {
-      await flutterTts.speak(text);
-    }
+Future<void> speakToText(String text, final FlutterTts flutterTts) async {
+  if (text.isNotEmpty) {
+    await flutterTts.speak(text);
   }
+}
+
+Widget dividerWidget({double height = 1, Color? color}) {
+  return Container(
+    height: height,
+    color: color ?? AppColorConstants.black,
+  );
+}
+
+String changeDateFormat(String datetime) {
+  DateTime parsedDate = DateTime.parse(datetime);
+  String formattedDate =
+      DateFormat('dd-MMM-yyyy').format(parsedDate).toLowerCase();
+  return formattedDate;
+}

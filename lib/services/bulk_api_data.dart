@@ -14,7 +14,7 @@ import 'data_base_service.dart';
 class BulkApiData {
   static void getCategory(BuildContext context) async {
     var response = await CommonApiCall.postApiCall(action: "get_category");
-
+    _settingDataInsert();
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
 
@@ -26,9 +26,7 @@ class BulkApiData {
             // Iterate through the list and insert each item
             for (var item in dataToStore) {
               if (item is Map<String, dynamic>) {
-                if (item["image"] != null) {
-                  await _asyncMethod(imageUrl, item["image"]);
-                }
+                await _downloadFilesIfValid(item, imageUrl);
                 await _insertApiResponseToDatabase(
                     item, "category_table", "type", "id");
               }
@@ -63,9 +61,7 @@ class BulkApiData {
             // Iterate through the list and insert each item
             for (var item in dataToStore) {
               if (item is Map<String, dynamic>) {
-                if (item["image"] != null) {
-                  await _asyncMethod(imageUrl, item["image"]);
-                }
+                await _downloadFilesIfValid(item, imageUrl);
                 await _insertApiResponseToDatabase(
                     item, categoryName.replaceAll("-", "_"), "type", "id");
               }
@@ -107,10 +103,7 @@ class BulkApiData {
             // Iterate through the list and insert each item
             for (var item in dataToStore) {
               if (item is Map<String, dynamic>) {
-                if (item["image"] != null) {
-                  await _asyncMethod(imageUrl, item["image"]);
-                }
-
+                await _downloadFilesIfValid(item, imageUrl);
                 await _insertApiResponseToDatabase(
                     item, categoryName.replaceAll("-", "_"), "type", "id");
               }
@@ -124,28 +117,74 @@ class BulkApiData {
     }
   }
 
-  static Future<void> _asyncMethod(String imageUrl, String imageName) async {
+  // static Future<void> _asyncMethod(String imageUrl, String imageName) async {
+  //   try {
+  //     final url = Uri.parse('$imageUrl$imageName');
+  //     var response = await http.get(url);
+  //     if (response.statusCode == 200) {
+  //       var documentDirectory = await getApplicationDocumentsDirectory();
+  //       // ignore: avoid_print
+  //       _insertApiResponseToDatabase({
+  //         "id": "1",
+  //         "type": "directoryPath",
+  //         "path": "${documentDirectory.path}/"
+  //       }, "directory_path", "id", "type");
+  //       var filePath = '${documentDirectory.path}/$imageName';
+  //       File file = File(filePath);
+  //       await file.writeAsBytes(response.bodyBytes);
+  //     } else {
+  //       // ignore: avoid_print
+  //       print('Failed to download image: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     // ignore: avoid_print
+  //     print('Error downloading image: $e');
+  //   }
+  // }
+
+  static Future<void> _asyncMethod(String fileUrl, String fileName,
+      {bool isAudio = false}) async {
     try {
-      final url = Uri.parse('$imageUrl$imageName');
+      final url = Uri.parse('$fileUrl$fileName');
       var response = await http.get(url);
       if (response.statusCode == 200) {
         var documentDirectory = await getApplicationDocumentsDirectory();
-        // ignore: avoid_print
+        // Store the directory path in the database
         _insertApiResponseToDatabase({
           "id": "1",
           "type": "directoryPath",
           "path": "${documentDirectory.path}/"
         }, "directory_path", "id", "type");
-        var filePath = '${documentDirectory.path}/$imageName';
+
+        var filePath = '${documentDirectory.path}/$fileName';
         File file = File(filePath);
         await file.writeAsBytes(response.bodyBytes);
       } else {
-        // ignore: avoid_print
-        print('Failed to download image: ${response.statusCode}');
+        // Log failure
+        // print('Failed to download file: ${response.statusCode}');
       }
     } catch (e) {
-      // ignore: avoid_print
-      print('Error downloading image: $e');
+      // Log error
+      // print('Error downloading file: $e');
+    }
+  }
+
+  static Future<void> _downloadFilesIfValid(
+      Map<String, dynamic> item, String fileUrl) async {
+    // Download image file
+    if (item["image"] != null &&
+        !item["image"].toString().endsWith(".mp3") &&
+        !item["image"].toString().endsWith(".wav")) {
+      await _asyncMethod(fileUrl, item["image"]);
+    }
+
+    // Download audio file
+    if (item["voice_file"] != null &&
+        !item["voice_file"].toString().endsWith(".png") &&
+        !item["voice_file"].toString().endsWith(".jpeg")) {
+      await _asyncMethod(fileUrl, item["voice_file"], isAudio: true);
+    } else {
+      item["voice_file"] = null;
     }
   }
 
@@ -159,5 +198,10 @@ class BulkApiData {
       uniqueType: uniqueType,
       uniqueId: uniqueId,
     );
+  }
+
+  static Future<void> _settingDataInsert() async {
+    final dbService = DataBaseService.instance;
+    await dbService.createSettingTables();
   }
 }

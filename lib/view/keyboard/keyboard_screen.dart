@@ -3,8 +3,14 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../common/common.dart';
 import '../../common/common_image_button.dart';
-import '../../common/common_text_to_speak.dart';
 import '../../util/app_color_constants.dart';
+import '../settings/setting_model.dart/account_setting_model.dart';
+import '../settings/setting_model.dart/audio_setting.dart';
+import '../settings/setting_model.dart/general_setting.dart';
+import '../settings/setting_model.dart/keyboard_setting.dart';
+import '../settings/setting_model.dart/picture_appearance_setting_model.dart';
+import '../settings/setting_model.dart/picture_behaviour_setting_model.dart';
+import '../settings/setting_model.dart/touch_setting.dart';
 
 class KeyboardScreen extends StatefulWidget {
   const KeyboardScreen(
@@ -13,12 +19,26 @@ class KeyboardScreen extends StatefulWidget {
       required this.onAdd,
       required this.onTextValue,
       required this.onSpace,
-      required this.deleteLast});
+      required this.deleteLast,
+      this.accountSettingModel,
+      this.pictureAppearanceSettingModel,
+      this.pictureBehaviourSettingModel,
+      this.keyboardSettingModel,
+      this.audioSettingModel,
+      this.generalSettingModel,
+      this.touchSettingModel});
   final FlutterTts flutterTts;
   final Function(String, String?) onAdd;
   final Function(String) onTextValue;
   final Function() onSpace;
   final Function() deleteLast;
+  final AccountSettingModel? accountSettingModel;
+  final PictureAppearanceSettingModel? pictureAppearanceSettingModel;
+  final PictureBehaviourSettingModel? pictureBehaviourSettingModel;
+  final KeyboardSettingModel? keyboardSettingModel;
+  final AudioSettingModel? audioSettingModel;
+  final GeneralSettingModel? generalSettingModel;
+  final TouchSettingModel? touchSettingModel;
 
   @override
   State<KeyboardScreen> createState() => _KeyboardScreenState();
@@ -27,16 +47,93 @@ class KeyboardScreen extends StatefulWidget {
 class _KeyboardScreenState extends State<KeyboardScreen> {
   List<String> suggestionList = ["I", "Yes", "Your", "it", "the"];
   List<Map<String, dynamic>> keyBoardList1 = [
-    {"name": "q", "Cname": "Q", "number": "1", "icon": null},
-    {"name": "w", "Cname": "W", "number": "2", "icon": null},
-    {"name": "e", "Cname": "E", "number": "3", "icon": null},
-    {"name": "r", "Cname": "R", "number": "4", "icon": null},
-    {"name": "t", "Cname": "T", "number": "5", "icon": null},
-    {"name": "y", "Cname": "Y", "number": "6", "icon": null},
-    {"name": "u", "Cname": "U", "number": "7", "icon": null},
-    {"name": "i", "Cname": "I", "number": "8", "icon": null},
-    {"name": "o", "Cname": "O", "number": "9", "icon": null},
-    {"name": "p", "Cname": "P", "number": "0", "icon": null},
+    {
+      "name": "q",
+      "Cname": "Q",
+      "normal": "a",
+      "Cnormal": "A",
+      "number": "1",
+      "Ncolor": AppColorConstants.blue100,
+      "icon": null
+    },
+    {
+      "name": "w",
+      "Cname": "W",
+      "normal": "b",
+      "Cnormal": "B",
+      "number": "2",
+      "icon": null
+    },
+    {
+      "name": "e",
+      "Cname": "E",
+      "normal": "c",
+      "Cnormal": "C",
+      "number": "3",
+      "color": AppColorConstants.blue100,
+      "icon": null
+    },
+    {
+      "name": "r",
+      "Cname": "R",
+      "normal": "d",
+      "Cnormal": "D",
+      "number": "4",
+      "icon": null
+    },
+    {
+      "name": "t",
+      "Cname": "T",
+      "normal": "e",
+      "Cnormal": "E",
+      "number": "5",
+      "Ncolor": AppColorConstants.blue100,
+      "icon": null
+    },
+    {
+      "name": "y",
+      "Cname": "Y",
+      "normal": "f",
+      "Cnormal": "F",
+      "number": "6",
+      "icon": null
+    },
+    {
+      "name": "u",
+      "Cname": "U",
+      "normal": "g",
+      "Cnormal": "G",
+      "number": "7",
+      "color": AppColorConstants.blue100,
+      "icon": null
+    },
+    {
+      "name": "i",
+      "Cname": "I",
+      "normal": "h",
+      "Cnormal": "H",
+      "number": "8",
+      "color": AppColorConstants.blue100,
+      "icon": null
+    },
+    {
+      "name": "o",
+      "Cname": "O",
+      "normal": "i",
+      "Cnormal": "I",
+      "number": "9",
+      "color": AppColorConstants.blue100,
+      "Ncolor": AppColorConstants.blue100,
+      "icon": null
+    },
+    {
+      "name": "p",
+      "Cname": "P",
+      "normal": "j",
+      "Cnormal": "J",
+      "number": "0",
+      "icon": null
+    },
     {
       "name": "delete",
       "Cname": "delete",
@@ -46,15 +143,80 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
     },
   ];
   List<Map<String, dynamic>> keyBoardList2 = [
-    {"name": "a", "Cname": "A", "number": "@", "icon": null},
-    {"name": "s", "Cname": "S", "number": "#", "icon": null},
-    {"name": "d", "Cname": "D", "number": "\$", "icon": null},
-    {"name": "f", "Cname": "F", "number": "&", "icon": null},
-    {"name": "g", "Cname": "G", "number": "*", "icon": null},
-    {"name": "h", "Cname": "H", "number": "(", "icon": null},
-    {"name": "j", "Cname": "J", "number": ")", "icon": null},
-    {"name": "k", "Cname": "K", "number": "'", "icon": null},
-    {"name": "l", "Cname": "L", "number": "\"", "icon": null},
+    {
+      "name": "a",
+      "Cname": "A",
+      "normal": "k",
+      "Cnormal": "K",
+      "number": "@",
+      "color": AppColorConstants.blue100,
+      "icon": null
+    },
+    {
+      "name": "s",
+      "Cname": "S",
+      "normal": "l",
+      "Cnormal": "L",
+      "number": "#",
+      "icon": null
+    },
+    {
+      "name": "d",
+      "Cname": "D",
+      "normal": "m",
+      "Cnormal": "M",
+      "number": "\$",
+      "icon": null
+    },
+    {
+      "name": "f",
+      "Cname": "F",
+      "normal": "n",
+      "Cnormal": "N",
+      "number": "&",
+      "icon": null
+    },
+    {
+      "name": "g",
+      "Cname": "G",
+      "normal": "o",
+      "Cnormal": "O",
+      "number": "*",
+      "Ncolor": AppColorConstants.blue100,
+      "icon": null
+    },
+    {
+      "name": "h",
+      "Cname": "H",
+      "normal": "p",
+      "Cnormal": "P",
+      "number": "(",
+      "icon": null
+    },
+    {
+      "name": "j",
+      "Cname": "J",
+      "normal": "q",
+      "Cnormal": "Q",
+      "number": ")",
+      "icon": null
+    },
+    {
+      "name": "k",
+      "Cname": "K",
+      "normal": "r",
+      "Cnormal": "R",
+      "number": "'",
+      "icon": null
+    },
+    {
+      "name": "l",
+      "Cname": "L",
+      "normal": "s",
+      "Cnormal": "S",
+      "number": "\"",
+      "icon": null
+    },
     {
       "name": "next",
       "Cname": "next",
@@ -71,15 +233,79 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
       "icon": Icons.upload,
       "action": "caps"
     },
-    {"name": "z", "Cname": "Z", "number": "%", "icon": null},
-    {"name": "x", "Cname": "X", "number": "-", "icon": null},
-    {"name": "c", "Cname": "C", "number": "+", "icon": null},
-    {"name": "v", "Cname": "V", "number": "=", "icon": null},
-    {"name": "b", "Cname": "B", "number": "/", "icon": null},
-    {"name": "n", "Cname": "N", "number": ";", "icon": null},
-    {"name": "m", "Cname": "M", "number": ":", "icon": null},
-    {"name": ",", "Cname": "!", "number": "!", "icon": null},
-    {"name": ".", "Cname": "?", "number": "?", "icon": null},
+    {
+      "name": "z",
+      "Cname": "Z",
+      "normal": "t",
+      "Cnormal": "T",
+      "number": "%",
+      "icon": null
+    },
+    {
+      "name": "x",
+      "Cname": "X",
+      "normal": "u",
+      "Cnormal": "U",
+      "number": "-",
+      "Ncolor": AppColorConstants.blue100,
+      "icon": null
+    },
+    {
+      "name": "c",
+      "Cname": "C",
+      "normal": "v",
+      "Cnormal": "V",
+      "number": "+",
+      "icon": null
+    },
+    {
+      "name": "v",
+      "Cname": "V",
+      "normal": "w",
+      "Cnormal": "W",
+      "number": "=",
+      "icon": null
+    },
+    {
+      "name": "b",
+      "Cname": "B",
+      "normal": "x",
+      "Cnormal": "X",
+      "number": "/",
+      "icon": null
+    },
+    {
+      "name": "n",
+      "Cname": "N",
+      "normal": "y",
+      "Cnormal": "Y",
+      "number": ";",
+      "icon": null
+    },
+    {
+      "name": "m",
+      "Cname": "M",
+      "normal": "z",
+      "Cnormal": "Z",
+      "number": ":",
+      "icon": null
+    },
+    {
+      "name": ",",
+      "Cname": "!",
+      "normal": ",",
+      "Cnormal": "!",
+      "number": "!",
+      "icon": null
+    },
+    {
+      "name": ".",
+      "Cname": "?",
+      "normal": ".",
+      "Cnormal": "?",
+      "number": "?",
+      "icon": null
+    },
     {
       "name": "delete",
       "Cname": "delete",
@@ -103,7 +329,9 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
       children: [
         Row(
           children: [
-            const CommonImageButton(
+            CommonImageButton(
+              flutterTts: widget.flutterTts,
+              text: "back",
               isImageShow: true,
               vertical: 10,
               buttonIcon: Icons.arrow_back,
@@ -123,22 +351,20 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 itemCount: suggestionList.length,
                 itemBuilder: (context, index) {
                   var data = suggestionList[index];
-                  return CommonTextToSpeak(
+                  return CommonImageButton(
                     flutterTts: widget.flutterTts,
                     text: data,
                     onTap: () {
                       widget.onAdd(data, null);
                     },
-                    child: CommonImageButton(
-                      backgroundColor: AppColorConstants.keyBoardBackColor,
-                      borderColor: AppColorConstants.keyBoardBackColor,
-                      textStyle: const TextStyle(
-                          color: AppColorConstants.keyBoardTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                      buttonIconColor: AppColorConstants.keyBoardTextColor,
-                      buttonName: data,
-                    ),
+                    backgroundColor: AppColorConstants.keyBoardBackColor,
+                    borderColor: AppColorConstants.keyBoardBackColor,
+                    textStyle: const TextStyle(
+                        color: AppColorConstants.keyBoardTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
+                    buttonIconColor: AppColorConstants.keyBoardTextColor,
+                    buttonName: data,
                   );
                 },
               ),
@@ -147,6 +373,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
               width: 15,
             ),
             const CommonImageButton(
+              text: "forward",
               isImageShow: true,
               vertical: 10,
               buttonIcon: Icons.arrow_forward,
@@ -175,41 +402,68 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 itemCount: keyBoardList1.length,
                 itemBuilder: (context, index) {
                   var data = keyBoardList1[index];
-                  return CommonTextToSpeak(
+                  return CommonImageButton(
                     flutterTts: widget.flutterTts,
                     text: isNumberOn
                         ? data["number"]
-                        : isCapsOn
-                            ? data["Cname"]
-                            : data["name"],
+                        : widget.keyboardSettingModel!.layout == "english_(qwe)"
+                            ? isCapsOn
+                                ? data["Cname"]
+                                : data["name"]
+                            : isCapsOn
+                                ? data["Cnormal"]
+                                : data["normal"],
                     onTap: data["action"] != null
                         ? () {
                             widget.deleteLast();
                           }
                         : () {
-                            widget.onTextValue(isNumberOn
-                                ? data["number"]
-                                : isCapsOn
-                                    ? data["Cname"]
-                                    : data["name"]);
+                            widget.onTextValue(
+                              isNumberOn
+                                  ? data["number"]
+                                  : widget.keyboardSettingModel!.layout ==
+                                          "english_(qwe)"
+                                      ? isCapsOn
+                                          ? data["Cname"]
+                                          : data["name"]
+                                      : isCapsOn
+                                          ? data["Cnormal"]
+                                          : data["normal"],
+                            );
                           },
-                    child: CommonImageButton(
-                      isImageShow: data["action"] != null ? true : false,
-                      isTextShow: data["action"] != null ? false : true,
-                      backgroundColor: AppColorConstants.keyBoardBackColor,
-                      borderColor: AppColorConstants.keyBoardBackColor,
-                      textStyle: const TextStyle(
-                          color: AppColorConstants.keyBoardTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                      buttonIconColor: AppColorConstants.keyBoardTextColor,
-                      buttonName: isNumberOn
-                          ? data["number"]
-                          : isCapsOn
-                              ? data["Cname"]
-                              : data["name"],
-                      buttonIcon: data["icon"],
-                    ),
+                    isImageShow: data["action"] != null ? true : false,
+                    isTextShow: data["action"] != null ? false : true,
+                    iscolorChange: false,
+                    backgroundColor: widget
+                            .keyboardSettingModel!.highlightVowels!
+                        ? widget.keyboardSettingModel?.layout == "english_(qwe)"
+                            ? (data["color"] ??
+                                AppColorConstants.keyBoardBackColor)
+                            : (data["Ncolor"] ??
+                                AppColorConstants.keyBoardBackColor)
+                        : AppColorConstants.keyBoardBackColor,
+                    borderColor: widget.keyboardSettingModel!.highlightVowels!
+                        ? widget.keyboardSettingModel?.layout == "english_(qwe)"
+                            ? (data["color"] ??
+                                AppColorConstants.keyBoardBackColor)
+                            : (data["Ncolor"] ??
+                                AppColorConstants.keyBoardBackColor)
+                        : AppColorConstants.keyBoardBackColor,
+                    textStyle: const TextStyle(
+                        color: AppColorConstants.keyBoardTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
+                    buttonIconColor: AppColorConstants.keyBoardTextColor,
+                    buttonName: isNumberOn
+                        ? data["number"]
+                        : widget.keyboardSettingModel!.layout == "english_(qwe)"
+                            ? isCapsOn
+                                ? data["Cname"]
+                                : data["name"]
+                            : isCapsOn
+                                ? data["Cnormal"]
+                                : data["normal"],
+                    buttonIcon: data["icon"],
                   );
                 },
               ),
@@ -228,41 +482,68 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 itemCount: keyBoardList2.length,
                 itemBuilder: (context, index) {
                   var data = keyBoardList2[index];
-                  return CommonTextToSpeak(
+                  return CommonImageButton(
                     text: isNumberOn
                         ? data["number"]
-                        : isCapsOn
-                            ? data["Cname"]
-                            : data["name"],
+                        : widget.keyboardSettingModel!.layout == "english_(qwe)"
+                            ? isCapsOn
+                                ? data["Cname"]
+                                : data["name"]
+                            : isCapsOn
+                                ? data["Cnormal"]
+                                : data["normal"],
                     flutterTts: widget.flutterTts,
                     onTap: data["action"] != null
                         ? () {
                             widget.deleteLast();
                           }
                         : () {
-                            widget.onTextValue(isNumberOn
-                                ? data["number"]
-                                : isCapsOn
-                                    ? data["Cname"]
-                                    : data["name"]);
+                            widget.onTextValue(
+                              isNumberOn
+                                  ? data["number"]
+                                  : widget.keyboardSettingModel!.layout ==
+                                          "english_(qwe)"
+                                      ? isCapsOn
+                                          ? data["Cname"]
+                                          : data["name"]
+                                      : isCapsOn
+                                          ? data["Cnormal"]
+                                          : data["normal"],
+                            );
                           },
-                    child: CommonImageButton(
-                      isImageShow: data["action"] != null ? true : false,
-                      isTextShow: data["action"] != null ? false : true,
-                      backgroundColor: AppColorConstants.keyBoardBackColor,
-                      borderColor: AppColorConstants.keyBoardBackColor,
-                      textStyle: const TextStyle(
-                          color: AppColorConstants.keyBoardTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                      buttonIconColor: AppColorConstants.keyBoardTextColor,
-                      buttonName: isNumberOn
-                          ? data["number"]
-                          : isCapsOn
-                              ? data["Cname"]
-                              : data["name"],
-                      buttonIcon: data["icon"],
-                    ),
+                    isImageShow: data["action"] != null ? true : false,
+                    isTextShow: data["action"] != null ? false : true,
+                    iscolorChange: false,
+                    backgroundColor: widget
+                            .keyboardSettingModel!.highlightVowels!
+                        ? widget.keyboardSettingModel?.layout == "english_(qwe)"
+                            ? (data["color"] ??
+                                AppColorConstants.keyBoardBackColor)
+                            : (data["Ncolor"] ??
+                                AppColorConstants.keyBoardBackColor)
+                        : AppColorConstants.keyBoardBackColor,
+                    borderColor: widget.keyboardSettingModel!.highlightVowels!
+                        ? widget.keyboardSettingModel?.layout == "english_(qwe)"
+                            ? (data["color"] ??
+                                AppColorConstants.keyBoardBackColor)
+                            : (data["Ncolor"] ??
+                                AppColorConstants.keyBoardBackColor)
+                        : AppColorConstants.keyBoardBackColor,
+                    textStyle: const TextStyle(
+                        color: AppColorConstants.keyBoardTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
+                    buttonIconColor: AppColorConstants.keyBoardTextColor,
+                    buttonName: isNumberOn
+                        ? data["number"]
+                        : widget.keyboardSettingModel!.layout == "english_(qwe)"
+                            ? isCapsOn
+                                ? data["Cname"]
+                                : data["name"]
+                            : isCapsOn
+                                ? data["Cnormal"]
+                                : data["normal"],
+                    buttonIcon: data["icon"],
                   );
                 },
               ),
@@ -281,7 +562,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 itemCount: keyBoardList3.length,
                 itemBuilder: (context, index) {
                   var data = keyBoardList3[index];
-                  return CommonTextToSpeak(
+                  return CommonImageButton(
                     onTap: data["action"] != null
                         ? () {
                             if (data["action"] != null) {
@@ -296,35 +577,62 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                             setState(() {});
                           }
                         : () {
-                            widget.onTextValue(isNumberOn
-                                ? data["number"]
-                                : isCapsOn
-                                    ? data["Cname"]
-                                    : data["name"]);
+                            widget.onTextValue(
+                              isNumberOn
+                                  ? data["number"]
+                                  : widget.keyboardSettingModel!.layout ==
+                                          "english_(qwe)"
+                                      ? isCapsOn
+                                          ? data["Cname"]
+                                          : data["name"]
+                                      : isCapsOn
+                                          ? data["Cnormal"]
+                                          : data["normal"],
+                            );
                           },
                     flutterTts: widget.flutterTts,
                     text: isNumberOn
                         ? data["number"]
-                        : isCapsOn
-                            ? data["Cname"]
-                            : data["name"],
-                    child: CommonImageButton(
-                      isImageShow: data["action"] != null ? true : false,
-                      isTextShow: data["action"] != null ? false : true,
-                      backgroundColor: AppColorConstants.keyBoardBackColor,
-                      borderColor: AppColorConstants.keyBoardBackColor,
-                      textStyle: const TextStyle(
-                          color: AppColorConstants.keyBoardTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                      buttonIconColor: AppColorConstants.keyBoardTextColor,
-                      buttonName: isNumberOn
-                          ? data["number"]
-                          : isCapsOn
-                              ? data["Cname"]
-                              : data["name"],
-                      buttonIcon: data["icon"],
-                    ),
+                        : widget.keyboardSettingModel!.layout == "english_(qwe)"
+                            ? isCapsOn
+                                ? data["Cname"]
+                                : data["name"]
+                            : isCapsOn
+                                ? data["Cnormal"]
+                                : data["normal"],
+                    isImageShow: data["action"] != null ? true : false,
+                    isTextShow: data["action"] != null ? false : true,
+                    iscolorChange: false,
+                    backgroundColor: widget
+                            .keyboardSettingModel!.highlightVowels!
+                        ? widget.keyboardSettingModel?.layout == "english_(qwe)"
+                            ? (data["color"] ??
+                                AppColorConstants.keyBoardBackColor)
+                            : (data["Ncolor"] ??
+                                AppColorConstants.keyBoardBackColor)
+                        : AppColorConstants.keyBoardBackColor,
+                    borderColor: widget.keyboardSettingModel!.highlightVowels!
+                        ? widget.keyboardSettingModel?.layout == "english_(qwe)"
+                            ? (data["color"] ??
+                                AppColorConstants.keyBoardBackColor)
+                            : (data["Ncolor"] ??
+                                AppColorConstants.keyBoardBackColor)
+                        : AppColorConstants.keyBoardBackColor,
+                    textStyle: const TextStyle(
+                        color: AppColorConstants.keyBoardTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
+                    buttonIconColor: AppColorConstants.keyBoardTextColor,
+                    buttonName: isNumberOn
+                        ? data["number"]
+                        : widget.keyboardSettingModel!.layout == "english_(qwe)"
+                            ? isCapsOn
+                                ? data["Cname"]
+                                : data["name"]
+                            : isCapsOn
+                                ? data["Cnormal"]
+                                : data["normal"],
+                    buttonIcon: data["icon"],
                   );
                 },
               ),

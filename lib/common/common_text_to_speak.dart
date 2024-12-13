@@ -36,20 +36,21 @@ class _CommonTextToSpeakState extends State<CommonTextToSpeak> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap:
-          widget.type != null && widget.type != "voice" && widget.slug != null
-              ? () async {
-                  speakToText(widget.text, widget.flutterTts);
-                  Future.delayed(const Duration(milliseconds: 50)).whenComplete(() {
-                    widget.changeTable!(widget.slug!);
-                  });
-                }
-              : () {
-                  // ignore: avoid_print
-                  print("text == > ${widget.text}");
-                  speakToText(widget.text, widget.flutterTts);
-                  widget.onTap();
-                },
+      onTap: widget.type != null &&
+              widget.type != "voice" &&
+              widget.slug != null
+          ? () async {
+              speakToText(widget.text, widget.flutterTts);
+              Future.delayed(const Duration(milliseconds: 50)).whenComplete(() {
+                widget.changeTable!(widget.slug!);
+              });
+            }
+          : () {
+              // ignore: avoid_print
+              print("text == > ${widget.text}");
+              speakToText(widget.text, widget.flutterTts);
+              widget.onTap();
+            },
       child: widget.child,
     );
   }

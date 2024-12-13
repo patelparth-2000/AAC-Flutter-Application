@@ -1,25 +1,51 @@
 import 'package:avaz_app/common/common_image_button.dart';
-import 'package:avaz_app/common/common_text_to_speak.dart';
 import 'package:avaz_app/util/app_color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 import '../model/get_category_modal.dart';
 import '../services/data_base_service.dart';
+import '../view/settings/setting_model.dart/account_setting_model.dart';
+import '../view/settings/setting_model.dart/audio_setting.dart';
+import '../view/settings/setting_model.dart/general_setting.dart';
+import '../view/settings/setting_model.dart/keyboard_setting.dart';
+import '../view/settings/setting_model.dart/picture_appearance_setting_model.dart';
+import '../view/settings/setting_model.dart/picture_behaviour_setting_model.dart';
+import '../view/settings/setting_model.dart/touch_setting.dart';
 
 class CommonZoomAnimationWidget extends StatefulWidget {
-  final Function(String text, String? image) onAdd;
+  final Function(String text, String? image, {String? audioFile}) onAdd;
   final Function(String slug) changeTable;
+  final Function(String audioPath) playAudio;
   final GetCategoryModal getCategoryModal;
   final FlutterTts flutterTts;
+  final AccountSettingModel? accountSettingModel;
+  final PictureAppearanceSettingModel? pictureAppearanceSettingModel;
+  final PictureBehaviourSettingModel? pictureBehaviourSettingModel;
+  final KeyboardSettingModel? keyboardSettingModel;
+  final AudioSettingModel? audioSettingModel;
+  final GeneralSettingModel? generalSettingModel;
+  final TouchSettingModel? touchSettingModel;
+  final double imageSize;
+  final double textSize;
+  final Function()? stopAudio;
 
-  const CommonZoomAnimationWidget({
-    super.key,
-    required this.onAdd,
-    required this.flutterTts,
-    required this.changeTable,
-    required this.getCategoryModal,
-  });
+  const CommonZoomAnimationWidget(
+      {super.key,
+      required this.onAdd,
+      required this.flutterTts,
+      required this.changeTable,
+      required this.getCategoryModal,
+      this.accountSettingModel,
+      this.pictureAppearanceSettingModel,
+      this.pictureBehaviourSettingModel,
+      this.keyboardSettingModel,
+      this.audioSettingModel,
+      this.generalSettingModel,
+      this.touchSettingModel,
+      required this.imageSize,
+      required this.textSize,
+      required this.playAudio, this.stopAudio});
 
   @override
   State<CommonZoomAnimationWidget> createState() =>
@@ -63,8 +89,14 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
   }
 
   void _onTap() {
-    widget.onAdd(widget.getCategoryModal.name!,
-        "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}");
+    widget.onAdd(
+        widget.getCategoryModal.name!,
+        widget.getCategoryModal.image != null
+            ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}"
+            : null,
+        audioFile: widget.getCategoryModal.voiceFile != null
+            ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.voiceFile}"
+            : null);
     _controller.forward();
     Future.delayed(const Duration(seconds: 1), () {
       _controller.reverse();
@@ -75,40 +107,62 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
   Widget build(BuildContext context) {
     return ScaleTransition(
       scale: _animation,
-      child: CommonTextToSpeak(
+      child: CommonImageButton(
+        stopAudio: widget.stopAudio,
+        iscolorChange: false,
         changeTable: widget.changeTable,
         slug: widget.getCategoryModal.slug,
         type: widget.getCategoryModal.type,
         onAdd: widget.onAdd,
+        playAudio: widget.playAudio,
         flutterTts: widget.flutterTts,
         text: widget.getCategoryModal.name!,
+        textPostion: widget.pictureAppearanceSettingModel!.textPosition!,
         onTap: widget.getCategoryModal.type == "voice" ? _onTap : () {},
-        child: CommonImageButton(
-          isImageAsset: false,
-          buttonImage: widget.getCategoryModal.image != null
-              ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}"
-              : null,
-          imageSize: 55,
-          isImageShow: true,
-          backgroundColor: widget.getCategoryModal.type == "voice"
-              ? AppColorConstants.keyBoardBackColor
-              : widget.getCategoryModal.type == "sub_categories"
-                  ? AppColorConstants.keyBoardBackColorPink
-                  : AppColorConstants.keyBoardBackColorGreen,
-          borderColor: widget.getCategoryModal.type == "voice"
-              ? AppColorConstants.keyBoardBackColor
-              : widget.getCategoryModal.type == "sub_categories"
-                  ? AppColorConstants.keyBoardBackColorPink
-                  : AppColorConstants.keyBoardBackColorGreen,
-          textStyle: const TextStyle(
-            color: AppColorConstants.keyBoardTextColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-          buttonIconColor: null,
-          buttonName: widget.getCategoryModal.name,
+        isImageAsset: false,
+        buttonImage: widget.getCategoryModal.image != null
+            ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}"
+            : null,
+        imageSize: widget.imageSize,
+        isImageShow: !(widget.pictureAppearanceSettingModel!.textSize! ==
+            "only_text_(no_picture)"),
+        backgroundColor: hexToColor(
+            widget.getCategoryModal.color, widget.getCategoryModal.type),
+        borderColor: hexToColor(
+            widget.getCategoryModal.color, widget.getCategoryModal.type),
+        isTextShow: !(widget.pictureAppearanceSettingModel!.textSize! ==
+            "no_text_(only_picture)"),
+        textStyle: TextStyle(
+          color: AppColorConstants.keyBoardTextColor,
+          fontWeight: FontWeight.bold,
+          fontSize: (widget.pictureAppearanceSettingModel!.textSize! == "small")
+              ? widget.textSize / 1.5
+              : (widget.pictureAppearanceSettingModel!.textSize! == "medium")
+                  ? widget.textSize / 1.2
+                  : widget.textSize,
         ),
+        buttonIconColor: null,
+        voiceFile: widget.getCategoryModal.voiceFile != null
+            ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.voiceFile}"
+            : null,
+        buttonName: widget.getCategoryModal.name,
       ),
     );
   }
+}
+
+Color hexToColor(String? hexString, String? type) {
+  Color color = type == "voice"
+      ? AppColorConstants.keyBoardBackColor
+      : type == "sub_categories"
+          ? AppColorConstants.keyBoardBackColorPink
+          : AppColorConstants.keyBoardBackColorGreen;
+  if (hexString == null) {
+    return color;
+  }
+  final buffer = StringBuffer();
+  if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+  buffer.write(hexString.replaceFirst('#', ''));
+  color = Color(int.parse(buffer.toString(), radix: 16));
+  return color;
 }

@@ -23,6 +23,7 @@ class CommonTextFieldWidget extends StatelessWidget {
   final int? maxLength;
   final FocusNode? focusNode;
   final double? textFieldHeight;
+  final double? textFieldiwidth;
   final double? fontSize;
 
   const CommonTextFieldWidget({
@@ -48,6 +49,7 @@ class CommonTextFieldWidget extends StatelessWidget {
     this.focusNode,
     this.isPrefixIConShow = false,
     this.textFieldHeight,
+    this.textFieldiwidth,
     this.fontSize,
   });
 
@@ -55,6 +57,7 @@ class CommonTextFieldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: textFieldHeight ?? 40.0, // Adjust the height as needed
+      width: textFieldiwidth,
       child: TextField(
         focusNode: focusNode,
         readOnly: readOnly ?? false,
@@ -80,7 +83,8 @@ class CommonTextFieldWidget extends StatelessWidget {
               enabledBorder: enabledBorder ??
                   OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5),
-                    borderSide:const BorderSide(color: AppColorConstants.black),
+                    borderSide:
+                        const BorderSide(color: AppColorConstants.black),
                   ),
               contentPadding: EdgeInsets.symmetric(
                 vertical:
@@ -90,14 +94,15 @@ class CommonTextFieldWidget extends StatelessWidget {
               focusedBorder: focusedBorder ??
                   OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5),
-                    borderSide:const BorderSide(color: AppColorConstants.blue100),
+                    borderSide:
+                        const BorderSide(color: AppColorConstants.blue100),
                   ),
               prefixIcon: prefixIcon != null
                   ? isPrefixIConShow
                       ? Container(
-                          padding:const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: Container(
-                            padding:const EdgeInsets.all(0),
+                            padding: const EdgeInsets.all(0),
                             decoration: BoxDecoration(
                               color: AppColorConstants.blue10,
                               borderRadius: BorderRadius.circular(30),
@@ -113,13 +118,13 @@ class CommonTextFieldWidget extends StatelessWidget {
                   : null,
               suffixIcon: suffixIcon,
               labelText: labelText,
-              labelStyle:const TextStyle(
+              labelStyle: const TextStyle(
                 color: AppColorConstants.contentSecondary,
                 fontSize: 14.0,
                 fontWeight: FontWeight.normal,
               ),
               hintText: hintText,
-              hintStyle:const TextStyle(
+              hintStyle: const TextStyle(
                 color: AppColorConstants.contentSecondary,
                 fontSize: 14.0,
                 fontWeight: FontWeight.normal,
