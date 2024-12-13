@@ -522,7 +522,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   touchSettingModel,
                                             )
                                           : GridDateScreen(
-                                            stopAudio: stopAudio,
+                                              stopAudio: stopAudio,
                                               flutterTts: flutterTts,
                                               getCategoryModalList:
                                                   getCategoryModalList,
@@ -752,8 +752,8 @@ class DashboardScreenState extends State<DashboardScreen> {
       } else {
         _mainTextFieldController.text += text;
         if (_widgetList.isNotEmpty &&
-            _widgetList.last is Container &&
-            (_widgetList.last as Container).child is Text) {
+            _widgetList.last["widget"] is Container &&
+            (_widgetList.last["widget"] as Container).child is Text) {
           // var lastWidget = _widgetList.last as Container;
           // var lastText = lastWidget.child as Text;
           _widgetList[_widgetList.length - 1]["widget"] = Container(
@@ -772,8 +772,8 @@ class DashboardScreenState extends State<DashboardScreen> {
         _mainTextFieldController.text = _mainTextFieldController.text
             .substring(0, _mainTextFieldController.text.length - 1);
         if (_widgetList.isNotEmpty &&
-            _widgetList.last is Container &&
-            (_widgetList.last as Container).child is Text) {
+            _widgetList.last["widget"] is Container &&
+            (_widgetList.last["widget"] as Container).child is Text) {
           _widgetList[_widgetList.length - 1]["widget"] = Container(
               margin: const EdgeInsets.symmetric(horizontal: 3),
               child: Text(_mainTextFieldController.text));
