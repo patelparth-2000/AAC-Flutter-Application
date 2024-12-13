@@ -822,16 +822,19 @@ class DashboardScreenState extends State<DashboardScreen> {
         // Process text from the widget
         var widget = item['widget'];
         if (widget is Container) {
+          String textInColumn = "";
           var child = widget.child;
           if (child is Column) {
-            String textInColumn = child.children
+            textInColumn = child.children
                 .whereType<Text>()
                 .map((textWidget) => textWidget.data ?? "")
                 .join(" ");
-            if (textInColumn.isNotEmpty) {
-              await speakToText(
-                  textInColumn.trim(), flutterTts); // Speak the text
-            }
+          } else if (child is Text) {
+            textInColumn = child.data ?? "";
+          }
+          if (textInColumn.isNotEmpty) {
+            await speakToText(
+                textInColumn.trim(), flutterTts); // Speak the text
           }
         }
       }
