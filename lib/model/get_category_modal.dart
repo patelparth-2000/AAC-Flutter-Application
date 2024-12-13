@@ -18,6 +18,7 @@ class GetCategoryModal {
   String? category;
   String? langName;
   String? subcategory;
+  String? color;
 
   GetCategoryModal(
       {this.id,
@@ -36,7 +37,7 @@ class GetCategoryModal {
       this.deleteStatus,
       this.category,
       this.langName,
-      this.subcategory});
+      this.subcategory,this.color});
 
   GetCategoryModal.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -56,6 +57,7 @@ class GetCategoryModal {
     category = json['category'];
     langName = json['lang_name'];
     subcategory = json['subcategory'];
+    color = json['color'];
     /*  category = json['category'] != null
         ? new Category.fromJson(json['category'])
         : null;
@@ -86,6 +88,7 @@ class GetCategoryModal {
     data['category'] = this.category;
     data['lang_name'] = this.langName;
     data['subcategory'] = this.subcategory;
+    data['color'] = this.color;
     /*  if (this.category != null) {
       data['category'] = this.category!.toJson();
     }

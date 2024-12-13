@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:avaz_app/util/app_color_constants.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +28,7 @@ class CommonImageButton extends StatefulWidget {
     this.isImageAsset = true,
     this.isTextShow = true,
     this.iscolorChange = true,
+    this.isSpeak = true,
     this.buttonImage,
     this.borderRadius,
     this.text,
@@ -44,6 +44,8 @@ class CommonImageButton extends StatefulWidget {
     this.fontSize,
     this.textPostion = "below",
     this.voiceFile,
+    this.playAudio,
+    this.stopAudio,
   });
   final double? vertical;
   final double? horizontal;
@@ -67,6 +69,7 @@ class CommonImageButton extends StatefulWidget {
   final bool isImageAsset;
   final bool isTextShow;
   final bool iscolorChange;
+  final bool isSpeak;
   final String? text;
   final String? slug;
   final String? type;
@@ -75,9 +78,12 @@ class CommonImageButton extends StatefulWidget {
   final FlutterTts? flutterTts;
   final MainAxisAlignment mainAxisAlignment;
   final CrossAxisAlignment crossAxisAlignment;
-  final Function(String text, String? image)? onAdd;
+  final Function(String text, String? image, {String? audioFile})? onAdd;
   final Function(String slug)? changeTable;
   final Function()? onTap;
+  final Function()? stopAudio;
+  // final AudioPlayer? player;
+  final Function(String audioPath)? playAudio;
 
   @override
   State<CommonImageButton> createState() => _CommonImageButtonState();
@@ -85,7 +91,6 @@ class CommonImageButton extends StatefulWidget {
 
 class _CommonImageButtonState extends State<CommonImageButton> {
   late Color _currentBackgroundColor;
-  final AudioPlayer player = AudioPlayer();
   String? audioPath;
 
   @override
@@ -118,11 +123,16 @@ class _CommonImageButtonState extends State<CommonImageButton> {
       _currentBackgroundColor = widget.backgroundColor; // Reset on release
     });
 
+    if (widget.stopAudio != null) {
+      await widget.stopAudio!();
+    }
+
     if (widget.voiceFile != null && widget.voiceFile!.isNotEmpty) {
       // Play audio file if voiceFile is provided
       audioPath = widget.voiceFile; // Set the audioPath to the voiceFile
       widget.onTap!();
-      await playAudio(); // Play the audio
+      widget.playAudio!(audioPath!);
+      // await playAudio(); // Play the audio
     } else if (widget.text != null && widget.flutterTts != null) {
       // Speak text only if voiceFile is null
       speckbutton();
@@ -134,7 +144,7 @@ class _CommonImageButtonState extends State<CommonImageButton> {
     }
   }
 
-  void speckbutton() {
+  void speckbutton() async {
     if (widget.type != null && widget.type != "voice" && widget.slug != null) {
       speakToText(widget.text!, widget.flutterTts!);
       Future.delayed(const Duration(milliseconds: 50)).whenComplete(() {
@@ -156,31 +166,31 @@ class _CommonImageButtonState extends State<CommonImageButton> {
     });
   }
 
-  Future<void> playAudio() async {
-    try {
-      // Always stop the current audio
-      await player.stop();
+  // Future<void> playAudio() async {
+  //   try {
+  //     // Always stop the current audio
+  //     await player.stop();
 
-      // Play the new audio if the path is not null
-      if (audioPath != null) {
-        await player.play(DeviceFileSource(audioPath!));
-      }
-    } catch (e) {
-      // ignore: avoid_print
-      print("Error playing audio: $e");
-    }
-  }
+  //     // Play the new audio if the path is not null
+  //     if (audioPath != null) {
+  //       await player.play(DeviceFileSource(audioPath!));
+  //     }
+  //   } catch (e) {
+  //     // ignore: avoid_print
+  //     print("Error playing audio: $e");
+  //   }
+  // }
 
-  Future<void> stopAudio() async {
-    if (player.state == PlayerState.playing) {
-      await player.stop();
-    }
-  }
+  // Future<void> stopAudio() async {
+  //   if (player.state == PlayerState.playing) {
+  //     await player.stop();
+  //   }
+  // }
 
   @override
   void dispose() {
     super.dispose();
-    player.dispose();
+    // player.dispose();
   }
 
   @override

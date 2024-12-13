@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:avaz_app/common/common.dart';
 import 'package:avaz_app/services/data_base_service.dart';
 import 'package:avaz_app/util/dimensions.dart';
@@ -34,6 +35,7 @@ class DashboardScreen extends StatefulWidget {
 
 class DashboardScreenState extends State<DashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final AudioPlayer player = AudioPlayer();
   final GlobalKey<NavigatorState> _dashboradNavigatorKey =
       GlobalKey<NavigatorState>();
   final FlutterTts flutterTts = FlutterTts();
@@ -42,7 +44,7 @@ class DashboardScreenState extends State<DashboardScreen> {
   bool isKeyBoardShow = false;
   final TextEditingController _mainTextFieldController =
       TextEditingController();
-  final List<Widget> _widgetList = [];
+  final List<Map<String, dynamic>> _widgetList = [];
   late ScrollController _scrollController;
   List<GetCategoryModal> getCategoryModalList = [];
   String firstTableName = "category_table";
@@ -127,6 +129,7 @@ class DashboardScreenState extends State<DashboardScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    player.dispose();
     super.dispose();
   }
 
@@ -207,6 +210,23 @@ class DashboardScreenState extends State<DashboardScreen> {
     return _imageExists;
   }
 
+  Future<void> playAudio(String audioPath) async {
+    try {
+      await stopAudio();
+      // Play the new audio if the path is not null
+      await player.play(DeviceFileSource(audioPath));
+    } catch (e) {
+      // ignore: avoid_print
+      print("Error playing audio: $e");
+    }
+  }
+
+  Future<void> stopAudio() async {
+    if (player.state == PlayerState.playing) {
+      await player.stop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -283,6 +303,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                     if (pictureAppearanceSettingModel!
                                         .massageBox!)
                                       CommonImageButton(
+                                        stopAudio: stopAudio,
                                         isImageShow: true,
                                         isTextShow: true,
                                         vertical: 0,
@@ -341,8 +362,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                     itemBuilder:
                                                         (context, index) {
                                                       return Center(
-                                                          child: _widgetList[
-                                                              index]);
+                                                          child:
+                                                              _widgetList[index]
+                                                                  ["widget"]);
                                                     },
                                                   ),
                                                 ),
@@ -352,12 +374,21 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   Row(
                                                     children: [
                                                       CommonImageButton(
+                                                        stopAudio: stopAudio,
                                                         isImageShow: true,
                                                         isTextShow: true,
                                                         vertical: 0,
                                                         horizontal: 0,
                                                         width: 45,
                                                         height: 45,
+                                                        isSpeak: textFieldButtonNameList[
+                                                                            i]
+                                                                        ["name"]
+                                                                    .toString()
+                                                                    .toLowerCase() ==
+                                                                "speak"
+                                                            ? false
+                                                            : true,
                                                         backgroundColor:
                                                             AppColorConstants
                                                                 .white,
@@ -402,6 +433,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                           margin: const EdgeInsets.symmetric(
                                               horizontal: 10),
                                           child: CommonImageButton(
+                                            stopAudio: stopAudio,
                                             isImageShow: true,
                                             isTextShow: true,
                                             vertical: 0,
@@ -430,6 +462,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 10),
                                               child: CommonImageButton(
+                                                stopAudio: stopAudio,
                                                 isImageShow: true,
                                                 isTextShow: true,
                                                 vertical: 0,
@@ -489,9 +522,11 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   touchSettingModel,
                                             )
                                           : GridDateScreen(
+                                            stopAudio: stopAudio,
                                               flutterTts: flutterTts,
                                               getCategoryModalList:
                                                   getCategoryModalList,
+                                              playAudio: playAudio,
                                               onAdd: _addNewWidget,
                                               changeTable: changeTables,
                                               accountSettingModel:
@@ -541,6 +576,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                   "right" ||
               !pictureAppearanceSettingModel!.massageBox!)
             CommonImageButton(
+              stopAudio: stopAudio,
               isImageShow: true,
               isTextShow: true,
               vertical: 0,
@@ -566,6 +602,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                   child: Column(
                     children: [
                       CommonImageButton(
+                        stopAudio: stopAudio,
                         isImageShow: true,
                         isTextShow: true,
                         vertical: 0,
@@ -637,7 +674,8 @@ class DashboardScreenState extends State<DashboardScreen> {
     {"name": "Share", "icon": Icons.share},
   ];
 
-  void onTextfieldButton(int i) {
+  void onTextfieldButton(int i) async {
+    await stopAudio();
     speakToText(textFieldButtonNameList[i]["name"], flutterTts);
     if (textFieldButtonNameList[i]["name"] == "Delete") {
       _isNewWidget = true;
@@ -650,9 +688,15 @@ class DashboardScreenState extends State<DashboardScreen> {
       _mainTextFieldController.clear();
       _widgetList.clear();
     } else if (textFieldButtonNameList[i]["name"] == "Speak") {
-      readAllText();
+      await flutterTts.awaitSpeakCompletion(true);
+      Future.delayed(const Duration(seconds: 1)).whenComplete(
+        () {
+          readAllText();
+        },
+      );
     } else if (textFieldButtonNameList[i]["name"] == "Share") {
       Navigator.push(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             builder: (context) => const MyHomePage(title: "hello boys"),
@@ -662,25 +706,30 @@ class DashboardScreenState extends State<DashboardScreen> {
     setState(() {});
   }
 
-  void _addNewWidget(text, String? image) {
+  void _addNewWidget(text, String? image, {String? audioFile}) async {
+    await stopAudio();
     setState(() {
-      _widgetList.add(Container(
-          margin: const EdgeInsets.symmetric(horizontal: 3),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (image != null &&
-                  image != "null" &&
-                  pictureAppearanceSettingModel!.pictureMassageBox!)
-                Image.file(
-                  File(image),
-                  height: 20,
-                  width: 20,
-                ),
-              Text("$text"),
-            ],
-          )));
+      _widgetList.add({
+        'widget': Container(
+            margin: const EdgeInsets.symmetric(horizontal: 3),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (image != null &&
+                    image != "null" &&
+                    pictureAppearanceSettingModel!.pictureMassageBox!)
+                  Image.file(
+                    File(image),
+                    height: 20,
+                    width: 20,
+                  ),
+                Text("$text"),
+              ],
+            )),
+        'audio': audioFile,
+      });
+      // _widgetList.add();
       _isNewWidget = true;
       _mainTextFieldController.clear();
       scrollLastItem();
@@ -689,13 +738,16 @@ class DashboardScreenState extends State<DashboardScreen> {
 
   bool _isNewWidget = true;
 
-  void addTextFieldValue(String text) {
+  void addTextFieldValue(String text) async {
+    await stopAudio();
     setState(() {
       if (_isNewWidget) {
         _mainTextFieldController.text = text;
-        _widgetList.add(Container(
-            margin: const EdgeInsets.symmetric(horizontal: 3),
-            child: Text(_mainTextFieldController.text)));
+        _widgetList.add({
+          "widget": Container(
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              child: Text(_mainTextFieldController.text))
+        });
         _isNewWidget = false;
       } else {
         _mainTextFieldController.text += text;
@@ -704,7 +756,7 @@ class DashboardScreenState extends State<DashboardScreen> {
             (_widgetList.last as Container).child is Text) {
           // var lastWidget = _widgetList.last as Container;
           // var lastText = lastWidget.child as Text;
-          _widgetList[_widgetList.length - 1] = Container(
+          _widgetList[_widgetList.length - 1]["widget"] = Container(
               margin: const EdgeInsets.symmetric(horizontal: 3),
               child: Text(_mainTextFieldController.text));
         }
@@ -713,7 +765,8 @@ class DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-  void removeLastCharacter() {
+  void removeLastCharacter() async {
+    await stopAudio();
     setState(() {
       if (_mainTextFieldController.text.isNotEmpty) {
         _mainTextFieldController.text = _mainTextFieldController.text
@@ -721,7 +774,7 @@ class DashboardScreenState extends State<DashboardScreen> {
         if (_widgetList.isNotEmpty &&
             _widgetList.last is Container &&
             (_widgetList.last as Container).child is Text) {
-          _widgetList[_widgetList.length - 1] = Container(
+          _widgetList[_widgetList.length - 1]["widget"] = Container(
               margin: const EdgeInsets.symmetric(horizontal: 3),
               child: Text(_mainTextFieldController.text));
         }
@@ -738,25 +791,65 @@ class DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-  void readAllText() {
-    String allText = _widgetList
-        .map((widget) {
-          if (widget is Container) {
-            var child = widget.child;
-            if (child is Column) {
-              return child.children
-                  .whereType<Text>()
-                  .map((textWidget) => (textWidget).data)
-                  .join(" ");
-            } else if (child is Text) {
-              return child.data;
+  // void readAllText() {
+  //   String allText = _widgetList
+  //       .map((widget) {
+  //         if (widget["widget"] is Container) {
+  //           var child = widget["widget"].child;
+  //           if (child is Column) {
+  //             return child.children
+  //                 .whereType<Text>()
+  //                 .map((textWidget) => (textWidget).data)
+  //                 .join(" ");
+  //           } else if (child is Text) {
+  //             return child.data;
+  //           }
+  //         }
+  //         return "";
+  //       })
+  //       .where((text) => text!.isNotEmpty)
+  //       .join(" ");
+  //   speakToText(allText, flutterTts);
+  // }
+
+  void readAllText() async {
+    for (var item in _widgetList) {
+      // Check if audio is present
+      String? audioFile = item['audio'];
+      if (audioFile != null && audioFile.isNotEmpty) {
+        await playAudioFile(audioFile); // Play the audio file
+      } else {
+        // Process text from the widget
+        var widget = item['widget'];
+        if (widget is Container) {
+          var child = widget.child;
+          if (child is Column) {
+            String textInColumn = child.children
+                .whereType<Text>()
+                .map((textWidget) => textWidget.data ?? "")
+                .join(" ");
+            if (textInColumn.isNotEmpty) {
+              await speakToText(
+                  textInColumn.trim(), flutterTts); // Speak the text
             }
           }
-          return "";
-        })
-        .where((text) => text!.isNotEmpty)
-        .join(" ");
-    speakToText(allText, flutterTts);
+        }
+      }
+    }
+  }
+
+  Future<void> playAudioFile(String audioFile) async {
+    final completer = Completer<void>();
+    player.onPlayerComplete.listen((event) {
+      completer.complete(); // Complete the future when playback finishes
+    });
+    await player.play(DeviceFileSource(audioFile));
+    await completer.future; // Wait until audio playback completes
+  }
+
+  Future<void> speakToText(String text, FlutterTts flutterTts) async {
+    await flutterTts.speak(text);
+    await flutterTts.awaitSpeakCompletion(true); // Wait for speech to finish
   }
 
   void scrollLastItem() {

@@ -165,7 +165,7 @@ class DataBaseService {
           sideNavigationBar: true,
           sideNavigationBarPosition: "right",
           sideNavigationBarButton:
-              "go_back,home,quick,core_words,next_page,previous_page,search_words,alert,i_made_a_mistake",
+              "go_back,home,quick,next_page,previous_page,search_words",
           colorCoding: "colour_code_background"));
     }
 

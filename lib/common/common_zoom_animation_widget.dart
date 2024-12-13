@@ -14,8 +14,9 @@ import '../view/settings/setting_model.dart/picture_behaviour_setting_model.dart
 import '../view/settings/setting_model.dart/touch_setting.dart';
 
 class CommonZoomAnimationWidget extends StatefulWidget {
-  final Function(String text, String? image) onAdd;
+  final Function(String text, String? image, {String? audioFile}) onAdd;
   final Function(String slug) changeTable;
+  final Function(String audioPath) playAudio;
   final GetCategoryModal getCategoryModal;
   final FlutterTts flutterTts;
   final AccountSettingModel? accountSettingModel;
@@ -27,6 +28,7 @@ class CommonZoomAnimationWidget extends StatefulWidget {
   final TouchSettingModel? touchSettingModel;
   final double imageSize;
   final double textSize;
+  final Function()? stopAudio;
 
   const CommonZoomAnimationWidget(
       {super.key,
@@ -42,7 +44,8 @@ class CommonZoomAnimationWidget extends StatefulWidget {
       this.generalSettingModel,
       this.touchSettingModel,
       required this.imageSize,
-      required this.textSize});
+      required this.textSize,
+      required this.playAudio, this.stopAudio});
 
   @override
   State<CommonZoomAnimationWidget> createState() =>
@@ -90,6 +93,9 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
         widget.getCategoryModal.name!,
         widget.getCategoryModal.image != null
             ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}"
+            : null,
+        audioFile: widget.getCategoryModal.voiceFile != null
+            ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.voiceFile}"
             : null);
     _controller.forward();
     Future.delayed(const Duration(seconds: 1), () {
@@ -102,11 +108,13 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
     return ScaleTransition(
       scale: _animation,
       child: CommonImageButton(
+        stopAudio: widget.stopAudio,
         iscolorChange: false,
         changeTable: widget.changeTable,
         slug: widget.getCategoryModal.slug,
         type: widget.getCategoryModal.type,
         onAdd: widget.onAdd,
+        playAudio: widget.playAudio,
         flutterTts: widget.flutterTts,
         text: widget.getCategoryModal.name!,
         textPostion: widget.pictureAppearanceSettingModel!.textPosition!,
@@ -118,16 +126,10 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
         imageSize: widget.imageSize,
         isImageShow: !(widget.pictureAppearanceSettingModel!.textSize! ==
             "only_text_(no_picture)"),
-        backgroundColor: widget.getCategoryModal.type == "voice"
-            ? AppColorConstants.keyBoardBackColor
-            : widget.getCategoryModal.type == "sub_categories"
-                ? AppColorConstants.keyBoardBackColorPink
-                : AppColorConstants.keyBoardBackColorGreen,
-        borderColor: widget.getCategoryModal.type == "voice"
-            ? AppColorConstants.keyBoardBackColor
-            : widget.getCategoryModal.type == "sub_categories"
-                ? AppColorConstants.keyBoardBackColorPink
-                : AppColorConstants.keyBoardBackColorGreen,
+        backgroundColor: hexToColor(
+            widget.getCategoryModal.color, widget.getCategoryModal.type),
+        borderColor: hexToColor(
+            widget.getCategoryModal.color, widget.getCategoryModal.type),
         isTextShow: !(widget.pictureAppearanceSettingModel!.textSize! ==
             "no_text_(only_picture)"),
         textStyle: TextStyle(
@@ -147,4 +149,20 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
       ),
     );
   }
+}
+
+Color hexToColor(String? hexString, String? type) {
+  Color color = type == "voice"
+      ? AppColorConstants.keyBoardBackColor
+      : type == "sub_categories"
+          ? AppColorConstants.keyBoardBackColorPink
+          : AppColorConstants.keyBoardBackColorGreen;
+  if (hexString == null) {
+    return color;
+  }
+  final buffer = StringBuffer();
+  if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+  buffer.write(hexString.replaceFirst('#', ''));
+  color = Color(int.parse(buffer.toString(), radix: 16));
+  return color;
 }
