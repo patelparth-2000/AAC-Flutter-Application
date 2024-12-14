@@ -212,7 +212,6 @@ class DataBaseService {
     print("All tables created and default data inserted if necessary!");
   }
 
-  // Create table dynamically based on API data
   Future<void> createTablesFromApiData({
     required String tableName,
     required String uniqueType,
@@ -220,6 +219,9 @@ class DataBaseService {
     required Map<String, dynamic> apiData,
   }) async {
     final db = await database;
+
+    // Ensure the table name is valid by wrapping it in double quotes
+    final safeTableName = '"$tableName"';
 
     // Check if the table exists
     final tableExists = await _checkIfTableExists(db, tableName);
@@ -236,9 +238,9 @@ class DataBaseService {
       if (newColumns.isNotEmpty) {
         for (String column in newColumns) {
           final alterTableQuery =
-              'ALTER TABLE $tableName ADD COLUMN $column TEXT';
+              'ALTER TABLE $safeTableName ADD COLUMN $column TEXT';
           await db.execute(alterTableQuery);
-          print('Added column $column to table $tableName');
+          print('Added column $column to table $safeTableName');
         }
       } else {
         print('No new columns to add.');
@@ -251,15 +253,15 @@ class DataBaseService {
           .join(', ');
 
       final createTableQuery = '''
-      CREATE TABLE IF NOT EXISTS $tableName (
-        row_number INTEGER PRIMARY KEY AUTOINCREMENT,
-        $columns
-      )
-    ''';
+    CREATE TABLE IF NOT EXISTS $safeTableName (
+      row_number INTEGER PRIMARY KEY AUTOINCREMENT,
+      $columns
+    )
+  ''';
 
       // Execute the query
       await db.execute(createTableQuery);
-      print('Table $tableName created with columns: $columns');
+      print('Table $safeTableName created with columns: $columns');
     }
 
     // Insert the data into the table
@@ -272,8 +274,9 @@ class DataBaseService {
 
   // Check if the table exists in the database
   Future<bool> _checkIfTableExists(Database db, String tableName) async {
+    final safeTableName = '"$tableName"';
     final result = await db.rawQuery(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='$tableName'");
+        "SELECT name FROM sqlite_master WHERE type='table' AND name=$safeTableName");
     return result.isNotEmpty;
   }
 
@@ -286,7 +289,8 @@ class DataBaseService {
 
   // Get the columns of an existing table
   Future<List<String>> _getTableColumns(Database db, String tableName) async {
-    final result = await db.rawQuery('PRAGMA table_info($tableName)');
+    final safeTableName = '"$tableName"';
+    final result = await db.rawQuery('PRAGMA table_info($safeTableName)');
     return result.map((row) => row['name'].toString()).toList();
   }
 
@@ -300,16 +304,17 @@ class DataBaseService {
     final db = await database;
 
     // Check if the data already exists based on the unique column
+    final safeTableName = '"$tableName"';
     final existingData = await db.query(
-      tableName,
+      safeTableName,
       where: '$uniqueType = ? AND $uniqueId = ?',
       whereArgs: [data[uniqueType], data[uniqueId]],
     );
 
     if (existingData.isEmpty) {
       // Insert data into table if it doesn't exist
-      await db.insert(tableName, data);
-      await deleteNullData(tableName: tableName);
+      await db.insert(safeTableName, data);
+      await deleteNullData(tableName: safeTableName);
       print('Data inserted into $tableName: $data');
     } else {
       print('Data already exists in $tableName, skipping insert.');
@@ -328,7 +333,7 @@ class DataBaseService {
     final db = await database;
     final tableExists = await _checkIfTableExists(db, tableName);
     if (tableExists) {
-      await db.insert(tableName, data);
+      await db.insert("'$tableName'", data);
     } else {
       final columns = data.keys
           .map((key) =>
@@ -356,7 +361,7 @@ class DataBaseService {
 
   Future<dynamic> getTablesData(String tableName) async {
     final db = await database;
-    final result = await db.rawQuery("SELECT * FROM $tableName");
+    final result = await db.rawQuery("SELECT * FROM '$tableName'");
     return result;
   }
 

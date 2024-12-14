@@ -114,12 +114,13 @@ class GridDateScreen extends StatefulWidget {
       this.audioSettingModel,
       this.generalSettingModel,
       this.touchSettingModel,
-      required this.playAudio, this.stopAudio});
+      required this.playAudio, this.stopAudio, required this.hexToBordorColor});
   final FlutterTts flutterTts;
   final List<GetCategoryModal> getCategoryModalList;
   final Function(String text, String? image, {String? audioFile}) onAdd;
   final Function(String slug) changeTable;
   final Function(String audioPath) playAudio;
+  final Function(String type) hexToBordorColor;
   final AccountSettingModel? accountSettingModel;
   final PictureAppearanceSettingModel? pictureAppearanceSettingModel;
   final PictureBehaviourSettingModel? pictureBehaviourSettingModel;
@@ -254,6 +255,7 @@ class _GridDateScreenState extends State<GridDateScreen> {
         itemBuilder: (context, index) {
           var getCategoryData = widget.getCategoryModalList[index];
           return CommonZoomAnimationWidget(
+            hexToBordorColor: widget.hexToBordorColor,
             stopAudio: widget.stopAudio,
             playAudio: widget.playAudio,
             imageSize: imageSize,

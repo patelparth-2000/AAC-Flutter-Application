@@ -142,6 +142,13 @@ class DashboardScreenState extends State<DashboardScreen> {
   }
 
   void changeTables(String slug) async {
+    for (var datalist in getCategoryModalList) {
+      if (datalist.type == "category") {
+        if (slug == datalist.slug) {
+          hexString = datalist.color;
+        }
+      }
+    }
     bool isExists =
         await dbService.checkIfTableExistsOrNot(slug.replaceAll("-", "_"));
     if (isExists) {
@@ -225,6 +232,24 @@ class DashboardScreenState extends State<DashboardScreen> {
     if (player.state == PlayerState.playing) {
       await player.stop();
     }
+  }
+
+  String? hexString;
+
+  Color hexToBordorColor(String? type) {
+    Color color = type == "voice"
+        ? AppColorConstants.keyBoardBackColor
+        : type == "sub_categories"
+            ? AppColorConstants.keyBoardBackColorPink
+            : AppColorConstants.keyBoardBackColorGreen;
+    if (hexString == null) {
+      return color;
+    }
+    final buffer = StringBuffer();
+    if (hexString!.length == 6 || hexString!.length == 7) buffer.write('ff');
+    buffer.write(hexString!.replaceFirst('#', ''));
+    color = Color(int.parse(buffer.toString(), radix: 16));
+    return color;
   }
 
   @override
@@ -522,6 +547,8 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   touchSettingModel,
                                             )
                                           : GridDateScreen(
+                                              hexToBordorColor:
+                                                  hexToBordorColor,
                                               stopAudio: stopAudio,
                                               flutterTts: flutterTts,
                                               getCategoryModalList:

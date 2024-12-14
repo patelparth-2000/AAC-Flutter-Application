@@ -17,6 +17,7 @@ class CommonZoomAnimationWidget extends StatefulWidget {
   final Function(String text, String? image, {String? audioFile}) onAdd;
   final Function(String slug) changeTable;
   final Function(String audioPath) playAudio;
+  final Function(String type) hexToBordorColor;
   final GetCategoryModal getCategoryModal;
   final FlutterTts flutterTts;
   final AccountSettingModel? accountSettingModel;
@@ -45,7 +46,9 @@ class CommonZoomAnimationWidget extends StatefulWidget {
       this.touchSettingModel,
       required this.imageSize,
       required this.textSize,
-      required this.playAudio, this.stopAudio});
+      required this.playAudio,
+      this.stopAudio,
+      required this.hexToBordorColor});
 
   @override
   State<CommonZoomAnimationWidget> createState() =>
@@ -128,8 +131,10 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
             "only_text_(no_picture)"),
         backgroundColor: hexToColor(
             widget.getCategoryModal.color, widget.getCategoryModal.type),
-        borderColor: hexToColor(
-            widget.getCategoryModal.color, widget.getCategoryModal.type),
+        borderColor: widget.getCategoryModal.type == "voice"
+            ? widget.hexToBordorColor(widget.getCategoryModal.type!)
+            : hexToColor(
+                widget.getCategoryModal.color, widget.getCategoryModal.type),
         isTextShow: !(widget.pictureAppearanceSettingModel!.textSize! ==
             "no_text_(only_picture)"),
         textStyle: TextStyle(
