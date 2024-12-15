@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 
 import '../../common/common.dart';
 import '../../model/get_category_modal.dart';
+import '../../model/language_modal.dart' as language;
 import '../../services/data_base_service.dart';
 import '../../services/permission_manager.dart';
 import 'text_drop_widget.dart';
@@ -45,11 +46,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
   Timer? timer;
   List<DropDownModel> categoryList = [];
   List<DropDownModel> subCategoryList = [];
-  List<DropDownModel> languageList = [
-    DropDownModel(id: "1", name: "Engilsh"),
-    DropDownModel(id: "2", name: "Hindi"),
-    DropDownModel(id: "3", name: "Gujrati"),
-  ];
+  List<DropDownModel> languageList = [];
   List<GetCategoryModal> getCategoryModalList = [];
   List<GetCategoryModal> getSubCategoryModalList = [];
   String firstTableName = "category_table";
@@ -65,6 +62,10 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
   void getDataFromDatabse() async {
     directoryPath = await dbService.directoryPath();
     var categoryData = await dbService.getCategoryTable();
+    final List<language.Data> langList = await dbService.getLangData();
+    for (var lang in langList) {
+      languageList.add(DropDownModel(name: lang.name!, id: "${lang.id}"));
+    }
     adddata(categoryData);
     setState(() {});
   }

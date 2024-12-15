@@ -13,8 +13,9 @@ import 'data_base_service.dart';
 
 class BulkApiData {
   static void getCategory(BuildContext context) async {
-    var response = await CommonApiCall.postApiCall(action: "get_category");
     _settingDataInsert();
+    _laungApi(context);
+    var response = await CommonApiCall.postApiCall(action: "get_category");
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
 
@@ -106,6 +107,30 @@ class BulkApiData {
                 await _downloadFilesIfValid(item, imageUrl);
                 await _insertApiResponseToDatabase(
                     item, categoryName.replaceAll("-", "_"), "type", "id");
+              }
+            }
+          }
+        } else {
+          scaffoldMessengerMessage(
+              message: responseData["message"].toString(), context: context);
+        }
+      }
+    }
+  }
+
+  static Future<void> _laungApi(BuildContext context) async {
+    var response = await CommonApiCall.postApiCall(action: "get_lang");
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData != null) {
+        if (responseData["status"].toString() == "1") {
+          final dataToStore = responseData["data"];
+          if (dataToStore != null && dataToStore is List) {
+            // Iterate through the list and insert each item
+            for (var item in dataToStore) {
+              if (item is Map<String, dynamic>) {
+                await _insertApiResponseToDatabase(
+                    item, "language_data_add", "slug", "id");
               }
             }
           }

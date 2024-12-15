@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:avaz_app/model/language_modal.dart' as language;
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -379,6 +380,24 @@ class DataBaseService {
       }
     } catch (e) {
       debugPrint("Database query failed for table: $tableName. Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<language.Data>> getLangData() async {
+    try {
+      final db = await database;
+      final tableExists = await _checkIfTableExists(db, "language_data_add");
+      if (tableExists) {
+        final result = await db.rawQuery("SELECT * FROM language_data_add");
+        print(result);
+        return result.map((data) => language.Data.fromJson(data)).toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      debugPrint(
+          "Database query failed for table: 'language_data_add'. Error: $e");
       return [];
     }
   }

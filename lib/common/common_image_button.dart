@@ -101,6 +101,7 @@ class _CommonImageButtonState extends State<CommonImageButton> {
 
   void _handleTapDown(TapDownDetails details) {
     setState(() {
+      // ignore: deprecated_member_use
       _currentBackgroundColor = Colors.amber.withOpacity(0.7); // Hover effect
     });
   }
