@@ -129,9 +129,12 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
         imageSize: widget.imageSize,
         isImageShow: !(widget.pictureAppearanceSettingModel!.textSize! ==
             "only_text_(no_picture)"),
-        backgroundColor: hexToColor(
-            widget.getCategoryModal.color, widget.getCategoryModal.type),
-        borderColor: widget.getCategoryModal.type == "voice"
+        backgroundColor: widget.getCategoryModal.type == "sub_categories"
+            ? widget.hexToBordorColor(widget.getCategoryModal.type!)
+            : hexToColor(
+                widget.getCategoryModal.color, widget.getCategoryModal.type),
+        borderColor: widget.getCategoryModal.type == "voice" ||
+                widget.getCategoryModal.type == "sub_categories"
             ? widget.hexToBordorColor(widget.getCategoryModal.type!)
             : hexToColor(
                 widget.getCategoryModal.color, widget.getCategoryModal.type),

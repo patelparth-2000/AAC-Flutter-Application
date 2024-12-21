@@ -8,7 +8,7 @@ import 'package:volume_controller/volume_controller.dart';
 import '../../common/common.dart';
 import '../../common/common_image_button.dart';
 import '../../util/app_color_constants.dart';
-import '../editwords/edit_words_screen.dart';
+import '../editwords/option_screen.dart';
 
 class DrawerScreen extends StatefulWidget {
   const DrawerScreen(
@@ -183,7 +183,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    EditWordsScreen(
+                                                    OptionScreen(
                                                   refreshGirdData:
                                                       widget.refreshGirdData,
                                                 ),

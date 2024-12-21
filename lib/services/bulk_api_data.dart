@@ -32,6 +32,7 @@ class BulkApiData {
                     item, "category_table", "type", "id");
               }
             }
+            getVoice(context, null, "category_table");
             for (var item in dataToStore) {
               getSubCategory(
                   context, item["id"].toString(), item["slug"].toString());
@@ -81,16 +82,18 @@ class BulkApiData {
   }
 
   static void getVoice(
-      BuildContext context, String categoryId, String categoryName,
+      BuildContext context, String? categoryId, String categoryName,
       {String? subCategoryId}) async {
     dynamic response;
     if (subCategoryId != null) {
       response = await CommonApiCall.postApiCall(
           action: "get_voice",
           body: {"category_id": categoryId, "sub_category_id": subCategoryId});
-    } else {
+    } else if (categoryId != null) {
       response = await CommonApiCall.postApiCall(
           action: "get_voice", body: {"category_id": categoryId});
+    } else {
+      response = await CommonApiCall.postApiCall(action: "get_voice");
     }
 
     if (response.statusCode == 200) {

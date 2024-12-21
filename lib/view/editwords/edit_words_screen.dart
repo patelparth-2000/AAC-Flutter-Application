@@ -19,8 +19,17 @@ import '../../services/permission_manager.dart';
 import 'text_drop_widget.dart';
 
 class EditWordsScreen extends StatefulWidget {
-  const EditWordsScreen({super.key, required this.refreshGirdData});
+  const EditWordsScreen({
+    super.key,
+    required this.refreshGirdData,
+    this.isCategory = false,
+    this.isSubCategory = true,
+    this.name = "Sub Category",
+  });
   final Function() refreshGirdData;
+  final bool isCategory;
+  final bool isSubCategory;
+  final String name;
 
   @override
   State<EditWordsScreen> createState() => _EditWordsScreenState();
@@ -349,12 +358,12 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
       showErrorDialog(text: "Language");
       return false;
     }
-    if (selectedCategory == null) {
-      showErrorDialog(text: "Category");
-      return false;
-    }
+    // if (selectedCategory == null) {
+    //   showErrorDialog(text: "Category");
+    //   return false;
+    // }
     if (voiceController.text.isEmpty) {
-      showErrorDialog(text: "Voice");
+      showErrorDialog(text: widget.name);
       return false;
     }
     return true;
@@ -367,7 +376,9 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
     String tableName = "";
     Map<String, dynamic> data = {
       "id": null,
-      "type": "voice",
+      "type": widget.isSubCategory
+          ? "sub_categories"
+          : widget.name.toLowerCase().replaceAll(" ", "_"),
       "lang": selectedLang?.id,
       "category_id": selectedCategory?.id,
       "sub_category_id": selectedSubCategory?.id,
@@ -393,7 +404,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
               tableName: tableName, data: data);
         }
       }
-    } else {
+    } else if (selectedCategory != null) {
       for (var item in getCategoryModalList) {
         if (item.id == selectedCategory?.id) {
           tableName = item.slug!.replaceAll("-", "_");
@@ -401,15 +412,27 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
               tableName: tableName, data: data);
         }
       }
+    } else {
+      tableName = "category_table";
+      await dbService.insertDataIntoTableManual(
+          tableName: tableName, data: data);
     }
     widget.refreshGirdData();
-    // ignore: use_build_context_synchronously
-    addAPiData(context);
+    if (widget.isCategory) {
+      // ignore: use_build_context_synchronously
+      addApiCategory(context);
+    } else if (widget.isSubCategory) {
+      // ignore: use_build_context_synchronously
+      addApiSubCategory(context);
+    } else {
+      // ignore: use_build_context_synchronously
+      addApiVoice(context);
+    }
     // ignore: use_build_context_synchronously
     Navigator.pop(context);
   }
 
-  void addAPiData(BuildContext context) async {
+  void addApiVoice(BuildContext context) async {
     var request = http.MultipartRequest(
         'POST', Uri.parse('https://sitedev.online/api/addVoice'));
     request.fields.addAll({
@@ -423,6 +446,63 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
     if (imagePath != null) {
       request.files.add(
           await http.MultipartFile.fromPath('icon_image', imagePath ?? ""));
+    }
+    if (audioPath != null) {
+      request.files.add(
+          await http.MultipartFile.fromPath('voice_file_doc', audioPath ?? ""));
+    }
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      // ignore: avoid_print
+      print(await response.stream.bytesToString());
+    } else {
+      // ignore: avoid_print
+      print(response.reasonPhrase);
+    }
+  }
+
+  void addApiSubCategory(BuildContext context) async {
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('https://sitedev.online/api/addSubCategory'));
+    request.fields.addAll({
+      'name': voiceController.text,
+      'lang': selectedLang != null ? selectedLang!.id : "",
+      'category_id': selectedCategory != null ? selectedCategory!.id : "",
+      'created_by': '1'
+    });
+    if (imagePath != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+          'sub_category_image', imagePath ?? ""));
+    }
+    if (audioPath != null) {
+      request.files.add(
+          await http.MultipartFile.fromPath('voice_file_doc', audioPath ?? ""));
+    }
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      // ignore: avoid_print
+      print(await response.stream.bytesToString());
+    } else {
+      // ignore: avoid_print
+      print(response.reasonPhrase);
+    }
+  }
+
+  void addApiCategory(BuildContext context) async {
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('https://sitedev.online/api/addCategory'));
+    request.fields.addAll({
+      'name': voiceController.text,
+      'lang': selectedLang != null ? selectedLang!.id : "",
+      'created_by': '1'
+    });
+    if (imagePath != null) {
+      request.files.add(
+          await http.MultipartFile.fromPath('category_image', imagePath ?? ""));
     }
     if (audioPath != null) {
       request.files.add(
@@ -466,9 +546,9 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                     ),
                   ),
                 ),
-                const Text(
-                  "Add a new voice",
-                  style: TextStyle(
+                Text(
+                  "Add a new ${widget.name.toLowerCase()}",
+                  style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                       color: AppColorConstants.buttonColorBlue1),
@@ -571,165 +651,176 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                           const SizedBox(
                             height: 5,
                           ),
-                          TextDropWidget(
-                            hintText: "Select Category",
-                            text: "Category",
-                            items: categoryList,
-                            value: selectedCategory,
-                            dropDownOnChanged: (value) {
-                              setState(() {
-                                selectedCategory = value;
-                                for (var getCategoryModal
-                                    in getCategoryModalList) {
-                                  if (getCategoryModal.id == value?.id) {
-                                    String tableName = getCategoryModal.slug!
-                                        .replaceAll("-", "_");
-                                    addSubCategory(tableName);
+                          if (!widget.isCategory)
+                            TextDropWidget(
+                              hintText: "Select Category",
+                              text: "Category",
+                              items: categoryList,
+                              value: selectedCategory,
+                              dropDownOnChanged: (value) {
+                                setState(() {
+                                  selectedCategory = value;
+                                  for (var getCategoryModal
+                                      in getCategoryModalList) {
+                                    if (getCategoryModal.id == value?.id) {
+                                      String tableName = getCategoryModal.slug!
+                                          .replaceAll("-", "_");
+                                      addSubCategory(tableName);
+                                    }
                                   }
-                                }
-                              });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          dividerWidget(),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          TextDropWidget(
-                            hintText: "Select Sub Category",
-                            text: "Sub Category",
-                            items: subCategoryList,
-                            value: selectedSubCategory,
-                            dropDownOnChanged: (value) {
-                              setState(() {
-                                selectedSubCategory = value;
-                              });
-                            },
-                          ),
+                                });
+                              },
+                            ),
+                          if (!widget.isCategory)
+                            const SizedBox(
+                              height: 5,
+                            ),
+                          if (!widget.isCategory) dividerWidget(),
+                          if (!widget.isCategory && !widget.isSubCategory)
+                            const SizedBox(
+                              height: 5,
+                            ),
+                          if (!widget.isCategory && !widget.isSubCategory)
+                            TextDropWidget(
+                              hintText: "Select Sub Category",
+                              text: "Sub Category",
+                              items: subCategoryList,
+                              value: selectedSubCategory,
+                              dropDownOnChanged: (value) {
+                                setState(() {
+                                  selectedSubCategory = value;
+                                });
+                              },
+                            ),
                           const SizedBox(
                             height: 5,
                           ),
                           TextDropWidget(
                             controller: voiceController,
-                            hintText: "Enter voice",
-                            text: "Voice",
+                            hintText: "Enter ${widget.name.toLowerCase()}",
+                            text: widget.name,
                             isTextField: true,
                           ),
                           const SizedBox(
                             height: 5,
                           ),
-                          dividerWidget(),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                width: 0,
-                              ),
-                              Container(
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: const Text(
-                                  "Select Voice File",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 16),
+                          if (!widget.isCategory && !widget.isSubCategory)
+                            dividerWidget(),
+                          if (!widget.isCategory && !widget.isSubCategory)
+                            const SizedBox(
+                              height: 5,
+                            ),
+                          if (!widget.isCategory && !widget.isSubCategory)
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  width: 0,
                                 ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      CommonImageButton(
-                                        buttonIcon:
-                                            Icons.my_library_music_rounded,
-                                        isImageShow: true,
-                                        onTap: () => selectAudio(),
-                                      ),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      CommonImageButton(
-                                        buttonIcon: isRecording
-                                            ? Icons.stop
-                                            : Icons.mic,
-                                        isImageShow: true,
-                                        onTap: isRecording
-                                            ? stopRecording
-                                            : startRecording,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      if (isRecording)
-                                        Text(
-                                          "${recordingDuration.inMinutes.toString().padLeft(2, '0')}:${(recordingDuration.inSeconds % 60).toString().padLeft(2, '0')}",
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.normal,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                    ],
+                                Container(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: Text(
+                                    "Select ${widget.name} File",
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16),
                                   ),
-                                  const SizedBox(height: 10),
-                                  if (audioPath != null)
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
                                       children: [
-                                        if (audioName != null)
-                                          SizedBox(
-                                            child: Text(
-                                              audioName!,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.normal,
-                                                  fontSize: 16),
+                                        CommonImageButton(
+                                          buttonIcon:
+                                              Icons.my_library_music_rounded,
+                                          isImageShow: true,
+                                          onTap: () => selectAudio(),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        CommonImageButton(
+                                          buttonIcon: isRecording
+                                              ? Icons.stop
+                                              : Icons.mic,
+                                          isImageShow: true,
+                                          onTap: isRecording
+                                              ? stopRecording
+                                              : startRecording,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        if (isRecording)
+                                          Text(
+                                            "${recordingDuration.inMinutes.toString().padLeft(2, '0')}:${(recordingDuration.inSeconds % 60).toString().padLeft(2, '0')}",
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.normal,
+                                              fontSize: 16,
                                             ),
                                           ),
-                                        Row(
-                                          children: [
-                                            CommonImageButton(
-                                              buttonIcon: isPlaying
-                                                  ? Icons.stop
-                                                  : Icons.play_arrow,
-                                              isImageShow: true,
-                                              onTap: isPlaying
-                                                  ? stopAudio
-                                                  : playAudio,
-                                            ),
-                                            const SizedBox(width: 10),
-                                            SizedBox(
-                                              width: 200,
-                                              child: Slider(
-                                                value: currentPosition.inSeconds
-                                                    .toDouble(),
-                                                max: audioDuration.inSeconds
-                                                    .toDouble(),
-                                                activeColor: AppColorConstants
-                                                    .imageTextButtonColor,
-                                                onChanged: (value) async {
-                                                  final newPosition = Duration(
-                                                      seconds: value.toInt());
-                                                  await player
-                                                      .seek(newPosition);
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        ),
                                       ],
                                     ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                    const SizedBox(height: 10),
+                                    if (audioPath != null)
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          if (audioName != null)
+                                            SizedBox(
+                                              child: Text(
+                                                audioName!,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 16),
+                                              ),
+                                            ),
+                                          Row(
+                                            children: [
+                                              CommonImageButton(
+                                                buttonIcon: isPlaying
+                                                    ? Icons.stop
+                                                    : Icons.play_arrow,
+                                                isImageShow: true,
+                                                onTap: isPlaying
+                                                    ? stopAudio
+                                                    : playAudio,
+                                              ),
+                                              const SizedBox(width: 10),
+                                              SizedBox(
+                                                width: 200,
+                                                child: Slider(
+                                                  value: currentPosition
+                                                      .inSeconds
+                                                      .toDouble(),
+                                                  max: audioDuration.inSeconds
+                                                      .toDouble(),
+                                                  activeColor: AppColorConstants
+                                                      .imageTextButtonColor,
+                                                  onChanged: (value) async {
+                                                    final newPosition =
+                                                        Duration(
+                                                            seconds:
+                                                                value.toInt());
+                                                    await player
+                                                        .seek(newPosition);
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                  ],
+                                ),
+                              ],
+                            ),
                         ],
                       ),
                     ),

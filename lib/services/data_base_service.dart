@@ -334,6 +334,25 @@ class DataBaseService {
     final db = await database;
     final tableExists = await _checkIfTableExists(db, tableName);
     if (tableExists) {
+      final safeTableName = '"$tableName"';
+      // Get the current columns of the table
+      final currentColumns = await _getTableColumns(db, tableName);
+
+      // Get the new columns (API keys that are not in the current table)
+      final newColumns =
+          data.keys.where((key) => !currentColumns.contains(key)).toList();
+
+      // If there are new columns, add them to the table
+      if (newColumns.isNotEmpty) {
+        for (String column in newColumns) {
+          final alterTableQuery =
+              'ALTER TABLE $safeTableName ADD COLUMN $column TEXT';
+          await db.execute(alterTableQuery);
+          print('Added column $column to table $safeTableName');
+        }
+      } else {
+        print('No new columns to add.');
+      }
       await db.insert("'$tableName'", data);
     } else {
       final columns = data.keys

@@ -163,6 +163,9 @@ class DashboardScreenState extends State<DashboardScreen> {
     if (tableNames.length > 1) {
       tableNames.removeLast();
       var categoryData = await dbService.getTablesData(tableNames.last);
+      if (tableNames.length == 1) {
+        hexString = null;
+      }
       adddata(categoryData);
     }
     setState(() {});
@@ -184,10 +187,11 @@ class DashboardScreenState extends State<DashboardScreen> {
         }
       }
     }
+    sortCategoryModalList();
   }
 
   void refreshGirdData() async {
-    if (tableNames.length > 1) {
+    if (tableNames.isNotEmpty) {
       var categoryData = await dbService.getTablesData(tableNames.last);
       adddata(categoryData);
     }
@@ -250,6 +254,17 @@ class DashboardScreenState extends State<DashboardScreen> {
     buffer.write(hexString!.replaceFirst('#', ''));
     color = Color(int.parse(buffer.toString(), radix: 16));
     return color;
+  }
+
+  void sortCategoryModalList() {
+    getCategoryModalList.sort((a, b) {
+      const typeOrder = {
+        'category': 0,
+        'sub_categories': 1,
+        'voice': 2,
+      };
+      return (typeOrder[a.type] ?? 3).compareTo(typeOrder[b.type] ?? 3);
+    });
   }
 
   @override
