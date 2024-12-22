@@ -183,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           dotWidth: 10,
                           spacing: 8,
                           dotColor: AppColorConstants.black20,
-                          activeDotColor: AppColorConstants.sentimentDotColor),
+                          activeDotColor: AppColorConstants.blue80),
                       onDotClicked: (index) {
                         _pageViewController.animateToPage(index,
                             duration: const Duration(milliseconds: 500),

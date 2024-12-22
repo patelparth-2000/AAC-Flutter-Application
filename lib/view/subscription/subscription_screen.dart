@@ -10,7 +10,10 @@ import '../settings/setting_model.dart/account_setting_model.dart';
 // ignore: must_be_immutable
 class SubscriptionScreen extends StatefulWidget {
   SubscriptionScreen(
-      {super.key, required this.dataBaseService, this.accountSettingModel, required this.refreshSettingData});
+      {super.key,
+      required this.dataBaseService,
+      this.accountSettingModel,
+      required this.refreshSettingData});
   final DataBaseService dataBaseService;
   AccountSettingModel? accountSettingModel;
   final Function() refreshSettingData;
@@ -200,8 +203,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           text: "T&C",
                           style: const TextStyle(
                             decoration: TextDecoration.underline,
-                            color: Colors
-                                .blue, // Optional: Use a different color for links
+                            color: AppColorConstants
+                                .blue80, // Optional: Use a different color for links
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
@@ -217,8 +220,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           text: "Privacy Policy.",
                           style: const TextStyle(
                             decoration: TextDecoration.underline,
-                            color: Colors
-                                .blue, // Optional: Use a different color for links
+                            color: AppColorConstants
+                                .blue80, // Optional: Use a different color for links
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {

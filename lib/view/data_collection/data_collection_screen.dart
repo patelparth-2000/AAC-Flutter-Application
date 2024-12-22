@@ -40,13 +40,11 @@ class _DataCollectionScreenState extends State<DataCollectionScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: Dimensions.screenWidth
- * .1),
+          margin: EdgeInsets.symmetric(horizontal: Dimensions.screenWidth * .1),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(height: Dimensions.screenHeight
- * 0.06),
+              SizedBox(height: Dimensions.screenHeight * 0.06),
               const Text(
                 "Let's set up AAC for the Communicator",
                 style: TextStyle(
@@ -54,8 +52,7 @@ class _DataCollectionScreenState extends State<DataCollectionScreen> {
                     fontSize: 20,
                     fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: Dimensions.screenHeight
- * 0.07),
+              SizedBox(height: Dimensions.screenHeight * 0.07),
               Row(
                 children: [
                   Expanded(
@@ -72,8 +69,7 @@ class _DataCollectionScreenState extends State<DataCollectionScreen> {
                             setState(() {});
                           },
                         ),
-                        SizedBox(height: Dimensions.screenHeight
- * 0.06),
+                        SizedBox(height: Dimensions.screenHeight * 0.06),
                         CommonTextFieldWidget(
                           controller: _ageController,
                           keyboardType: TextInputType.number,
@@ -84,8 +80,7 @@ class _DataCollectionScreenState extends State<DataCollectionScreen> {
                             setState(() {});
                           },
                         ),
-                        SizedBox(height: Dimensions.screenHeight
- * 0.06),
+                        SizedBox(height: Dimensions.screenHeight * 0.06),
                         const Text("Preferred Gender Pronoun"),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,8 +97,7 @@ class _DataCollectionScreenState extends State<DataCollectionScreen> {
                     ),
                   ),
                   SizedBox(
-                    width: Dimensions.screenWidth
- * .1,
+                    width: Dimensions.screenWidth * .1,
                   ),
                   Expanded(
                     flex: 1,
@@ -132,11 +126,9 @@ class _DataCollectionScreenState extends State<DataCollectionScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: Dimensions.screenHeight
- * 0.06),
+              SizedBox(height: Dimensions.screenHeight * 0.06),
               SizedBox(
-                width: Dimensions.screenWidth
- * .3,
+                width: Dimensions.screenWidth * .3,
                 child: CommonButtonWidget(
                   radius: 5.0,
                   paddingVertical: 4,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import '../../common/common.dart';
 import '../../model/get_category_modal.dart';
@@ -47,6 +49,8 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
   String? directoryPath; // To display the selected audio file name
   bool isRecording = false;
   bool isPlaying = false;
+  Color? pickerColor;
+  Color currentColor = const Color(0xff443a49);
   final recorder = FlutterSoundRecorder();
   final player = AudioPlayer();
   Duration currentPosition = Duration.zero;
@@ -87,8 +91,11 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
           GetCategoryModal getCategoryModal =
               GetCategoryModal.fromJson(modifiableItem);
           getCategoryModalList.add(getCategoryModal);
-          categoryList.add(DropDownModel(
-              name: getCategoryModal.name!, id: getCategoryModal.id!));
+          if (getCategoryModal.id != null &&
+              getCategoryModal.type == "category") {
+            categoryList.add(DropDownModel(
+                name: getCategoryModal.name!, id: getCategoryModal.id!));
+          }
         }
       }
     }
@@ -369,6 +376,20 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
     return true;
   }
 
+  String? colordata() {
+    if (pickerColor == null) {
+      return null;
+    }
+//     String colorHex =
+//     '#${(pickerColor.opacity * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.r * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.g * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.b * 255).round().toRadixString(16).padLeft(2, '0')}';
+// print(colorHex);
+    String colorHex =
+        '#${(pickerColor!.r * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor!.g * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor!.b * 255).round().toRadixString(16).padLeft(2, '0')}';
+    return colorHex;
+  }
+
+  int? rowNumber;
+
   void addData(BuildContext context) async {
     if (!isValid()) {
       return;
@@ -383,6 +404,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
       "category_id": selectedCategory?.id,
       "sub_category_id": selectedSubCategory?.id,
       "name": voiceController.text,
+      "color": colordata(),
       "code": null,
       "image": imageName,
       "slug": voiceController.text.toLowerCase().replaceAll(" ", "-"),
@@ -414,7 +436,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
       }
     } else {
       tableName = "category_table";
-      await dbService.insertDataIntoTableManual(
+      rowNumber = await dbService.insertDataIntoTableManual(
           tableName: tableName, data: data);
     }
     widget.refreshGirdData();
@@ -498,6 +520,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
     request.fields.addAll({
       'name': voiceController.text,
       'lang': selectedLang != null ? selectedLang!.id : "",
+      "color": colordata() ?? "",
       'created_by': '1'
     });
     if (imagePath != null) {
@@ -512,12 +535,59 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
-      // ignore: avoid_print
-      print(await response.stream.bytesToString());
+      final responseBody = await response.stream.bytesToString();
+      final responseData = jsonDecode(responseBody);
+      if (responseData['status'] == 1) {
+        final insertedId = responseData['insertedId'];
+        if (rowNumber != null) {
+          await dbService.updateCategoryTable(
+              id: insertedId.toString(), rowID: rowNumber!);
+        }
+      } else {
+        // ignore: avoid_print
+        print('Error: ${responseData['message']}');
+      }
     } else {
       // ignore: avoid_print
       print(response.reasonPhrase);
     }
+  }
+
+  void _showColorPicker(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select color'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: currentColor,
+              onColorChanged: (Color color) {
+                setState(() {
+                  currentColor = color;
+                  pickerColor = color;
+                });
+              },
+              pickerAreaHeightPercent: 0.8, // Adjust picker height
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Select'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -704,9 +774,21 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                           const SizedBox(
                             height: 5,
                           ),
-                          if (!widget.isCategory && !widget.isSubCategory)
-                            dividerWidget(),
-                          if (!widget.isCategory && !widget.isSubCategory)
+                          dividerWidget(),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          if (widget.isCategory)
+                            TextDropWidget(
+                              hintText: "Select color",
+                              text: "Color",
+                              isColorPicker: true,
+                              colorPicker: pickerColor,
+                              onTap: () {
+                                _showColorPicker(context);
+                              },
+                            ),
+                          if (widget.isCategory)
                             const SizedBox(
                               height: 5,
                             ),

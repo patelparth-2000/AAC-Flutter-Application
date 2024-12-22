@@ -16,15 +16,6 @@ class AppColorConstants {
   static const Color baseBG = Color(0xFFF8F9FD);
   static const Color bgGrey = Color(0xFFF6F6F6);
 
-  //-------------------- Green HUe colours ----------------------//
-  static const Color blue100 = Color(0xFF087CE7);
-  static const Color blue80 = Color(0xCC087CE7);
-  static const Color blue60 = Color(0x99087CE7);
-  static const Color blue40 = Color(0x66087CE7);
-  static const Color blue20 = Color(0x33087CE7);
-  static const Color blue10 = Color(0x1A087CE7);
-  static const Color blue5 = Color(0x0D087CE7);
-
   //-------------------- Black HUe colours ---------------------//
   static const Color black100 = Color(0xFF000000);
   static const Color black80 = Color(0xCC000000);
@@ -55,14 +46,11 @@ class AppColorConstants {
   static const Color transparent = Colors.transparent;
 
   //------------------- Icons colours ---------------------//
+
   static const Color icons = Color(0xFFB3B3B3);
-  static const Color buttonColorBlue1 = Color(0xFF0b4a9c); // Dark blue
-  static const Color buttonColorBlue2 = Color(0xFF3a67b1); // Medium dark blue
-  static const Color buttonColorBlue3 = Color(0xFF6395c6); // Medium light blue
-  static const Color buttonColorBlue4 = Color(0xFF8db3dc); // Light blue
+
   static const Color inActiveButton = Color(0xFF808080);
   static const Color textTitle = Color(0xFF616775);
-  static const Color textTitle2 = Color(0xFF0b4a9c);
   static const Color background = Color(0xFFFAFAFA);
 
   // static const Color keyBackground = Color(0xFFFFE1C4);
@@ -75,6 +63,50 @@ class AppColorConstants {
   // static const Color imageTextButtonColor = Color(0xFF794B2A);
   // static const Color keyBoardBackColor = Color(0xFFF9D5B1);
   // static const Color keyBoardTextColor = Color(0xFF321D0C);
+
+  // ------------------Purpal ----------------------------------------
+
+  // static const Color blue100 = Color(0xFF8B1B52); // 100% opacity
+  // static const Color blue80 = Color(0xCC8B1B52); // 80% opacity
+  // static const Color blue40 = Color(0x668B1B52); // 40% opacity
+  // static const Color blue60 = Color(0x998B1B52); // 60% opacity of #8B1B52
+  // static const Color blue20 = Color(0x338B1B52); // 20% opacity
+  // static const Color blue10 = Color(0x1A8B1B52); // 10% opacity
+  // static const Color blue5 = Color(0x0D8B1B52); // 5% opacity
+
+  // static const Color buttonColorBlue1 =
+  //     Color(0xFF520E34); // Dark red (similar to #8B1B52)
+  // static const Color buttonColorBlue2 = Color(0xFF702248); // Medium dark red
+  // static const Color buttonColorBlue3 = Color(0xFF974061); // Medium light red
+  // static const Color buttonColorBlue4 = Color(0xFFC77B94); // Light red
+  // static const Color textTitle2 = Color(0xFF8B1B52);
+
+  // static const Color keyBackground = Color(0xFFB37592);
+  // static const Color keyTextColor = Color(0xFF61113A);
+  // static const Color keyRowBackground = Color(0xFFA23A6F);
+  // static const Color screenBackground = Color(0xFFF0D3DE);
+  // static const Color topRowBackground = Color(0xFF73163D);
+  // static const Color specialKeyColor = Color(0xFF9E3768);
+  // static const Color imageTextColor = Color(0xFFE4AFC5);
+  // static const Color imageTextButtonColor = Color.fromARGB(255, 100, 12, 49);
+  // static const Color keyBoardBackColor = Color(0xFFAF6187);
+  // static const Color keyBoardTextColor = Color(0xFF56102F);
+
+  //---------------------Blue ---------------------------------------//
+
+  static const Color buttonColorBlue1 = Color(0xFF0b4a9c); // Dark blue
+  static const Color buttonColorBlue2 = Color(0xFF3a67b1); // Medium dark blue
+  static const Color buttonColorBlue3 = Color(0xFF6395c6); // Medium light blue
+  static const Color buttonColorBlue4 = Color(0xFF8db3dc); // Light blue
+  static const Color textTitle2 = Color(0xFF0b4a9c);
+
+  static const Color blue100 = Color(0xFF087CE7);
+  static const Color blue80 = Color(0xCC087CE7);
+  static const Color blue60 = Color(0x99087CE7);
+  static const Color blue40 = Color(0x66087CE7);
+  static const Color blue20 = Color(0x33087CE7);
+  static const Color blue10 = Color(0x1A087CE7);
+  static const Color blue5 = Color(0x0D087CE7);
 
   static const Color keyBackground = Color(0xFFB3C7F9);
   static const Color keyTextColor = Color(0xFF1E3A8A);

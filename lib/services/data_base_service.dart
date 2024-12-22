@@ -327,12 +327,13 @@ class DataBaseService {
     await db.execute("DELETE FROM $tableName WHERE id IS NULL");
   }
 
-  Future<void> insertDataIntoTableManual({
+  Future<int> insertDataIntoTableManual({
     required String tableName,
     required Map<String, dynamic> data,
   }) async {
     final db = await database;
     final tableExists = await _checkIfTableExists(db, tableName);
+    int? id;
     if (tableExists) {
       final safeTableName = '"$tableName"';
       // Get the current columns of the table
@@ -353,7 +354,7 @@ class DataBaseService {
       } else {
         print('No new columns to add.');
       }
-      await db.insert("'$tableName'", data);
+      id = await db.insert("'$tableName'", data);
     } else {
       final columns = data.keys
           .map((key) =>
@@ -369,14 +370,35 @@ class DataBaseService {
       // Execute the query
       await db.execute(createTableQuery);
       print('Table $tableName created with columns: $columns');
-      await db.insert(tableName, data);
+      id = await db.insert(tableName, data);
     }
+    return id;
   }
 
   Future<dynamic> getCategoryTable() async {
     final db = await database;
     final result = await db.rawQuery("SELECT * FROM category_table");
     return result;
+  }
+
+  Future<int> updateCategoryTable(
+      {required int rowID, required String id}) async {
+    final db = await database;
+
+    // Define the values to update
+    final updatedValues = {
+      'id': id, // Update only the 'id' column
+    };
+
+    // Perform the update operation
+    final result = await db.update(
+      'category_table', // Table name
+      updatedValues, // Updated values
+      where: 'row_number = ?', // Condition for updating
+      whereArgs: [rowID], // Arguments for the condition
+    );
+
+    return result; // Returns the number of rows affected
   }
 
   Future<dynamic> getTablesData(String tableName) async {

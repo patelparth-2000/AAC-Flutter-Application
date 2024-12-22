@@ -15,15 +15,21 @@ class TextDropWidget extends StatelessWidget {
       this.isTextField = false,
       this.value,
       this.items = const [],
-      this.dropDownOnChanged});
+      this.dropDownOnChanged,
+      this.isColorPicker = false,
+      this.colorPicker,
+      this.onTap});
   final TextEditingController? controller;
   final ValueChanged<String?>? onChanged;
   final ValueChanged<DropDownModel?>? dropDownOnChanged;
   final String hintText;
   final String text;
   final bool isTextField;
+  final bool isColorPicker;
+  final Color? colorPicker;
   final DropDownModel? value;
   final List<DropDownModel> items;
+  final Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +53,32 @@ class TextDropWidget extends StatelessWidget {
             controller: controller!,
             hintText: hintText,
             onChanged: onChanged,
+          )
+        else if (isColorPicker)
+          InkWell(
+            onTap: onTap,
+            child: Container(
+              width: 250,
+              height: 35,
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                  color: AppColorConstants.white,
+                  border: Border.all(color: AppColorConstants.black),
+                  borderRadius: BorderRadius.circular(5)),
+              child: colorPicker != null
+                  ? Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      color: colorPicker,
+                    )
+                  : Text(
+                      hintText,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).hintColor,
+                      ),
+                    ),
+            ),
           )
         else
           Container(
