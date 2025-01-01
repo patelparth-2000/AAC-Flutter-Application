@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../common/common.dart';
 import '../../services/data_base_service.dart';
-import '../settings/setting_model.dart/account_setting_model.dart';
+import '../settings/setting_model/account_setting_model.dart';
 
 // ignore: must_be_immutable
 class SubscriptionScreen extends StatefulWidget {

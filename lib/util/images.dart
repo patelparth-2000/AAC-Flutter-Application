@@ -3,4 +3,5 @@ class Images {
   static const String info1Image = 'assets/images/info1-image.png';
   static const String info2Image = 'assets/images/info2-image.png';
   static const String info3Image = 'assets/images/info3-image.png';
+  static const String magnifyImage = 'assets/images/magnify.png';
 }

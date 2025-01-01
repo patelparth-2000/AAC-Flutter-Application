@@ -1,4 +1,4 @@
-import 'package:avaz_app/view/settings/setting_model.dart/touch_setting.dart';
+import 'package:avaz_app/view/settings/setting_model/touch_setting.dart';
 import 'package:avaz_app/view/settings/setting_widget.dart';
 import 'package:flutter/material.dart';
 

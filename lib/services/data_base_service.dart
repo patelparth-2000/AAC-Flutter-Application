@@ -6,13 +6,13 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../view/settings/setting_model.dart/account_setting_model.dart';
-import '../view/settings/setting_model.dart/audio_setting.dart';
-import '../view/settings/setting_model.dart/general_setting.dart';
-import '../view/settings/setting_model.dart/keyboard_setting.dart';
-import '../view/settings/setting_model.dart/picture_appearance_setting_model.dart';
-import '../view/settings/setting_model.dart/picture_behaviour_setting_model.dart';
-import '../view/settings/setting_model.dart/touch_setting.dart';
+import '../view/settings/setting_model/account_setting_model.dart';
+import '../view/settings/setting_model/audio_setting.dart';
+import '../view/settings/setting_model/general_setting.dart';
+import '../view/settings/setting_model/keyboard_setting.dart';
+import '../view/settings/setting_model/picture_appearance_setting_model.dart';
+import '../view/settings/setting_model/picture_behaviour_setting_model.dart';
+import '../view/settings/setting_model/touch_setting.dart';
 
 class DataBaseService {
   static Database? _db;

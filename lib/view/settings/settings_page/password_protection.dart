@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../services/data_base_service.dart';
 import '../../../util/app_color_constants.dart';
-import '../setting_model.dart/general_setting.dart';
+import '../setting_model/general_setting.dart';
 import '../setting_widget.dart';
 
 // ignore: must_be_immutable

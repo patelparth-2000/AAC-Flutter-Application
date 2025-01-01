@@ -1,3 +1,4 @@
+import 'package:avaz_app/model/search_table_model.dart';
 import 'package:avaz_app/view/search/search_screen.dart';
 import 'package:avaz_app/view/settings/settings_screen.dart';
 import 'package:avaz_app/view/tools/tools_screen.dart';
@@ -5,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:volume_controller/volume_controller.dart';
 
-import '../../common/common.dart';
 import '../../common/common_image_button.dart';
 import '../../util/app_color_constants.dart';
 import '../editwords/option_screen.dart';
@@ -18,13 +18,19 @@ class DrawerScreen extends StatefulWidget {
       required this.isKeyBoardShow,
       required this.dashboradNavigatorKey,
       required this.refreshSettingData,
-      required this.refreshGirdData});
+      required this.refreshGirdData,
+      this.isSearchOpen = false,
+      required this.searchChangeTable,
+      required this.searchList});
   final GlobalKey<ScaffoldState> scaffoldKey;
   final GlobalKey<NavigatorState> dashboradNavigatorKey;
   final FlutterTts flutterTts;
   final bool isKeyBoardShow;
+  final bool isSearchOpen;
   final Function() refreshSettingData;
   final Function() refreshGirdData;
+  final Function(SearchTableModel searchTable) searchChangeTable;
+  final List<SearchTableModel> searchList;
   @override
   State<DrawerScreen> createState() => _DrawerScreenState();
 }
@@ -104,14 +110,14 @@ class _DrawerScreenState extends State<DrawerScreen> {
             backgroundColor: AppColorConstants.keyBoardBackColor,
             borderColor: AppColorConstants.keyBoardBackColor,
             isImageShow: true,
+            flutterTts: widget.flutterTts,
+            text: isNavigated ? "Back" : "Close",
             vertical: 0,
             height: 50,
             onTap: () {
               if (isNavigated) {
-                speakToText("Back", widget.flutterTts);
                 _drawerNavigatorKey.currentState?.pop();
               } else {
-                speakToText("Close", widget.flutterTts);
                 widget.scaffoldKey.currentState?.closeEndDrawer();
               }
             },
@@ -131,6 +137,16 @@ class _DrawerScreenState extends State<DrawerScreen> {
             child: Navigator(
               key: _drawerNavigatorKey,
               onGenerateRoute: (settings) {
+                if (widget.isSearchOpen) {
+                  return MaterialPageRoute(
+                      builder: (_) => SearchScreen(
+                            dashboradNavigatorKey: widget.dashboradNavigatorKey,
+                            scaffoldKey: widget.scaffoldKey,
+                            drawerNavigatorKey: _drawerNavigatorKey,
+                            searchChangeTable: widget.searchChangeTable,
+                            searchList: widget.searchList,
+                          ));
+                }
                 return MaterialPageRoute(
                   builder: (_) => Row(
                     children: [
@@ -192,8 +208,16 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                             "Search") {
                                           _drawerNavigatorKey.currentState
                                               ?.push(MaterialPageRoute(
-                                            builder: (context) =>
-                                                const SearchScreen(),
+                                            builder: (context) => SearchScreen(
+                                              dashboradNavigatorKey:
+                                                  widget.dashboradNavigatorKey,
+                                              scaffoldKey: widget.scaffoldKey,
+                                              drawerNavigatorKey:
+                                                  _drawerNavigatorKey,
+                                              searchChangeTable:
+                                                  widget.searchChangeTable,
+                                              searchList: widget.searchList,
+                                            ),
                                           ))
                                               .whenComplete(
                                             () {

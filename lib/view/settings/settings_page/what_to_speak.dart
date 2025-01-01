@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../services/data_base_service.dart';
 import '../../../util/app_color_constants.dart';
 import '../radio_button.dart';
-import '../setting_model.dart/audio_setting.dart';
+import '../setting_model/audio_setting.dart';
 
 // ignore: must_be_immutable
 class WhatToSpeak extends StatefulWidget {

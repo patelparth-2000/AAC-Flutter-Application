@@ -6,7 +6,7 @@ import 'package:avaz_app/services/data_base_service.dart';
 import 'package:avaz_app/util/app_color_constants.dart';
 import 'package:avaz_app/util/app_constants.dart';
 import 'package:avaz_app/view/data_collection/data_collection_screen.dart';
-import 'package:avaz_app/view/settings/setting_model.dart/account_setting_model.dart';
+import 'package:avaz_app/view/settings/setting_model/account_setting_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../api/common_api_call.dart';

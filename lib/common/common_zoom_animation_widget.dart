@@ -5,13 +5,13 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 import '../model/get_category_modal.dart';
 import '../services/data_base_service.dart';
-import '../view/settings/setting_model.dart/account_setting_model.dart';
-import '../view/settings/setting_model.dart/audio_setting.dart';
-import '../view/settings/setting_model.dart/general_setting.dart';
-import '../view/settings/setting_model.dart/keyboard_setting.dart';
-import '../view/settings/setting_model.dart/picture_appearance_setting_model.dart';
-import '../view/settings/setting_model.dart/picture_behaviour_setting_model.dart';
-import '../view/settings/setting_model.dart/touch_setting.dart';
+import '../view/settings/setting_model/account_setting_model.dart';
+import '../view/settings/setting_model/audio_setting.dart';
+import '../view/settings/setting_model/general_setting.dart';
+import '../view/settings/setting_model/keyboard_setting.dart';
+import '../view/settings/setting_model/picture_appearance_setting_model.dart';
+import '../view/settings/setting_model/picture_behaviour_setting_model.dart';
+import '../view/settings/setting_model/touch_setting.dart';
 
 class CommonZoomAnimationWidget extends StatefulWidget {
   final Function(String text, String? image, {String? audioFile}) onAdd;
@@ -113,6 +113,7 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
       child: CommonImageButton(
         stopAudio: widget.stopAudio,
         iscolorChange: false,
+        isSpeak: true,
         changeTable: widget.changeTable,
         slug: widget.getCategoryModal.slug,
         type: widget.getCategoryModal.type,

@@ -1,4 +1,4 @@
-import 'package:avaz_app/view/settings/setting_model.dart/keyboard_setting.dart';
+import 'package:avaz_app/view/settings/setting_model/keyboard_setting.dart';
 import 'package:flutter/material.dart';
 
 import '../../../services/data_base_service.dart';

@@ -28,7 +28,7 @@ class CommonImageButton extends StatefulWidget {
     this.isImageAsset = true,
     this.isTextShow = true,
     this.iscolorChange = true,
-    this.isSpeak = true,
+    this.isSpeak = false,
     this.buttonImage,
     this.borderRadius,
     this.text,
@@ -134,13 +134,20 @@ class _CommonImageButtonState extends State<CommonImageButton> {
       widget.onTap!();
       widget.playAudio!(audioPath!);
       // await playAudio(); // Play the audio
-    } else if (widget.text != null && widget.flutterTts != null) {
+    } else if (widget.text != null &&
+        widget.flutterTts != null &&
+        widget.isSpeak) {
       // Speak text only if voiceFile is null
       speckbutton();
     } else {
       // Default onTap behavior
       if (widget.onTap != null) {
         widget.onTap!();
+      }
+      if (widget.changeTable != null) {
+        Future.delayed(const Duration(milliseconds: 50)).whenComplete(() {
+          widget.changeTable!(widget.slug!);
+        });
       }
     }
   }

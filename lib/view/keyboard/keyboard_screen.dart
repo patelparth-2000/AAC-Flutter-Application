@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-import '../../common/common.dart';
 import '../../common/common_image_button.dart';
 import '../../util/app_color_constants.dart';
-import '../settings/setting_model.dart/account_setting_model.dart';
-import '../settings/setting_model.dart/audio_setting.dart';
-import '../settings/setting_model.dart/general_setting.dart';
-import '../settings/setting_model.dart/keyboard_setting.dart';
-import '../settings/setting_model.dart/picture_appearance_setting_model.dart';
-import '../settings/setting_model.dart/picture_behaviour_setting_model.dart';
-import '../settings/setting_model.dart/touch_setting.dart';
+import '../settings/setting_model/account_setting_model.dart';
+import '../settings/setting_model/audio_setting.dart';
+import '../settings/setting_model/general_setting.dart';
+import '../settings/setting_model/keyboard_setting.dart';
+import '../settings/setting_model/picture_appearance_setting_model.dart';
+import '../settings/setting_model/picture_behaviour_setting_model.dart';
+import '../settings/setting_model/touch_setting.dart';
 
 class KeyboardScreen extends StatefulWidget {
   const KeyboardScreen(
@@ -568,8 +567,8 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                             if (data["action"] != null) {
                               if (data["action"] == "caps") {
                                 isCapsOn = !isCapsOn;
-                                speakToText(isCapsOn ? "Capital" : "Small",
-                                    widget.flutterTts);
+                                // speakToText(isCapsOn ? "Capital" : "Small",
+                                //     widget.flutterTts);
                               }
                             } else {
                               widget.deleteLast();
@@ -591,15 +590,18 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                             );
                           },
                     flutterTts: widget.flutterTts,
-                    text: isNumberOn
-                        ? data["number"]
-                        : widget.keyboardSettingModel!.layout == "english_(qwe)"
-                            ? isCapsOn
-                                ? data["Cname"]
-                                : data["name"]
-                            : isCapsOn
-                                ? data["Cnormal"]
-                                : data["normal"],
+                    text: data["action"] != null
+                        ? null
+                        : isNumberOn
+                            ? data["number"]
+                            : widget.keyboardSettingModel!.layout ==
+                                    "english_(qwe)"
+                                ? isCapsOn
+                                    ? data["Cname"]
+                                    : data["name"]
+                                : isCapsOn
+                                    ? data["Cnormal"]
+                                    : data["normal"],
                     isImageShow: data["action"] != null ? true : false,
                     isTextShow: data["action"] != null ? false : true,
                     iscolorChange: false,
@@ -657,9 +659,9 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                         fontWeight: FontWeight.bold,
                         fontSize: 10),
                     buttonName: "Favorites",
-                    onTap: () {
-                      speakToText("Favorites", widget.flutterTts);
-                    },
+                    text: "Favorites",
+                    flutterTts: widget.flutterTts,
+                    onTap: () {},
                   ),
                   const SizedBox(
                     width: 5,
@@ -677,9 +679,9 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                         fontWeight: FontWeight.bold,
                         fontSize: 10),
                     buttonName: "Save",
-                    onTap: () {
-                      speakToText("Save", widget.flutterTts);
-                    },
+                    text: "Save",
+                    flutterTts: widget.flutterTts,
+                    onTap: () {},
                   ),
                   const SizedBox(
                     width: 5,
@@ -696,9 +698,10 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                           fontWeight: FontWeight.bold,
                           fontSize: 10),
                       buttonName: "",
+                      text: "Space",
+                      flutterTts: widget.flutterTts,
                       onTap: () {
                         widget.onSpace();
-                        speakToText("Space", widget.flutterTts);
                       },
                     ),
                   ),
@@ -716,9 +719,9 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
                     buttonName: isNumberOn ? "ABC" : "?123",
+                    text: isNumberOn ? "Alphabet" : "Number",
+                    flutterTts: widget.flutterTts,
                     onTap: () {
-                      speakToText(isNumberOn ? "Alphabet" : "Number",
-                          widget.flutterTts);
                       isNumberOn = !isNumberOn;
                       setState(() {});
                     },
@@ -734,9 +737,9 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                     isHorizontal: true,
                     buttonIcon: Icons.notifications_active_rounded,
                     buttonIconColor: AppColorConstants.keyBoardTextColor,
-                    onTap: () {
-                      speakToText("Alarm", widget.flutterTts);
-                    },
+                    text: "Alarm",
+                    flutterTts: widget.flutterTts,
+                    onTap: () {},
                   ),
                   const SizedBox(
                     width: 5,

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../services/data_base_service.dart';
 import '../../../util/app_color_constants.dart';
 import '../radio_button.dart';
-import '../setting_model.dart/picture_appearance_setting_model.dart';
+import '../setting_model/picture_appearance_setting_model.dart';
 
 // ignore: must_be_immutable
 class SideNavigationBar extends StatefulWidget {

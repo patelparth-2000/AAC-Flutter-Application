@@ -13,18 +13,19 @@ import 'package:get/get.dart';
 
 import '../../common/common_image_button.dart';
 import '../../model/get_category_modal.dart';
+import '../../model/search_table_model.dart';
 import '../../services/bulk_api_data.dart';
 import '../../util/app_color_constants.dart';
 import '../drawer/drawer_screen.dart';
 import '../grid_data/grid_date_screen.dart';
 import '../keyboard/keyboard_screen.dart';
-import '../settings/setting_model.dart/account_setting_model.dart';
-import '../settings/setting_model.dart/audio_setting.dart';
-import '../settings/setting_model.dart/general_setting.dart';
-import '../settings/setting_model.dart/keyboard_setting.dart';
-import '../settings/setting_model.dart/picture_appearance_setting_model.dart';
-import '../settings/setting_model.dart/picture_behaviour_setting_model.dart';
-import '../settings/setting_model.dart/touch_setting.dart';
+import '../settings/setting_model/account_setting_model.dart';
+import '../settings/setting_model/audio_setting.dart';
+import '../settings/setting_model/general_setting.dart';
+import '../settings/setting_model/keyboard_setting.dart';
+import '../settings/setting_model/picture_appearance_setting_model.dart';
+import '../settings/setting_model/picture_behaviour_setting_model.dart';
+import '../settings/setting_model/touch_setting.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -42,11 +43,13 @@ class DashboardScreenState extends State<DashboardScreen> {
   final dbService = DataBaseService.instance;
   bool _canExit = false;
   bool isKeyBoardShow = false;
+  bool isSearchOpen = false;
   final TextEditingController _mainTextFieldController =
       TextEditingController();
   final List<Map<String, dynamic>> _widgetList = [];
   late ScrollController _scrollController;
   List<GetCategoryModal> getCategoryModalList = [];
+  List<SearchTableModel> searchTable = [];
   String firstTableName = "category_table";
   List<String> tableNames = [];
   AccountSettingModel? accountSettingModel = AccountSettingModel();
@@ -138,6 +141,99 @@ class DashboardScreenState extends State<DashboardScreen> {
     tableNames.add(firstTableName);
     var categoryData = await dbService.getCategoryTable();
     adddata(categoryData);
+    searchVoice(categoryData);
+    setState(() {});
+  }
+
+  void searchVoice(var categoryData) async {
+    if (categoryData != null && categoryData is List) {
+      for (var item in categoryData) {
+        if (item is Map<String, dynamic>) {
+          Map<String, dynamic> modifiableItem = Map<String, dynamic>.from(item);
+          GetCategoryModal getCategoryModal =
+              GetCategoryModal.fromJson(modifiableItem);
+          if (getCategoryModal.type == "category") {
+            bool isExists = await dbService.checkIfTableExistsOrNot(
+                getCategoryModal.slug!.replaceAll("-", "_"));
+            if (isExists) {
+              await searchCategoryTable(
+                  getCategoryModal.name!, getCategoryModal.slug!);
+            }
+          } else if (getCategoryModal.type == "sub_categories") {
+            bool isExists = await dbService.checkIfTableExistsOrNot(
+                getCategoryModal.slug!.replaceAll("-", "_"));
+            if (isExists) {
+              await searchCategoryTable(
+                  getCategoryModal.name!, getCategoryModal.slug!);
+            }
+          } else {
+            searchTable.add(SearchTableModel(voice: getCategoryModal.name!));
+          }
+        }
+      }
+    }
+  }
+
+  Future<void> searchCategoryTable(String name, String slug,
+      {String? subName, String? subSlug}) async {
+    // ignore: prefer_typing_uninitialized_variables
+    var categoryTableData;
+    if (subName != null && subSlug != null) {
+      categoryTableData =
+          await dbService.getTablesData(subSlug.replaceAll("-", "_").trim());
+    } else {
+      categoryTableData =
+          await dbService.getTablesData(slug.replaceAll("-", "_").trim());
+    }
+    if (categoryTableData != null && categoryTableData is List) {
+      for (var item in categoryTableData) {
+        if (item is Map<String, dynamic>) {
+          Map<String, dynamic> modifiableItem = Map<String, dynamic>.from(item);
+          GetCategoryModal getSubCategoryModal =
+              GetCategoryModal.fromJson(modifiableItem);
+          if (getSubCategoryModal.type == "sub_categories") {
+            bool isExists = await dbService.checkIfTableExistsOrNot(
+                getSubCategoryModal.slug!.replaceAll("-", "_"));
+            if (isExists) {
+              await searchCategoryTable(name, slug,
+                  subName: getSubCategoryModal.name,
+                  subSlug: getSubCategoryModal.slug);
+            }
+          } else {
+            if (subName != null && subSlug != null) {
+              searchTable.add(SearchTableModel(
+                  voice: getSubCategoryModal.name!,
+                  category: name,
+                  categorySlug: slug,
+                  subCategory: subName,
+                  subCategorySlug: subSlug));
+            } else {
+              searchTable.add(SearchTableModel(
+                  voice: getSubCategoryModal.name!,
+                  category: name,
+                  categorySlug: slug));
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void changeTablesBaseSearch(SearchTableModel searchTable) async {
+    tableNames.clear();
+    tableNames.add(firstTableName);
+    if (searchTable.categorySlug != null) {
+      tableNames.add(searchTable.categorySlug!);
+    }
+    if (searchTable.subCategorySlug != null) {
+      tableNames.add(searchTable.subCategorySlug!);
+    }
+
+    bool isExists = await dbService.checkIfTableExistsOrNot(tableNames.last);
+    if (isExists) {
+      var categoryData = await dbService.getTablesData(tableNames.last);
+      adddata(categoryData);
+    }
     setState(() {});
   }
 
@@ -292,12 +388,15 @@ class DashboardScreenState extends State<DashboardScreen> {
           shape: const BeveledRectangleBorder(),
           width: Dimensions.screenWidth * 0.6,
           child: DrawerScreen(
+            isSearchOpen: isSearchOpen,
             isKeyBoardShow: !isKeyBoardShow,
             flutterTts: flutterTts,
             scaffoldKey: _scaffoldKey,
             refreshSettingData: refreshSettingData,
             refreshGirdData: refreshGirdData,
             dashboradNavigatorKey: _dashboradNavigatorKey,
+            searchChangeTable: changeTablesBaseSearch,
+            searchList: searchTable,
           ),
         ),
         backgroundColor: AppColorConstants.topRowBackground,
@@ -348,18 +447,13 @@ class DashboardScreenState extends State<DashboardScreen> {
                                         isTextShow: true,
                                         vertical: 0,
                                         height: 50,
+                                        flutterTts: flutterTts,
+                                        text: !isKeyBoardShow
+                                            ? "Pictures"
+                                            : "Keyboard",
                                         onTap: () {
                                           isKeyBoardShow = !isKeyBoardShow;
                                           setState(() {});
-                                          Future.delayed(const Duration(
-                                                  milliseconds: 10))
-                                              .whenComplete(() {
-                                            speakToText(
-                                                !isKeyBoardShow
-                                                    ? "Pictures"
-                                                    : "Keyboard",
-                                                flutterTts);
-                                          });
                                         },
                                         horizontal: 2,
                                         width: 75,
@@ -479,12 +573,15 @@ class DashboardScreenState extends State<DashboardScreen> {
                                             vertical: 0,
                                             height: 50,
                                             width: 75,
+                                            text: "Menu",
+                                            flutterTts: flutterTts,
                                             buttonIcon: Icons.menu,
                                             buttonName: "Menu",
                                             onTap: () {
+                                              isSearchOpen = false;
+                                              setState(() {});
                                               _scaffoldKey.currentState
                                                   ?.openEndDrawer();
-                                              speakToText("Menu", flutterTts);
                                             },
                                           ),
                                         ),
@@ -511,12 +608,14 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                 imageSize: 10,
                                                 buttonIcon: Icons.menu,
                                                 buttonName: "Menu",
+                                                flutterTts: flutterTts,
+                                                text: "Menu",
                                                 fontSize: 10,
                                                 onTap: () {
+                                                  isSearchOpen = false;
+                                                  setState(() {});
                                                   _scaffoldKey.currentState
                                                       ?.openEndDrawer();
-                                                  speakToText(
-                                                      "Menu", flutterTts);
                                                 },
                                               ),
                                             ),
@@ -624,11 +723,14 @@ class DashboardScreenState extends State<DashboardScreen> {
               vertical: 0,
               height: 50,
               width: 75,
+              flutterTts: flutterTts,
+              text: "Menu",
               buttonIcon: Icons.menu,
               buttonName: "Menu",
               onTap: () {
+                isSearchOpen = false;
+                setState(() {});
                 _scaffoldKey.currentState?.openEndDrawer();
-                speakToText("Menu", flutterTts);
               },
             ),
           if (pictureAppearanceSettingModel!.sideNavigationBarPosition! ==
@@ -657,9 +759,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                             fontSize: 90 / sidebarShow.length),
                         buttonIcon: sideButtonNameList[i]["icon"],
                         buttonName: sideButtonNameList[i]["name"],
+                        flutterTts: flutterTts,
+                        text: sideButtonNameList[i]["name"],
                         onTap: () async {
-                          await speakToText(
-                              sideButtonNameList[i]["name"], flutterTts);
                           Future.delayed(const Duration(milliseconds: 20))
                               .whenComplete(() {
                             if (sideButtonNameList[i]["name"] == "Go back") {
@@ -667,6 +769,11 @@ class DashboardScreenState extends State<DashboardScreen> {
                             } else if (sideButtonNameList[i]["name"] ==
                                 "Home") {
                               getDataFromDatabse();
+                            } else if (sideButtonNameList[i]["name"] ==
+                                "Search") {
+                              isSearchOpen = true;
+                              setState(() {});
+                              _scaffoldKey.currentState?.openEndDrawer();
                             }
                           });
                         },
@@ -718,7 +825,7 @@ class DashboardScreenState extends State<DashboardScreen> {
 
   void onTextfieldButton(int i) async {
     await stopAudio();
-    speakToText(textFieldButtonNameList[i]["name"], flutterTts);
+    // speakToText(textFieldButtonNameList[i]["name"], flutterTts);
     if (textFieldButtonNameList[i]["name"] == "Delete") {
       _isNewWidget = true;
       _mainTextFieldController.clear();

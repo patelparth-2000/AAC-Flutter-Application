@@ -92,13 +92,13 @@ import 'package:flutter_tts/flutter_tts.dart';
 import '../../common/common_zoom_animation_widget.dart';
 import '../../model/get_category_modal.dart';
 import '../../util/dimensions.dart';
-import '../settings/setting_model.dart/account_setting_model.dart';
-import '../settings/setting_model.dart/audio_setting.dart';
-import '../settings/setting_model.dart/general_setting.dart';
-import '../settings/setting_model.dart/keyboard_setting.dart';
-import '../settings/setting_model.dart/picture_appearance_setting_model.dart';
-import '../settings/setting_model.dart/picture_behaviour_setting_model.dart';
-import '../settings/setting_model.dart/touch_setting.dart';
+import '../settings/setting_model/account_setting_model.dart';
+import '../settings/setting_model/audio_setting.dart';
+import '../settings/setting_model/general_setting.dart';
+import '../settings/setting_model/keyboard_setting.dart';
+import '../settings/setting_model/picture_appearance_setting_model.dart';
+import '../settings/setting_model/picture_behaviour_setting_model.dart';
+import '../settings/setting_model/touch_setting.dart';
 
 class GridDateScreen extends StatefulWidget {
   const GridDateScreen(

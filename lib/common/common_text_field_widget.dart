@@ -25,6 +25,8 @@ class CommonTextFieldWidget extends StatelessWidget {
   final double? textFieldHeight;
   final double? textFieldiwidth;
   final double? fontSize;
+  final double radius;
+  final Color? profixColor;
 
   const CommonTextFieldWidget({
     super.key,
@@ -51,6 +53,8 @@ class CommonTextFieldWidget extends StatelessWidget {
     this.textFieldHeight,
     this.textFieldiwidth,
     this.fontSize,
+    this.radius = 5,
+    this.profixColor,
   });
 
   @override
@@ -82,7 +86,7 @@ class CommonTextFieldWidget extends StatelessWidget {
               focusColor: AppColorConstants.baseBG,
               enabledBorder: enabledBorder ??
                   OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(radius),
                     borderSide:
                         const BorderSide(color: AppColorConstants.black),
                   ),
@@ -93,7 +97,7 @@ class CommonTextFieldWidget extends StatelessWidget {
               ),
               focusedBorder: focusedBorder ??
                   OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(radius),
                     borderSide:
                         const BorderSide(color: AppColorConstants.blue100),
                   ),
@@ -104,7 +108,7 @@ class CommonTextFieldWidget extends StatelessWidget {
                           child: Container(
                             padding: const EdgeInsets.all(0),
                             decoration: BoxDecoration(
-                              color: AppColorConstants.blue10,
+                              color: profixColor,
                               borderRadius: BorderRadius.circular(30),
                             ),
                             child: Image.asset(
