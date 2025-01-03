@@ -53,6 +53,7 @@ class DashboardScreenState extends State<DashboardScreen> {
   List<GetCategoryModal> getCategoryModalList = [];
   List<SearchTableModel> searchTable = [];
   String firstTableName = "category_table";
+  String keyboardSuggtionText = "";
   List<String> tableNames = [];
   AccountSettingModel? accountSettingModel = AccountSettingModel();
   PictureAppearanceSettingModel? pictureAppearanceSettingModel =
@@ -406,6 +407,7 @@ class DashboardScreenState extends State<DashboardScreen> {
           shape: const BeveledRectangleBorder(),
           width: Dimensions.screenWidth * 0.6,
           child: DrawerScreen(
+            touchSettingModel: touchSettingModel,
             isSearchOpen: isSearchOpen,
             isKeyBoardShow: !isKeyBoardShow,
             flutterTts: flutterTts,
@@ -460,6 +462,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                     if (pictureAppearanceSettingModel!
                                         .massageBox!)
                                       CommonImageButton(
+                                        touchSettingModel: touchSettingModel,
                                         stopAudio: stopAudio,
                                         isImageShow: true,
                                         isTextShow: true,
@@ -536,6 +539,8 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   Row(
                                                     children: [
                                                       CommonImageButton(
+                                                        touchSettingModel:
+                                                            touchSettingModel,
                                                         stopAudio: stopAudio,
                                                         isImageShow: true,
                                                         isTextShow: true,
@@ -595,6 +600,8 @@ class DashboardScreenState extends State<DashboardScreen> {
                                           margin: const EdgeInsets.symmetric(
                                               horizontal: 10),
                                           child: CommonImageButton(
+                                            touchSettingModel:
+                                                touchSettingModel,
                                             stopAudio: stopAudio,
                                             isImageShow: true,
                                             isTextShow: true,
@@ -627,6 +634,8 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 10),
                                               child: CommonImageButton(
+                                                touchSettingModel:
+                                                    touchSettingModel,
                                                 stopAudio: stopAudio,
                                                 isImageShow: true,
                                                 isTextShow: true,
@@ -694,6 +703,8 @@ class DashboardScreenState extends State<DashboardScreen> {
                                               isSaveEnable:
                                                   _widgetList.isNotEmpty,
                                               saveAllText: saveAllText,
+                                              suggetionSearch:
+                                                  keyboardSuggtionText,
                                             )
                                           : GridDateScreen(
                                               hexToBordorColor:
@@ -752,6 +763,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                   "right" ||
               !pictureAppearanceSettingModel!.massageBox!)
             CommonImageButton(
+              touchSettingModel: touchSettingModel,
               stopAudio: stopAudio,
               isImageShow: true,
               isTextShow: true,
@@ -781,6 +793,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                   child: Column(
                     children: [
                       CommonImageButton(
+                        touchSettingModel: touchSettingModel,
                         stopAudio: stopAudio,
                         isImageShow: true,
                         isTextShow: true,
@@ -934,7 +947,7 @@ class DashboardScreenState extends State<DashboardScreen> {
 
   bool _isNewWidget = true;
 
-  void addTextFieldValue(String text) async {
+  void addTextFieldValue(String text, {bool isKeyboard = false}) async {
     await stopAudio();
     setState(() {
       if (_isNewWidget) {
@@ -946,7 +959,12 @@ class DashboardScreenState extends State<DashboardScreen> {
         });
         _isNewWidget = false;
       } else {
-        _mainTextFieldController.text += text;
+        if (isKeyboard) {
+          _mainTextFieldController.text = text;
+        } else {
+          _mainTextFieldController.text += text;
+        }
+
         if (_widgetList.isNotEmpty &&
             _widgetList.last["widget"] is Container &&
             (_widgetList.last["widget"] as Container).child is Text) {
@@ -957,6 +975,7 @@ class DashboardScreenState extends State<DashboardScreen> {
               child: Text(_mainTextFieldController.text));
         }
       }
+      keyboardSuggtionText = _mainTextFieldController.text;
       scrollLastItem();
     });
   }
@@ -982,6 +1001,7 @@ class DashboardScreenState extends State<DashboardScreen> {
   void onSpace() {
     setState(() {
       _isNewWidget = true;
+      keyboardSuggtionText = "";
       _mainTextFieldController.clear();
       scrollLastItem();
     });

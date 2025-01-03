@@ -125,6 +125,13 @@ class DataBaseService {
       CREATE TABLE IF NOT EXISTS touch_setting (
         row_number INTEGER PRIMARY KEY AUTOINCREMENT,
         enable_touch BOOLEAN,
+        hold_duration BOOLEAN,
+        duration_limit TEXT,
+        ignore_repeat BOOLEAN,
+        ignore_limit TEXT,
+        border_color TEXT,
+        border_thickness TEXT,
+        border_radius TEXT,
         update_date DATE
       )
     '''
@@ -207,7 +214,15 @@ class DataBaseService {
     }
 
     if (await isTableEmpty('touch_setting')) {
-      touchSettingInsert(TouchSettingModel(enableTouch: false));
+      touchSettingInsert(TouchSettingModel(
+          enableTouch: false,
+          holdDuration: false,
+          durationLimit: "1.0",
+          ignoreRepeat: false,
+          ignoreLimit: "1.0",
+          borderColor: "pink",
+          borderThickness: "5",
+          borderRadius: "5"));
     }
 
     print("All tables created and default data inserted if necessary!");
@@ -316,7 +331,7 @@ class DataBaseService {
       // Insert data into table if it doesn't exist
       await db.insert(safeTableName, data);
       await deleteNullData(tableName: safeTableName);
-      print('Data inserted into $tableName: $data');
+      // print('Data inserted into $tableName: $data');
     } else {
       print('Data already exists in $tableName, skipping insert.');
     }

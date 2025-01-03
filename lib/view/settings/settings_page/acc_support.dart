@@ -12,7 +12,6 @@ class AccSupport extends StatefulWidget {
 }
 
 class _AccSupportState extends State<AccSupport> {
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,14 +29,14 @@ class _AccSupportState extends State<AccSupport> {
               height: 20,
             ),
             TitleWidget(
-              text: "ACC SUPPORT",
+              text: "Touch Voz SUPPORT",
             ),
             SettingWidget(
-              text: "Join ACC User Group on WhatsApp",
+              text: "Join Touch Voz User Group on WhatsApp",
               isArrow: false,
             ),
             SettingWidget(
-              text: "View ACC FAQs",
+              text: "View Touch Voz FAQs",
               isArrow: false,
             ),
             SettingWidget(

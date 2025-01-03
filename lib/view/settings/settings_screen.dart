@@ -421,7 +421,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           text: "ACCESSIBILITY",
                         ),
                         SettingWidget(
-                            text: "Touch Accommodation",
+                            text: "Touch Sensitivity",
                             onTap: () {
                               nextpage(TouchAccommodation(
                                 dataBaseService: dataBaseService,
@@ -433,7 +433,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           text: "SUPPORT",
                         ),
                         SettingWidget(
-                            text: "Avaz Support",
+                            text: "Touch Voz Support",
                             onTap: () {
                               nextpage(const AccSupport());
                             }),

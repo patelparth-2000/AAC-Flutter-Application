@@ -1,7 +1,10 @@
+import 'package:avaz_app/util/dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../common/common_image_button.dart';
+import '../../model/get_category_modal.dart';
+import '../../model/search_table_model.dart';
 import '../../services/data_base_service.dart';
 import '../../util/app_color_constants.dart';
 import '../settings/setting_model/account_setting_model.dart';
@@ -35,10 +38,11 @@ class KeyboardScreen extends StatefulWidget {
       this.isSave = false,
       this.isFavorite = false,
       this.isSaveEnable = false,
-      this.saveAllText});
+      this.saveAllText,
+      required this.suggetionSearch});
   final FlutterTts flutterTts;
   final Function(String, String?) onAdd;
-  final Function(String) onTextValue;
+  final Function(String, {bool isKeyboard}) onTextValue;
   final Function() onSpace;
   final Function() deleteLast;
   final Function()? saveAllText;
@@ -55,6 +59,7 @@ class KeyboardScreen extends StatefulWidget {
   final AudioSettingModel? audioSettingModel;
   final GeneralSettingModel? generalSettingModel;
   final TouchSettingModel? touchSettingModel;
+  final String suggetionSearch;
 
   @override
   State<KeyboardScreen> createState() => _KeyboardScreenState();
@@ -333,10 +338,82 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
 
   bool isCapsOn = false;
   bool isNumberOn = false;
+  List<GetCategoryModal> getCategoryModalList = [];
+  List<SearchTableModel> searchTable = [];
+  List<SearchTableModel> filteredSearchList = [];
+  List<String> keyboardSuggestionList = [];
 
   @override
   void initState() {
     super.initState();
+    getDataFromDatabse();
+  }
+
+  void getDataFromDatabse() async {
+    var categoryData = await widget.dataBaseService.getFavoritesTable();
+    searchVoice(categoryData);
+    setState(() {});
+  }
+
+  void searchVoice(var categoryData) async {
+    if (categoryData != null && categoryData is List) {
+      for (var item in categoryData) {
+        if (item is Map<String, dynamic>) {
+          Map<String, dynamic> modifiableItem = Map<String, dynamic>.from(item);
+          GetCategoryModal getCategoryModal =
+              GetCategoryModal.fromJson(modifiableItem);
+          if (getCategoryModal.type == "category") {
+            bool isExists = await widget.dataBaseService
+                .checkIfTableExistsOrNot(
+                    getCategoryModal.slug!.replaceAll("-", "_"));
+            if (isExists) {
+              getVoiceData(getCategoryModal);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void getVoiceData(GetCategoryModal getvoicedata) async {
+    var categoryData =
+        await widget.dataBaseService.getTablesData(getvoicedata.slug!);
+    addVoiceData(categoryData);
+  }
+
+  void addVoiceData(categoryData) async {
+    if (categoryData != null && categoryData is List) {
+      for (var item in categoryData) {
+        if (item is Map<String, dynamic>) {
+          if (item["delete_status"] != "1") {
+            Map<String, dynamic> modifiableItem =
+                Map<String, dynamic>.from(item);
+            GetCategoryModal getCategoryModal =
+                GetCategoryModal.fromJson(modifiableItem);
+            searchTable.add(SearchTableModel(voice: getCategoryModal.name!));
+          }
+        }
+      }
+    }
+    filteredSearchList = searchTable;
+  }
+
+  void _filterSearchList() {
+    keyboardSuggestionList.clear();
+    final query = widget.suggetionSearch.toLowerCase();
+    setState(() {
+      final filteredItems = searchTable
+          .where((item) => item.voice.toLowerCase().contains(query))
+          .toList();
+      filteredSearchList = filteredItems
+          .toSet()
+          .take(5)
+          .toList(); // Remove duplicates and limit to 5 items
+      for (var element in filteredSearchList) {
+        keyboardSuggestionList.add(element.voice);
+      }
+    });
+    setState(() {});
   }
 
   @override
@@ -350,6 +427,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
         keyboardSettingModel: widget.keyboardSettingModel,
         saveAllText: widget.saveAllText!,
         keyboradShow: widget.keyboradShow,
+        touchSettingModel: widget.touchSettingModel,
       );
     }
     if (widget.isFavorite) {
@@ -359,62 +437,86 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
         onTextValue: widget.onTextValue,
         onSpace: widget.onSpace,
         keyboardSettingModel: widget.keyboardSettingModel,
+        touchSettingModel: widget.touchSettingModel,
       );
     }
     return Column(
       children: [
-        Row(
-          children: [
-            CommonImageButton(
-              flutterTts: widget.flutterTts,
-              text: "back",
-              isImageShow: true,
-              vertical: 10,
-              buttonIcon: Icons.arrow_back,
-            ),
-            const SizedBox(
-              width: 15,
-            ),
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount:
-                        suggestionList.length, // Number of columns in the grid
-                    childAspectRatio: 8 / 3, // Aspect ratio of the grid items
-                    mainAxisSpacing: 11,
-                    crossAxisSpacing: 11),
-                shrinkWrap: true,
-                itemCount: suggestionList.length,
-                itemBuilder: (context, index) {
-                  var data = suggestionList[index];
-                  return CommonImageButton(
-                    flutterTts: widget.flutterTts,
-                    text: data,
-                    onTap: () {
-                      widget.onAdd(data, null);
-                    },
-                    backgroundColor: AppColorConstants.keyBoardBackColor,
-                    borderColor: AppColorConstants.keyBoardBackColor,
-                    textStyle: const TextStyle(
-                        color: AppColorConstants.keyBoardTextColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18),
-                    buttonIconColor: AppColorConstants.keyBoardTextColor,
-                    buttonName: data,
-                  );
-                },
+        SizedBox(
+          height: 50,
+          width: double.infinity,
+          child: Row(
+            children: [
+              CommonImageButton(
+                touchSettingModel: widget.touchSettingModel,
+                flutterTts: widget.flutterTts,
+                text: "back",
+                isImageShow: true,
+                vertical: 10,
+                buttonIcon: Icons.arrow_back,
               ),
-            ),
-            const SizedBox(
-              width: 15,
-            ),
-            const CommonImageButton(
-              text: "forward",
-              isImageShow: true,
-              vertical: 10,
-              buttonIcon: Icons.arrow_forward,
-            )
-          ],
+              const SizedBox(
+                width: 15,
+              ),
+              Expanded(
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: widget.suggetionSearch.isNotEmpty &&
+                          keyboardSuggestionList.isNotEmpty
+                      ? keyboardSuggestionList.length
+                      : suggestionList.length,
+                  itemBuilder: (context, index) {
+                    var data = widget.suggetionSearch.isNotEmpty &&
+                            keyboardSuggestionList.isNotEmpty
+                        ? keyboardSuggestionList[index]
+                        : suggestionList[index];
+                    return CommonImageButton(
+                      touchSettingModel: widget.touchSettingModel,
+                      width: Dimensions.screenWidth * 0.165,
+                      flutterTts: widget.flutterTts,
+                      text: data,
+                      onTap: () {
+                        if (widget.suggetionSearch.isNotEmpty) {
+                          widget.onTextValue(data, isKeyboard: true);
+                          Future.delayed(const Duration(milliseconds: 20))
+                              .whenComplete(() {
+                            widget.onSpace();
+                          });
+                        } else {
+                          widget.onAdd(data, null);
+                        }
+                      },
+                      backgroundColor: AppColorConstants.keyBoardBackColor,
+                      borderColor: AppColorConstants.keyBoardBackColor,
+                      textStyle: const TextStyle(
+                          color: AppColorConstants.keyBoardTextColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                      buttonIconColor: AppColorConstants.keyBoardTextColor,
+                      buttonName: data,
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return const SizedBox(
+                      width: 10,
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+              CommonImageButton(
+                touchSettingModel: widget.touchSettingModel,
+                text: "forward",
+                isImageShow: true,
+                vertical: 10,
+                buttonIcon: Icons.arrow_forward,
+              )
+            ],
+          ),
         ),
         const SizedBox(
           height: 7,
@@ -439,6 +541,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 itemBuilder: (context, index) {
                   var data = keyBoardList1[index];
                   return CommonImageButton(
+                    touchSettingModel: widget.touchSettingModel,
                     flutterTts: widget.flutterTts,
                     text: isNumberOn
                         ? data["number"]
@@ -466,6 +569,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                                           ? data["Cnormal"]
                                           : data["normal"],
                             );
+                            _filterSearchList();
                           },
                     isImageShow: data["action"] != null ? true : false,
                     isTextShow: data["action"] != null ? false : true,
@@ -519,6 +623,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 itemBuilder: (context, index) {
                   var data = keyBoardList2[index];
                   return CommonImageButton(
+                    touchSettingModel: widget.touchSettingModel,
                     text: isNumberOn
                         ? data["number"]
                         : widget.keyboardSettingModel!.layout == "english_(qwe)"
@@ -546,6 +651,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                                           ? data["Cnormal"]
                                           : data["normal"],
                             );
+                            _filterSearchList();
                           },
                     isImageShow: data["action"] != null ? true : false,
                     isTextShow: data["action"] != null ? false : true,
@@ -599,6 +705,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 itemBuilder: (context, index) {
                   var data = keyBoardList3[index];
                   return CommonImageButton(
+                    touchSettingModel: widget.touchSettingModel,
                     onTap: data["action"] != null
                         ? () {
                             if (data["action"] != null) {
@@ -625,6 +732,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                                           ? data["Cnormal"]
                                           : data["normal"],
                             );
+                            _filterSearchList();
                           },
                     flutterTts: widget.flutterTts,
                     text: data["action"] != null
@@ -687,6 +795,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                     CommonImageButton(
                       width: 110,
                       height: 60,
+                      touchSettingModel: widget.touchSettingModel,
                       backgroundColor: AppColorConstants.keyBoardBackColor,
                       borderColor: AppColorConstants.keyBoardBackColor,
                       isHorizontal: true,
@@ -717,6 +826,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                     CommonImageButton(
                       width: 80,
                       height: 60,
+                      touchSettingModel: widget.touchSettingModel,
                       backgroundColor: AppColorConstants.keyBoardBackColor,
                       borderColor: AppColorConstants.keyBoardBackColor,
                       isHorizontal: true,
@@ -748,6 +858,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                     child: CommonImageButton(
                       height: 60,
                       vertical: 10,
+                      touchSettingModel: widget.touchSettingModel,
                       backgroundColor: AppColorConstants.keyBoardBackColor,
                       borderColor: AppColorConstants.keyBoardBackColor,
                       isHorizontal: true,
@@ -769,6 +880,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                   CommonImageButton(
                     height: 60,
                     width: 80,
+                    touchSettingModel: widget.touchSettingModel,
                     backgroundColor: AppColorConstants.keyBoardBackColor,
                     borderColor: AppColorConstants.keyBoardBackColor,
                     isHorizontal: true,
@@ -790,6 +902,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                   CommonImageButton(
                     height: 60,
                     width: 80,
+                    touchSettingModel: widget.touchSettingModel,
                     backgroundColor: AppColorConstants.keyBoardBackColor,
                     borderColor: AppColorConstants.keyBoardBackColor,
                     isHorizontal: true,

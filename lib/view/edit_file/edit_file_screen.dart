@@ -9,6 +9,7 @@ import '../../util/app_color_constants.dart';
 import '../../util/dimensions.dart';
 import '../keyboard/keyboard_screen.dart';
 import '../settings/setting_model/keyboard_setting.dart';
+import '../settings/setting_model/touch_setting.dart';
 
 class EditFileScreen extends StatefulWidget {
   const EditFileScreen(
@@ -16,11 +17,13 @@ class EditFileScreen extends StatefulWidget {
       required this.dataBaseService,
       required this.flutterTts,
       this.keyboardSettingModel,
-      required this.rename});
+      required this.rename,
+      this.touchSettingModel});
   final DataBaseService dataBaseService;
   final FlutterTts flutterTts;
   final KeyboardSettingModel? keyboardSettingModel;
   final Function(String) rename;
+  final TouchSettingModel? touchSettingModel;
 
   @override
   EditFileScreenState createState() => EditFileScreenState();
@@ -33,6 +36,7 @@ class EditFileScreenState extends State<EditFileScreen> {
       TextEditingController();
   final List<Map<String, dynamic>> _widgetList = [];
   late ScrollController _scrollController;
+  String keyboardSuggtionText = "";
 
   @override
   void initState() {
@@ -65,6 +69,7 @@ class EditFileScreenState extends State<EditFileScreen> {
                         width: 10,
                       ),
                       CommonImageButton(
+                        touchSettingModel: widget.touchSettingModel,
                         isImageShow: true,
                         isTextShow: true,
                         vertical: 0,
@@ -119,6 +124,8 @@ class EditFileScreenState extends State<EditFileScreen> {
                                   Row(
                                     children: [
                                       CommonImageButton(
+                                        touchSettingModel:
+                                            widget.touchSettingModel,
                                         isImageShow: true,
                                         isTextShow: true,
                                         vertical: 0,
@@ -161,6 +168,7 @@ class EditFileScreenState extends State<EditFileScreen> {
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: 10),
                         child: CommonImageButton(
+                          touchSettingModel: widget.touchSettingModel,
                           isImageShow: true,
                           isTextShow: true,
                           vertical: 0,
@@ -194,6 +202,7 @@ class EditFileScreenState extends State<EditFileScreen> {
                         onTextValue: addTextFieldValue,
                         keyboardSettingModel: widget.keyboardSettingModel,
                         isMain: false,
+                        suggetionSearch: keyboardSuggtionText,
                       )),
                     ],
                   ),
@@ -208,7 +217,7 @@ class EditFileScreenState extends State<EditFileScreen> {
 
   bool _isNewWidget = true;
 
-  void addTextFieldValue(String text) async {
+  void addTextFieldValue(String text, {bool isKeyboard = false}) async {
     setState(() {
       if (_isNewWidget) {
         _mainTextFieldController.text = text;
@@ -230,6 +239,7 @@ class EditFileScreenState extends State<EditFileScreen> {
               child: Text(_mainTextFieldController.text));
         }
       }
+      keyboardSuggtionText = _mainTextFieldController.text;
       scrollLastItem();
     });
   }
@@ -317,6 +327,7 @@ class EditFileScreenState extends State<EditFileScreen> {
   void onSpace() {
     setState(() {
       _isNewWidget = true;
+      keyboardSuggtionText = "";
       _mainTextFieldController.clear();
       scrollLastItem();
     });

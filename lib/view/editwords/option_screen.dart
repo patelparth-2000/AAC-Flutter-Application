@@ -6,11 +6,14 @@ import '../../common/common.dart';
 import '../../common/common_image_button.dart';
 import '../../util/app_color_constants.dart';
 import '../drawer/drawer_screen.dart';
+import '../settings/setting_model/touch_setting.dart';
 
 // ignore: must_be_immutable
 class OptionScreen extends StatelessWidget {
-  OptionScreen({super.key, required this.refreshGirdData});
+  OptionScreen(
+      {super.key, required this.refreshGirdData, this.touchSettingModel});
   final Function() refreshGirdData;
+  final TouchSettingModel? touchSettingModel;
   List<DrawerModel> drawerData = [
     DrawerModel(
       name: "Category",
@@ -60,7 +63,7 @@ class OptionScreen extends StatelessWidget {
                       // addData(context);
                     },
                     child: const Text(
-                      "Save",
+                      "",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -81,6 +84,7 @@ class OptionScreen extends StatelessWidget {
                     Column(
                       children: [
                         CommonImageButton(
+                          touchSettingModel: touchSettingModel,
                           width: Dimensions.screenWidth * 0.2,
                           isHorizontal: true,
                           text: drawerData[i].name,
@@ -120,6 +124,7 @@ class OptionScreen extends StatelessWidget {
                                     isCategory: isCategory,
                                     isSubCategory: isSubCategory,
                                     name: name,
+                                    touchSettingModel: touchSettingModel,
                                   ),
                                 ));
                           },

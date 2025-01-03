@@ -9,6 +9,7 @@ import 'package:volume_controller/volume_controller.dart';
 import '../../common/common_image_button.dart';
 import '../../util/app_color_constants.dart';
 import '../editwords/option_screen.dart';
+import '../settings/setting_model/touch_setting.dart';
 
 class DrawerScreen extends StatefulWidget {
   const DrawerScreen(
@@ -21,7 +22,8 @@ class DrawerScreen extends StatefulWidget {
       required this.refreshGirdData,
       this.isSearchOpen = false,
       required this.searchChangeTable,
-      required this.searchList});
+      required this.searchList,
+      this.touchSettingModel});
   final GlobalKey<ScaffoldState> scaffoldKey;
   final GlobalKey<NavigatorState> dashboradNavigatorKey;
   final FlutterTts flutterTts;
@@ -31,6 +33,7 @@ class DrawerScreen extends StatefulWidget {
   final Function() refreshGirdData;
   final Function(SearchTableModel searchTable) searchChangeTable;
   final List<SearchTableModel> searchList;
+  final TouchSettingModel? touchSettingModel;
   @override
   State<DrawerScreen> createState() => _DrawerScreenState();
 }
@@ -107,6 +110,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
         Container(
           margin: const EdgeInsets.symmetric(vertical: 5),
           child: CommonImageButton(
+            touchSettingModel: widget.touchSettingModel,
             backgroundColor: AppColorConstants.keyBoardBackColor,
             borderColor: AppColorConstants.keyBoardBackColor,
             isImageShow: true,
@@ -170,6 +174,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                 Column(
                                   children: [
                                     CommonImageButton(
+                                      touchSettingModel:
+                                          widget.touchSettingModel,
                                       width: 135,
                                       isHorizontal: true,
                                       text: drawerData[i].name,
@@ -201,6 +207,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     OptionScreen(
+                                                  touchSettingModel:
+                                                      widget.touchSettingModel,
                                                   refreshGirdData:
                                                       widget.refreshGirdData,
                                                 ),
@@ -297,6 +305,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                 Row(
                                   children: [
                                     CommonImageButton(
+                                      touchSettingModel:
+                                          widget.touchSettingModel,
                                       width: 75,
                                       isImageShow: true,
                                       isHorizontal: false,

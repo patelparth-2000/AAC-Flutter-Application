@@ -8,6 +8,7 @@ import '../../model/get_category_modal.dart';
 import '../../services/data_base_service.dart';
 import '../../util/app_color_constants.dart';
 import '../settings/setting_model/keyboard_setting.dart';
+import '../settings/setting_model/touch_setting.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen(
@@ -16,12 +17,14 @@ class FavoritesScreen extends StatefulWidget {
       required this.onTextValue,
       required this.onSpace,
       required this.flutterTts,
-      this.keyboardSettingModel});
+      this.keyboardSettingModel,
+      this.touchSettingModel});
   final DataBaseService dataBaseService;
   final Function(String) onTextValue;
   final Function() onSpace;
   final FlutterTts flutterTts;
   final KeyboardSettingModel? keyboardSettingModel;
+  final TouchSettingModel? touchSettingModel;
   @override
   State<FavoritesScreen> createState() => _FavoritesScreenState();
 }
@@ -199,6 +202,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 ),
                 if (!isEdit)
                   CommonImageButton(
+                    touchSettingModel: widget.touchSettingModel,
                     buttonIcon: Icons.edit,
                     isHorizontal: true,
                     isImageShow: true,
@@ -215,6 +219,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     spacing: 4,
                     children: [
                       CommonImageButton(
+                        touchSettingModel: widget.touchSettingModel,
                         buttonIcon: Icons.delete,
                         isHorizontal: true,
                         isImageShow: true,
@@ -235,6 +240,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         },
                       ),
                       CommonImageButton(
+                        touchSettingModel: widget.touchSettingModel,
                         buttonIcon: Icons.edit,
                         isHorizontal: true,
                         isImageShow: true,
@@ -259,12 +265,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                                   flutterTts: widget.flutterTts,
                                   keyboardSettingModel:
                                       widget.keyboardSettingModel,
+                                  touchSettingModel: widget.touchSettingModel,
                                   rename: renameFolder,
                                 ),
                               ));
                         },
                       ),
                       CommonImageButton(
+                        touchSettingModel: widget.touchSettingModel,
                         buttonIcon: Icons.cancel,
                         isHorizontal: true,
                         isImageShow: true,
@@ -286,64 +294,69 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           Container(
             color: AppColorConstants.imageTextButtonColor,
             padding: const EdgeInsets.all(5),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                spacing: 5,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  for (int i = 0; i < getCategoryModalList.length; i++)
-                    Stack(
-                      children: [
-                        CommonImageButton(
-                          width: 110,
-                          buttonIcon:
-                              indexID.toString() == getCategoryModalList[i].id
-                                  ? Icons.folder_special_rounded
-                                  : null,
-                          textwidth: 70,
-                          backgroundColor:
-                              AppColorConstants.keyBoardBackColorGreen,
-                          buttonIconColor:
-                              AppColorConstants.imageTextButtonColor,
-                          buttonTextColor:
-                              AppColorConstants.imageTextButtonColor,
-                          iscolorChange: false,
-                          isHorizontal: true,
-                          isImageShow: true,
-                          vertical:
-                              indexID.toString() == getCategoryModalList[i].id
-                                  ? 10
-                                  : 12,
-                          imageSize: 20,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          buttonName: getCategoryModalList[i].name,
-                          onTap: () {
-                            index = i;
-                            indexID = int.parse(getCategoryModalList[i].id!);
-                            getVoiceData(getCategoryModalList[i]);
-                            if (isEdit) {
-                              editIndex = indexID;
-                              editList.clear();
-                            }
-                            setState(() {});
-                          },
-                        ),
-                        if (isEdit)
-                          Positioned(
-                            right: 3,
-                            child: Icon(
-                              editIndex.toString() == getCategoryModalList[i].id
-                                  ? Icons.check_circle
-                                  : Icons.radio_button_off,
-                              color: AppColorConstants.imageTextButtonColor,
-                              size: 15,
-                            ),
-                          )
-                      ],
-                    )
-                ],
+            width: double.infinity,
+            child: Center(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  spacing: 5,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (int i = 0; i < getCategoryModalList.length; i++)
+                      Stack(
+                        children: [
+                          CommonImageButton(
+                            touchSettingModel: widget.touchSettingModel,
+                            width: 110,
+                            buttonIcon:
+                                indexID.toString() == getCategoryModalList[i].id
+                                    ? Icons.folder_special_rounded
+                                    : null,
+                            textwidth: 70,
+                            backgroundColor:
+                                AppColorConstants.keyBoardBackColorGreen,
+                            buttonIconColor:
+                                AppColorConstants.imageTextButtonColor,
+                            buttonTextColor:
+                                AppColorConstants.imageTextButtonColor,
+                            iscolorChange: false,
+                            isHorizontal: true,
+                            isImageShow: true,
+                            vertical:
+                                indexID.toString() == getCategoryModalList[i].id
+                                    ? 10
+                                    : 12,
+                            imageSize: 20,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            buttonName: getCategoryModalList[i].name,
+                            onTap: () {
+                              index = i;
+                              indexID = int.parse(getCategoryModalList[i].id!);
+                              getVoiceData(getCategoryModalList[i]);
+                              if (isEdit) {
+                                editIndex = indexID;
+                                editList.clear();
+                              }
+                              setState(() {});
+                            },
+                          ),
+                          if (isEdit)
+                            Positioned(
+                              right: 3,
+                              child: Icon(
+                                editIndex.toString() ==
+                                        getCategoryModalList[i].id
+                                    ? Icons.check_circle
+                                    : Icons.radio_button_off,
+                                color: AppColorConstants.imageTextButtonColor,
+                                size: 15,
+                              ),
+                            )
+                        ],
+                      )
+                  ],
+                ),
               ),
             ),
           ),
@@ -362,6 +375,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 return Stack(
                   children: [
                     CommonImageButton(
+                      touchSettingModel: widget.touchSettingModel,
                       backgroundColor: AppColorConstants.imageTextButtonColor,
                       buttonTextColor: AppColorConstants.white,
                       iscolorChange: false,

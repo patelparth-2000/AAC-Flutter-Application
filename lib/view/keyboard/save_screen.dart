@@ -7,6 +7,7 @@ import '../../services/data_base_service.dart';
 import '../../util/app_color_constants.dart';
 import '../edit_file/edit_file_screen.dart';
 import '../settings/setting_model/keyboard_setting.dart';
+import '../settings/setting_model/touch_setting.dart';
 
 class SaveScreen extends StatefulWidget {
   const SaveScreen(
@@ -17,7 +18,8 @@ class SaveScreen extends StatefulWidget {
       required this.flutterTts,
       required this.saveAllText,
       this.keyboardSettingModel,
-      this.keyboradShow});
+      this.keyboradShow,
+      this.touchSettingModel});
   final DataBaseService dataBaseService;
   final Function(String) onTextValue;
   final Function() onSpace;
@@ -25,6 +27,7 @@ class SaveScreen extends StatefulWidget {
   final Function() saveAllText;
   final KeyboardSettingModel? keyboardSettingModel;
   final Function(bool, bool, bool)? keyboradShow;
+  final TouchSettingModel? touchSettingModel;
   @override
   State<SaveScreen> createState() => _SaveScreenState();
 }
@@ -220,40 +223,43 @@ class _SaveScreenState extends State<SaveScreen> {
           Container(
             color: AppColorConstants.imageTextButtonColor,
             padding: const EdgeInsets.all(5),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                spacing: 5,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  for (int i = 0; i < getCategoryModalList.length; i++)
-                    if (i != 0)
-                      Stack(
-                        children: [
-                          CommonImageButton(
-                            width: 110,
-                            backgroundColor:
-                                AppColorConstants.keyBoardBackColorGreen,
-                            buttonIconColor:
-                                AppColorConstants.imageTextButtonColor,
-                            buttonTextColor:
-                                AppColorConstants.imageTextButtonColor,
-                            iscolorChange: false,
-                            isHorizontal: true,
-                            isImageShow: true,
-                            vertical: 12,
-                            imageSize: 20,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            buttonName: getCategoryModalList[i].name,
-                            onTap: () {
-                              voiceFavourite(getCategoryModalList[i].slug!);
-                              setState(() {});
-                            },
-                          ),
-                        ],
-                      )
-                ],
+            child: Center(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  spacing: 5,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (int i = 0; i < getCategoryModalList.length; i++)
+                      if (i != 0)
+                        Stack(
+                          children: [
+                            CommonImageButton(
+                              touchSettingModel: widget.touchSettingModel,
+                              width: 110,
+                              backgroundColor:
+                                  AppColorConstants.keyBoardBackColorGreen,
+                              buttonIconColor:
+                                  AppColorConstants.imageTextButtonColor,
+                              buttonTextColor:
+                                  AppColorConstants.imageTextButtonColor,
+                              iscolorChange: false,
+                              isHorizontal: true,
+                              isImageShow: true,
+                              vertical: 12,
+                              imageSize: 20,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              buttonName: getCategoryModalList[i].name,
+                              onTap: () {
+                                voiceFavourite(getCategoryModalList[i].slug!);
+                                setState(() {});
+                              },
+                            ),
+                          ],
+                        )
+                  ],
+                ),
               ),
             ),
           ),
@@ -270,6 +276,7 @@ class _SaveScreenState extends State<SaveScreen> {
             width: 150,
             buttonIcon: Icons.folder,
             betweenGap: 5,
+            touchSettingModel: widget.touchSettingModel,
             backgroundColor: AppColorConstants.keyBoardBackColorGreen,
             borderColor: AppColorConstants.keyBoardBackColorGreen,
             buttonIconColor: AppColorConstants.imageTextButtonColor,
@@ -291,6 +298,7 @@ class _SaveScreenState extends State<SaveScreen> {
                       dataBaseService: widget.dataBaseService,
                       flutterTts: widget.flutterTts,
                       keyboardSettingModel: widget.keyboardSettingModel,
+                      touchSettingModel: widget.touchSettingModel,
                     ),
                   ));
               setState(() {});

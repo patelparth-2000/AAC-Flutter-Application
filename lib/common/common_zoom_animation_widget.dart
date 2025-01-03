@@ -111,6 +111,7 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
     return ScaleTransition(
       scale: _animation,
       child: CommonImageButton(
+        touchSettingModel: widget.touchSettingModel,
         stopAudio: widget.stopAudio,
         iscolorChange: false,
         isSpeak: true,

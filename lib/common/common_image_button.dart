@@ -5,6 +5,8 @@ import 'package:avaz_app/util/app_color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
+import '../view/settings/setting_model/touch_setting.dart';
+import '../view/settings/settings_page/touch_accommodation.dart';
 import 'common.dart';
 
 class CommonImageButton extends StatefulWidget {
@@ -48,6 +50,7 @@ class CommonImageButton extends StatefulWidget {
     this.voiceFile,
     this.playAudio,
     this.stopAudio,
+    this.touchSettingModel,
   });
   final double? vertical;
   final double? horizontal;
@@ -86,6 +89,7 @@ class CommonImageButton extends StatefulWidget {
   final Function(String slug)? changeTable;
   final Function()? onTap;
   final Function()? stopAudio;
+  final TouchSettingModel? touchSettingModel;
   // final AudioPlayer? player;
   final Function(String audioPath)? playAudio;
 
@@ -94,19 +98,17 @@ class CommonImageButton extends StatefulWidget {
 }
 
 class _CommonImageButtonState extends State<CommonImageButton> {
-  late Color _currentBackgroundColor;
   String? audioPath;
+  bool isButtonClick = false;
 
   @override
   void initState() {
     super.initState();
-    _currentBackgroundColor = widget.backgroundColor;
   }
 
   void _handleTapDown(TapDownDetails details) {
     setState(() {
-      // ignore: deprecated_member_use
-      _currentBackgroundColor = Colors.amber.withOpacity(0.7); // Hover effect
+      isButtonClick = true;
     });
   }
 
@@ -124,36 +126,58 @@ class _CommonImageButtonState extends State<CommonImageButton> {
   // }
 
   void _handleTapUp(TapUpDetails details) async {
-    setState(() {
-      _currentBackgroundColor = widget.backgroundColor; // Reset on release
-    });
+    if (widget.touchSettingModel!.enableTouch! &&
+        widget.touchSettingModel!.holdDuration!) {
+      Future.delayed(Duration(
+        milliseconds:
+            (double.parse(widget.touchSettingModel!.durationLimit!) * 1000)
+                .toInt(),
+      )).whenComplete(() {
+        isButtonClick = false;
+        setState(() {});
+      });
+    } else {
+      isButtonClick = false;
+      setState(() {});
+    }
 
     if (widget.stopAudio != null) {
       await widget.stopAudio!();
     }
 
-    if (widget.voiceFile != null && widget.voiceFile!.isNotEmpty) {
-      // Play audio file if voiceFile is provided
-      audioPath = widget.voiceFile; // Set the audioPath to the voiceFile
-      widget.onTap!();
-      widget.playAudio!(audioPath!);
-      // await playAudio(); // Play the audio
-    } else if (widget.text != null &&
-        widget.flutterTts != null &&
-        widget.isSpeak) {
-      // Speak text only if voiceFile is null
-      speckbutton();
-    } else {
-      // Default onTap behavior
-      if (widget.onTap != null) {
+    Future.delayed(widget.touchSettingModel!.enableTouch! &&
+                widget.touchSettingModel!.holdDuration!
+            ? Duration(
+                milliseconds:
+                    (double.parse(widget.touchSettingModel!.durationLimit!) *
+                            1000)
+                        .toInt(),
+              )
+            : const Duration(seconds: 0))
+        .whenComplete(() {
+      if (widget.voiceFile != null && widget.voiceFile!.isNotEmpty) {
+        // Play audio file if voiceFile is provided
+        audioPath = widget.voiceFile; // Set the audioPath to the voiceFile
         widget.onTap!();
+        widget.playAudio!(audioPath!);
+        // await playAudio(); // Play the audio
+      } else if (widget.text != null &&
+          widget.flutterTts != null &&
+          widget.isSpeak) {
+        // Speak text only if voiceFile is null
+        speckbutton();
+      } else {
+        // Default onTap behavior
+        if (widget.onTap != null) {
+          widget.onTap!();
+        }
+        if (widget.changeTable != null) {
+          Future.delayed(const Duration(milliseconds: 50)).whenComplete(() {
+            widget.changeTable!(widget.slug!);
+          });
+        }
       }
-      if (widget.changeTable != null) {
-        Future.delayed(const Duration(milliseconds: 50)).whenComplete(() {
-          widget.changeTable!(widget.slug!);
-        });
-      }
-    }
+    });
   }
 
   void speckbutton() async {
@@ -173,9 +197,20 @@ class _CommonImageButtonState extends State<CommonImageButton> {
   }
 
   void _handleTapCancel() {
-    setState(() {
-      _currentBackgroundColor = widget.backgroundColor; // Reset if canceled
-    });
+    if (widget.touchSettingModel!.enableTouch! &&
+        widget.touchSettingModel!.holdDuration!) {
+      Future.delayed(Duration(
+        milliseconds:
+            (double.parse(widget.touchSettingModel!.durationLimit!) * 1000)
+                .toInt(),
+      )).whenComplete(() {
+        isButtonClick = false;
+        setState(() {});
+      });
+    } else {
+      isButtonClick = false;
+      setState(() {});
+    }
   }
 
   // Future<void> playAudio() async {
@@ -215,147 +250,181 @@ class _CommonImageButtonState extends State<CommonImageButton> {
       child: Container(
         height: widget.height,
         width: widget.width,
-        padding: EdgeInsets.symmetric(
-            horizontal: widget.horizontal ?? 5, vertical: widget.vertical ?? 5),
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
         decoration: BoxDecoration(
             border: Border.all(color: widget.borderColor, width: 2),
-            color: widget.iscolorChange
-                ? _currentBackgroundColor
-                : widget.backgroundColor,
+            color: widget.backgroundColor,
             borderRadius: widget.borderRadius ?? BorderRadius.circular(5)),
-        child: widget.isHorizontal
-            ? Row(
-                crossAxisAlignment: widget.crossAxisAlignment,
-                mainAxisAlignment: widget.mainAxisAlignment,
-                children: [
-                  if (widget.buttonIcon != null)
-                    Icon(
-                      widget.buttonIcon,
-                      color: widget.buttonIconColor,
-                      size: widget.imageSize,
-                    ),
-                  if (widget.buttonImage != null)
-                    if (widget.isImageAsset)
-                      Image.asset(
-                        widget.buttonImage!,
-                        color: widget.buttonIconColor,
-                        height: widget.imageSize,
-                        width: widget.imageSize,
-                      )
-                    else
-                      Image.file(
-                        File(widget.buttonImage!),
-                        color: widget.buttonIconColor,
-                        height: widget.imageSize,
-                        width: widget.imageSize,
-                      ),
-                  SizedBox(
-                    width: widget.betweenGap ?? 3,
-                  ),
-                  if (widget.buttonName != null)
-                    SizedBox(
-                      height: widget.textheight,
-                      width: widget.textwidth,
-                      child: Center(
-                        child: AutoSizeText(
-                          widget.buttonName!, // The text to display
-                          style: widget.textStyle ??
-                              TextStyle(
-                                  color: widget.buttonTextColor,
-                                  fontWeight: widget.fontWeight,
-                                  fontSize: widget.fontSize ??
-                                      14), // Default font size if not provided
-                          maxLines: 2, // Limit to a single line
-                          minFontSize:
-                              10, // Minimum font size when text is too long
-                          overflow: TextOverflow
-                              .ellipsis, // Adds "..." if text overflows
-                        ),
+        child: Stack(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: widget.horizontal ?? 5,
+                  vertical: widget.vertical ?? 5),
+              child: widget.isHorizontal
+                  ? Center(
+                      child: Row(
+                        crossAxisAlignment: widget.crossAxisAlignment,
+                        mainAxisAlignment: widget.mainAxisAlignment,
+                        children: [
+                          if (widget.buttonIcon != null)
+                            Icon(
+                              widget.buttonIcon,
+                              color: widget.buttonIconColor,
+                              size: widget.imageSize,
+                            ),
+                          if (widget.buttonImage != null)
+                            if (widget.isImageAsset)
+                              Image.asset(
+                                widget.buttonImage!,
+                                color: widget.buttonIconColor,
+                                height: widget.imageSize,
+                                width: widget.imageSize,
+                              )
+                            else
+                              Image.file(
+                                File(widget.buttonImage!),
+                                color: widget.buttonIconColor,
+                                height: widget.imageSize,
+                                width: widget.imageSize,
+                              ),
+                          SizedBox(
+                            width: widget.betweenGap ?? 3,
+                          ),
+                          if (widget.buttonName != null)
+                            SizedBox(
+                              height: widget.textheight,
+                              width: widget.textwidth,
+                              child: Center(
+                                child: AutoSizeText(
+                                  widget.buttonName!, // The text to display
+                                  style: widget.textStyle ??
+                                      TextStyle(
+                                          color: widget.buttonTextColor,
+                                          fontWeight: widget.fontWeight,
+                                          fontSize: widget.fontSize ??
+                                              14), // Default font size if not provided
+                                  maxLines: 2, // Limit to a single line
+                                  minFontSize:
+                                      10, // Minimum font size when text is too long
+                                  overflow: TextOverflow
+                                      .ellipsis, // Adds "..." if text overflows
+                                ),
+                              ),
+                            )
+                          // Text(
+                          //   "${widget.buttonName}",
+                          //   style: widget.textStyle ??
+                          //       TextStyle(
+                          //           color: widget.buttonTextColor,
+                          //           fontWeight: widget.fontWeight,
+                          //           fontSize: widget.fontSize),
+                          // )
+                        ],
                       ),
                     )
-                  // Text(
-                  //   "${widget.buttonName}",
-                  //   style: widget.textStyle ??
-                  //       TextStyle(
-                  //           color: widget.buttonTextColor,
-                  //           fontWeight: widget.fontWeight,
-                  //           fontSize: widget.fontSize),
-                  // )
-                ],
-              )
-            : Column(
-                crossAxisAlignment: widget.crossAxisAlignment,
-                mainAxisAlignment: widget.mainAxisAlignment,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (widget.buttonName != null &&
-                      widget.isTextShow &&
-                      widget.textPostion == "above")
-                    AutoSizeText(
-                      widget.buttonName!, // The text to display
-                      style: widget.textStyle ??
-                          TextStyle(
-                              color: widget.buttonTextColor,
-                              fontWeight: widget.fontWeight,
-                              fontSize: widget.fontSize ??
-                                  14), // Default font size if not provided
-                      maxLines: 1, // Limit to a single line
-                      minFontSize:
-                          10, // Minimum font size when text is too long
-                      overflow:
-                          TextOverflow.ellipsis, // Adds "..." if text overflows
-                    ),
-                  if (widget.buttonIcon != null && widget.isImageShow)
-                    Icon(
-                      widget.buttonIcon,
-                      color: widget.buttonIconColor,
-                      size: widget.imageSize,
-                    ),
-                  if (widget.buttonImage != null && widget.isImageShow)
-                    if (widget.isImageAsset)
-                      Image.asset(
-                        widget.buttonImage!,
-                        color: widget.buttonIconColor,
-                        height: widget.imageSize,
-                        width: widget.imageSize,
-                      )
-                    else
-                      Image.file(
-                        File(widget.buttonImage!),
-                        color: widget.buttonIconColor,
-                        height: widget.imageSize,
-                        width: widget.imageSize,
+                  : Center(
+                      child: Column(
+                        crossAxisAlignment: widget.crossAxisAlignment,
+                        mainAxisAlignment: widget.mainAxisAlignment,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.buttonName != null &&
+                              widget.isTextShow &&
+                              widget.textPostion == "above")
+                            AutoSizeText(
+                              widget.buttonName!, // The text to display
+                              style: widget.textStyle ??
+                                  TextStyle(
+                                      color: widget.buttonTextColor,
+                                      fontWeight: widget.fontWeight,
+                                      fontSize: widget.fontSize ??
+                                          14), // Default font size if not provided
+                              maxLines: 1, // Limit to a single line
+                              minFontSize:
+                                  10, // Minimum font size when text is too long
+                              overflow: TextOverflow
+                                  .ellipsis, // Adds "..." if text overflows
+                            ),
+                          if (widget.buttonIcon != null && widget.isImageShow)
+                            Icon(
+                              widget.buttonIcon,
+                              color: widget.buttonIconColor,
+                              size: widget.imageSize,
+                            ),
+                          if (widget.buttonImage != null && widget.isImageShow)
+                            if (widget.isImageAsset)
+                              Image.asset(
+                                widget.buttonImage!,
+                                color: widget.buttonIconColor,
+                                height: widget.imageSize,
+                                width: widget.imageSize,
+                              )
+                            else
+                              Image.file(
+                                File(widget.buttonImage!),
+                                color: widget.buttonIconColor,
+                                height: widget.imageSize,
+                                width: widget.imageSize,
+                              ),
+                          SizedBox(
+                            width: widget.betweenGap ?? 0,
+                          ),
+                          if (widget.buttonName != null &&
+                              widget.isTextShow &&
+                              widget.textPostion == "below")
+                            AutoSizeText(
+                              widget.buttonName!, // The text to display
+                              style: widget.textStyle ??
+                                  TextStyle(
+                                      color: widget.buttonTextColor,
+                                      fontWeight: widget.fontWeight,
+                                      fontSize: widget.fontSize ??
+                                          14), // Default font size if not provided
+                              maxLines: 1, // Limit to a single line
+                              minFontSize:
+                                  10, // Minimum font size when text is too long
+                              overflow: TextOverflow
+                                  .ellipsis, // Adds "..." if text overflows
+                            )
+                          // Text(
+                          //   "${widget.buttonName}",
+                          //   style: widget.textStyle ??
+                          //       TextStyle(
+                          //           color: widget.buttonTextColor,
+                          //           fontWeight: widget.fontWeight,
+                          //           fontSize: widget.fontSize),
+                          // )
+                        ],
                       ),
-                  SizedBox(
-                    width: widget.betweenGap ?? 0,
-                  ),
-                  if (widget.buttonName != null &&
-                      widget.isTextShow &&
-                      widget.textPostion == "below")
-                    AutoSizeText(
-                      widget.buttonName!, // The text to display
-                      style: widget.textStyle ??
-                          TextStyle(
-                              color: widget.buttonTextColor,
-                              fontWeight: widget.fontWeight,
-                              fontSize: widget.fontSize ??
-                                  14), // Default font size if not provided
-                      maxLines: 1, // Limit to a single line
-                      minFontSize:
-                          10, // Minimum font size when text is too long
-                      overflow:
-                          TextOverflow.ellipsis, // Adds "..." if text overflows
-                    )
-                  // Text(
-                  //   "${widget.buttonName}",
-                  //   style: widget.textStyle ??
-                  //       TextStyle(
-                  //           color: widget.buttonTextColor,
-                  //           fontWeight: widget.fontWeight,
-                  //           fontSize: widget.fontSize),
-                  // )
-                ],
-              ),
+                    ),
+            ),
+            Container(
+                width: isButtonClick ? widget.width : 0,
+                height: isButtonClick ? widget.height : 0,
+                padding: widget.touchSettingModel!.enableTouch!
+                    ? const EdgeInsets.all(10)
+                    : const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  // ignore: deprecated_member_usedecoration: BoxDecoration(
+                  borderRadius: widget.touchSettingModel!.enableTouch!
+                      ? BorderRadius.circular(
+                          double.parse(widget.touchSettingModel!.borderRadius!))
+                      : widget.borderRadius ?? BorderRadius.circular(5),
+                  border: widget.touchSettingModel!.enableTouch!
+                      ? Border.all(
+                          width: double.parse(
+                              widget.touchSettingModel!.borderThickness!),
+                          color: colorchange(widget.touchSettingModel),
+                        )
+                      : null,
+                  color: widget.touchSettingModel!.enableTouch!
+                      ? null
+                      // ignore: deprecated_member_use
+                      : Colors.amber.withOpacity(0.7),
+                )),
+          ],
+        ),
       ),
     );
   }

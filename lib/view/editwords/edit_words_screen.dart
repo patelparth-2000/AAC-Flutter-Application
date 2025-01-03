@@ -18,6 +18,7 @@ import '../../model/get_category_modal.dart';
 import '../../model/language_modal.dart' as language;
 import '../../services/data_base_service.dart';
 import '../../services/permission_manager.dart';
+import '../settings/setting_model/touch_setting.dart';
 import 'text_drop_widget.dart';
 
 class EditWordsScreen extends StatefulWidget {
@@ -26,12 +27,13 @@ class EditWordsScreen extends StatefulWidget {
     required this.refreshGirdData,
     this.isCategory = false,
     this.isSubCategory = true,
-    this.name = "Sub Category",
+    this.name = "Sub Category", this.touchSettingModel,
   });
   final Function() refreshGirdData;
   final bool isCategory;
   final bool isSubCategory;
   final String name;
+  final TouchSettingModel? touchSettingModel;
 
   @override
   State<EditWordsScreen> createState() => _EditWordsScreenState();
@@ -683,6 +685,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                             ),
                           ),
                           CommonImageButton(
+                            touchSettingModel: widget.touchSettingModel,
                             buttonIcon: Icons.camera_alt,
                             isImageShow: true,
                             onTap: () => selectImage(ImageSource.camera),
@@ -691,6 +694,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                             width: 10,
                           ),
                           CommonImageButton(
+                            touchSettingModel: widget.touchSettingModel,
                             buttonIcon: Icons.image_rounded,
                             isImageShow: true,
                             onTap: () => selectImage(ImageSource.gallery),
@@ -818,6 +822,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                                     Row(
                                       children: [
                                         CommonImageButton(
+                                          touchSettingModel: widget.touchSettingModel,
                                           buttonIcon:
                                               Icons.my_library_music_rounded,
                                           isImageShow: true,
@@ -827,6 +832,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                                           width: 10,
                                         ),
                                         CommonImageButton(
+                                          touchSettingModel: widget.touchSettingModel,
                                           buttonIcon: isRecording
                                               ? Icons.stop
                                               : Icons.mic,
@@ -866,6 +872,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                                           Row(
                                             children: [
                                               CommonImageButton(
+                                                touchSettingModel: widget.touchSettingModel,
                                                 buttonIcon: isPlaying
                                                     ? Icons.stop
                                                     : Icons.play_arrow,

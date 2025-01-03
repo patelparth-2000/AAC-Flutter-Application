@@ -13,7 +13,7 @@
 <uses-feature android:name="android.hardware.microphone" android:required="true" />
 
     <application
-        android:label="AAC"
+        android:label="Touch Voz"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

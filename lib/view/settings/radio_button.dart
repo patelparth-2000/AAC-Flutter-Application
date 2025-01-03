@@ -66,7 +66,8 @@ class _RadioButtonState extends State<RadioButton> {
                     child: Text(
                       widget.radioList[index].name,
                       style: const TextStyle(
-                          color: AppColorConstants.keyTextColor,
+                          // color: AppColorConstants.keyTextColor,
+                          color: AppColorConstants.white,
                           fontSize: 14,
                           fontWeight: FontWeight.bold),
                     ),

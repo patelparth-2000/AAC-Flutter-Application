@@ -44,11 +44,11 @@ class _ToolsScreenState extends State<ToolsScreen> {
                     children: [
                       const TitleWidget(text: "LOW TECH"),
                       const SettingWidget(
-                        text: "Create an ACC Book with Home",
+                        text: "Create an Touch Voz Book with Home",
                         isArrow: false,
                       ),
                       SettingWidget(
-                        text: "Browse all ACC Books",
+                        text: "Browse all Touch Voz Books",
                         onTap: () {
                           nextpage(const AccBooks());
                         },

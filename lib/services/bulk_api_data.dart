@@ -11,8 +11,12 @@ import '../api/common_api_call.dart';
 import 'data_base_service.dart';
 
 class BulkApiData {
+  static bool _isSettingIsDone = false;
   static void getCategory(BuildContext context) async {
-    _settingDataInsert();
+    if (_isSettingIsDone) {
+      _isSettingIsDone = true;
+      _settingDataInsert();
+    }
     categoryFavourite();
     _laungApi(context);
     var response = await CommonApiCall.postApiCall(action: "get_category");
