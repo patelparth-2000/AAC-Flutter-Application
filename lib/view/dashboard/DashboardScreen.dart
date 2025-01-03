@@ -44,6 +44,8 @@ class DashboardScreenState extends State<DashboardScreen> {
   bool _canExit = false;
   bool isKeyBoardShow = false;
   bool isSearchOpen = false;
+  bool isFavorite = false;
+  bool isSave = false;
   final TextEditingController _mainTextFieldController =
       TextEditingController();
   final List<Map<String, dynamic>> _widgetList = [];
@@ -63,6 +65,7 @@ class DashboardScreenState extends State<DashboardScreen> {
   TouchSettingModel? touchSettingModel = TouchSettingModel();
   bool isLoading = false;
   List<String> sidebarShow = [];
+  dynamic quickdata;
 
   void getSettingData() async {
     setState(() {
@@ -140,6 +143,7 @@ class DashboardScreenState extends State<DashboardScreen> {
     tableNames.clear();
     tableNames.add(firstTableName);
     var categoryData = await dbService.getCategoryTable();
+    quickdata = categoryData[0];
     adddata(categoryData);
     searchVoice(categoryData);
     setState(() {});
@@ -224,6 +228,13 @@ class DashboardScreenState extends State<DashboardScreen> {
     tableNames.add(firstTableName);
     if (searchTable.categorySlug != null) {
       tableNames.add(searchTable.categorySlug!);
+      for (var datalist in getCategoryModalList) {
+        if (datalist.type == "category") {
+          if (searchTable.categorySlug == datalist.slug) {
+            hexString = datalist.color;
+          }
+        }
+      }
     }
     if (searchTable.subCategorySlug != null) {
       tableNames.add(searchTable.subCategorySlug!);
@@ -238,16 +249,16 @@ class DashboardScreenState extends State<DashboardScreen> {
   }
 
   void changeTables(String slug) async {
-    for (var datalist in getCategoryModalList) {
-      if (datalist.type == "category") {
-        if (slug == datalist.slug) {
-          hexString = datalist.color;
-        }
-      }
-    }
     bool isExists =
         await dbService.checkIfTableExistsOrNot(slug.replaceAll("-", "_"));
     if (isExists) {
+      for (var datalist in getCategoryModalList) {
+        if (datalist.type == "category") {
+          if (slug == datalist.slug) {
+            hexString = datalist.color;
+          }
+        }
+      }
       tableNames.add(slug.replaceAll("-", "_"));
       var categoryData = await dbService.getTablesData(tableNames.last);
       adddata(categoryData);
@@ -363,6 +374,13 @@ class DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  void keyboradShow(bool keyboard, bool favorite, bool save) {
+    isKeyBoardShow = keyboard;
+    isFavorite = favorite;
+    isSave = save;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -449,19 +467,29 @@ class DashboardScreenState extends State<DashboardScreen> {
                                         height: 50,
                                         flutterTts: flutterTts,
                                         text: !isKeyBoardShow
-                                            ? "Pictures"
+                                            ? isFavorite || isSave
+                                                ? "Keyboard"
+                                                : "Pictures"
                                             : "Keyboard",
                                         onTap: () {
+                                          if (isFavorite || isSave) {
+                                            keyboradShow(true, false, false);
+                                            return;
+                                          }
                                           isKeyBoardShow = !isKeyBoardShow;
                                           setState(() {});
                                         },
                                         horizontal: 2,
                                         width: 75,
                                         buttonName: isKeyBoardShow
-                                            ? "Pictures"
+                                            ? isFavorite || isSave
+                                                ? "Keyboard"
+                                                : "Pictures"
                                             : "Keyboard",
                                         buttonIcon: isKeyBoardShow
-                                            ? Icons.photo
+                                            ? isFavorite || isSave
+                                                ? Icons.keyboard_alt
+                                                : Icons.photo
                                             : Icons.keyboard_alt,
                                       ),
                                     if (pictureAppearanceSettingModel!
@@ -640,6 +668,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                     Expanded(
                                       child: isKeyBoardShow
                                           ? KeyboardScreen(
+                                              dataBaseService: dbService,
                                               flutterTts: flutterTts,
                                               onAdd: _addNewWidget,
                                               onSpace: onSpace,
@@ -659,6 +688,12 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   pictureBehaviourSettingModel,
                                               touchSettingModel:
                                                   touchSettingModel,
+                                              keyboradShow: keyboradShow,
+                                              isFavorite: isFavorite,
+                                              isSave: isSave,
+                                              isSaveEnable:
+                                                  _widgetList.isNotEmpty,
+                                              saveAllText: saveAllText,
                                             )
                                           : GridDateScreen(
                                               hexToBordorColor:
@@ -774,6 +809,18 @@ class DashboardScreenState extends State<DashboardScreen> {
                               isSearchOpen = true;
                               setState(() {});
                               _scaffoldKey.currentState?.openEndDrawer();
+                            } else if (sideButtonNameList[i]["name"] ==
+                                "Quick") {
+                              if (quickdata != null) {
+                                if (quickdata is Map<String, dynamic>) {
+                                  Map<String, dynamic> modifiableItem =
+                                      Map<String, dynamic>.from(quickdata);
+                                  GetCategoryModal quickGetCategoryModal =
+                                      GetCategoryModal.fromJson(modifiableItem);
+                                  changeTables(quickGetCategoryModal.slug!);
+                                }
+                              }
+                              setState(() {});
                             }
                           });
                         },
@@ -848,7 +895,7 @@ class DashboardScreenState extends State<DashboardScreen> {
           // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
-            builder: (context) => const MyHomePage(title: "hello boys"),
+            builder: (context) => MyHomePage(title: saveAllText()),
           ));
     }
 
@@ -988,6 +1035,26 @@ class DashboardScreenState extends State<DashboardScreen> {
         }
       }
     }
+  }
+
+  String saveAllText() {
+    String textInColumn = "";
+    for (var item in _widgetList) {
+      var widget = item['widget'];
+      if (widget is Container) {
+        var child = widget.child;
+        if (child is Column) {
+          textInColumn += child.children
+              .whereType<Text>()
+              .map((textWidget) => textWidget.data ?? "")
+              .join(" ");
+        } else if (child is Text) {
+          textInColumn += child.data ?? "";
+        }
+        textInColumn += " ";
+      }
+    }
+    return textInColumn;
   }
 
   Future<void> playAudioFile(String audioFile) async {

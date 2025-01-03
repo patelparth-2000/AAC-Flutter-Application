@@ -115,6 +115,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
             vertical: 0,
             height: 50,
             onTap: () {
+              FocusScope.of(context).requestFocus(FocusNode());
               if (isNavigated) {
                 _drawerNavigatorKey.currentState?.pop();
               } else {

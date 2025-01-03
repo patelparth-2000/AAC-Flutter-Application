@@ -18,6 +18,8 @@ class CommonImageButton extends StatefulWidget {
     this.buttonName,
     this.buttonIcon,
     this.height,
+    this.textheight,
+    this.textwidth,
     this.width,
     this.backgroundColor = AppColorConstants.imageTextButtonColor,
     this.borderColor = AppColorConstants.imageTextButtonColor,
@@ -51,6 +53,8 @@ class CommonImageButton extends StatefulWidget {
   final double? horizontal;
   final double? imageSize;
   final double? height;
+  final double? textheight;
+  final double? textwidth;
   final double? width;
   final double? betweenGap;
   final double? fontSize;
@@ -249,19 +253,25 @@ class _CommonImageButtonState extends State<CommonImageButton> {
                     width: widget.betweenGap ?? 3,
                   ),
                   if (widget.buttonName != null)
-                    AutoSizeText(
-                      widget.buttonName!, // The text to display
-                      style: widget.textStyle ??
-                          TextStyle(
-                              color: widget.buttonTextColor,
-                              fontWeight: widget.fontWeight,
-                              fontSize: widget.fontSize ??
-                                  14), // Default font size if not provided
-                      maxLines: 1, // Limit to a single line
-                      minFontSize:
-                          10, // Minimum font size when text is too long
-                      overflow:
-                          TextOverflow.ellipsis, // Adds "..." if text overflows
+                    SizedBox(
+                      height: widget.textheight,
+                      width: widget.textwidth,
+                      child: Center(
+                        child: AutoSizeText(
+                          widget.buttonName!, // The text to display
+                          style: widget.textStyle ??
+                              TextStyle(
+                                  color: widget.buttonTextColor,
+                                  fontWeight: widget.fontWeight,
+                                  fontSize: widget.fontSize ??
+                                      14), // Default font size if not provided
+                          maxLines: 2, // Limit to a single line
+                          minFontSize:
+                              10, // Minimum font size when text is too long
+                          overflow: TextOverflow
+                              .ellipsis, // Adds "..." if text overflows
+                        ),
+                      ),
                     )
                   // Text(
                   //   "${widget.buttonName}",

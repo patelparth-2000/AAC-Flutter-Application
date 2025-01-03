@@ -403,8 +403,12 @@ class DataBaseService {
 
   Future<dynamic> getTablesData(String tableName) async {
     final db = await database;
-    final result = await db.rawQuery("SELECT * FROM '$tableName'");
-    return result;
+    final tableExists = await _checkIfTableExists(db, tableName);
+    if (tableExists) {
+      final result = await db.rawQuery("SELECT * FROM '$tableName'");
+      return result;
+    }
+    return [];
   }
 
   Future<dynamic> getTablesSubCategoryData(String tableName) async {
@@ -442,6 +446,67 @@ class DataBaseService {
       return [];
     }
   }
+
+  Future<dynamic> getFavoritesTable() async {
+    final db = await database;
+    final result = await db.rawQuery("SELECT * FROM favourite_table");
+    return result;
+  }
+
+  Future<dynamic> deleteItem(int id, String? tableName) async {
+    final db = await database;
+    String tableName0 = tableName ?? "favourite_table";
+    final result = await db.rawQuery('''
+    UPDATE $tableName0
+    SET delete_status = 1
+    WHERE id = $id;
+    ''');
+    return result;
+  }
+
+  Future<dynamic> renameItem(int id, String name) async {
+    final db = await database;
+    String tableName0 = "favourite_table";
+    final result = await db.rawQuery('''
+    UPDATE $tableName0
+    SET name = ?
+    WHERE id = ?;
+  ''', [name, id]);
+    return result;
+  }
+
+  Future<int?> getLastAddedItemId(String tableName) async {
+    final db = await database;
+    final result = await db.rawQuery('''
+    SELECT MAX(row_number) 
+    FROM $tableName 
+    LIMIT 1;
+  ''');
+
+    print("datat =====> ${result.first['MAX(row_number)']}");
+
+    // Safely parse the result as int
+    return result.isNotEmpty
+        ? int.tryParse(result.first['MAX(row_number)'].toString())
+        : null;
+  }
+
+  //  Future<int?> getLastAddedItemId(String tableName) async {
+  //   final db = await database;
+  //   final result = await db.rawQuery('''
+  //   SELECT row_number
+  //   FROM $tableName
+  //   ORDER BY id DESC
+  //   LIMIT 1;
+  // ''');
+
+  //   print(result);
+
+  //   // Safely parse the result as int
+  //   return result.isNotEmpty
+  //       ? int.tryParse(result.first['id'].toString())
+  //       : null;
+  // }
 
   Future<dynamic> directoryPath() async {
     final db = await database;

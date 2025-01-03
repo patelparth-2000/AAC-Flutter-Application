@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -14,6 +13,7 @@ import 'data_base_service.dart';
 class BulkApiData {
   static void getCategory(BuildContext context) async {
     _settingDataInsert();
+    categoryFavourite();
     _laungApi(context);
     var response = await CommonApiCall.postApiCall(action: "get_category");
     if (response.statusCode == 200) {
@@ -231,5 +231,125 @@ class BulkApiData {
   static Future<void> _settingDataInsert() async {
     final dbService = DataBaseService.instance;
     await dbService.createSettingTables();
+  }
+
+  static Map<String, List<String>> favouritesMap = {
+    "History": historyFavourite,
+    "About Me": aboutFavourite,
+    "I need help": needHelpFavourite,
+    "Greetings": greetingsFavourite,
+    "Comments": commentsFavourite,
+    "Wishes": wishesFavourite,
+  };
+
+  static List<String> favourites = [
+    "History",
+    "About Me",
+    "I need help",
+    "Greetings",
+    "Comments",
+    "Wishes"
+  ];
+
+  static bool _isCategoryFavouriteCalled = false; // Flag to track execution
+
+  static void categoryFavourite() async {
+    if (_isCategoryFavouriteCalled) return; // Exit if already called
+    _isCategoryFavouriteCalled = true; // Set flag to true
+
+    for (int i = 0; i < favourites.length; i++) {
+      Map<String, dynamic> commonCategoryData = {
+        "id": i + 1,
+        "type": "category",
+        "color": null,
+        "lang": "1",
+        "name": favourites[i],
+        "image": null,
+        "slug": favourites[i].replaceAll(" ", "_").toLowerCase(),
+        "created_by": null,
+        "status": "active",
+        "delete_status": "0",
+        "lang_name": {"id": 1, "name": "English"}
+      };
+      await _insertApiResponseToDatabase(
+          commonCategoryData, "favourite_table", "type", "id");
+    }
+    voiceFavourite();
+  }
+
+  static List<String> historyFavourite = [];
+  static List<String> aboutFavourite = [
+    "My name is",
+    "I live in",
+    "I study in",
+    "I use AAC to communicate",
+  ];
+  static List<String> needHelpFavourite = [
+    "I want to use the restroom",
+    "I am in pain",
+    "I am not well",
+    "I want water",
+    "Please call home",
+  ];
+  static List<String> greetingsFavourite = [
+    "Hey",
+    "Hello",
+    "Good morning",
+    "Good evening",
+    "Good night",
+    "How are you?",
+    "See you later",
+    "Bye",
+    "Have a good day",
+  ];
+  static List<String> commentsFavourite = [
+    "Awesome",
+    "Great",
+    "Cool",
+    "Oh no!",
+    "Amazing",
+    "Good job!",
+    "No way!",
+  ];
+  static List<String> wishesFavourite = [
+    "Happy birthday",
+    "Good luck",
+    "Congratulations",
+  ];
+
+  static Future<void> voiceFavourite() async {
+    for (String category in favourites) {
+      // Fetch the corresponding list from the map
+      List<String> currentList = favouritesMap[category] ?? [];
+
+      for (int j = 0; j < currentList.length; j++) {
+        Map<String, dynamic> commonVoiceData = {
+          "id": j + 1,
+          "type": "voice",
+          "lang": "1",
+          "category_id": null,
+          "sub_category_id": null,
+          "name": currentList[j],
+          "code": null,
+          "image": null,
+          "slug": currentList[j].replaceAll(" ", "_").toLowerCase(),
+          "voice_file": null,
+          "created_by": 1,
+          "status": "active",
+          "delete_status": "0",
+          "category": null,
+          "lang_name": {"id": 1, "name": "English"},
+          "subcategory": null
+        };
+
+        // Insert data into the database
+        await _insertApiResponseToDatabase(
+          commonVoiceData,
+          category.replaceAll(" ", "_").toLowerCase(),
+          "type",
+          "id",
+        );
+      }
+    }
   }
 }

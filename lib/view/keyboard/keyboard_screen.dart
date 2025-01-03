@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../common/common_image_button.dart';
+import '../../services/data_base_service.dart';
 import '../../util/app_color_constants.dart';
 import '../settings/setting_model/account_setting_model.dart';
 import '../settings/setting_model/audio_setting.dart';
@@ -10,6 +11,8 @@ import '../settings/setting_model/keyboard_setting.dart';
 import '../settings/setting_model/picture_appearance_setting_model.dart';
 import '../settings/setting_model/picture_behaviour_setting_model.dart';
 import '../settings/setting_model/touch_setting.dart';
+import 'favorites_screen.dart';
+import 'save_screen.dart';
 
 class KeyboardScreen extends StatefulWidget {
   const KeyboardScreen(
@@ -25,12 +28,26 @@ class KeyboardScreen extends StatefulWidget {
       this.keyboardSettingModel,
       this.audioSettingModel,
       this.generalSettingModel,
-      this.touchSettingModel});
+      this.touchSettingModel,
+      required this.dataBaseService,
+      this.isMain = true,
+      this.keyboradShow,
+      this.isSave = false,
+      this.isFavorite = false,
+      this.isSaveEnable = false,
+      this.saveAllText});
   final FlutterTts flutterTts;
   final Function(String, String?) onAdd;
   final Function(String) onTextValue;
   final Function() onSpace;
   final Function() deleteLast;
+  final Function()? saveAllText;
+  final Function(bool, bool, bool)? keyboradShow;
+  final bool isMain;
+  final bool isSave;
+  final bool isFavorite;
+  final bool isSaveEnable;
+  final DataBaseService dataBaseService;
   final AccountSettingModel? accountSettingModel;
   final PictureAppearanceSettingModel? pictureAppearanceSettingModel;
   final PictureBehaviourSettingModel? pictureBehaviourSettingModel;
@@ -324,6 +341,26 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.isSave) {
+      return SaveScreen(
+        flutterTts: widget.flutterTts,
+        dataBaseService: widget.dataBaseService,
+        onTextValue: widget.onTextValue,
+        onSpace: widget.onSpace,
+        keyboardSettingModel: widget.keyboardSettingModel,
+        saveAllText: widget.saveAllText!,
+        keyboradShow: widget.keyboradShow,
+      );
+    }
+    if (widget.isFavorite) {
+      return FavoritesScreen(
+        flutterTts: widget.flutterTts,
+        dataBaseService: widget.dataBaseService,
+        onTextValue: widget.onTextValue,
+        onSpace: widget.onSpace,
+        keyboardSettingModel: widget.keyboardSettingModel,
+      );
+    }
     return Column(
       children: [
         Row(
@@ -646,43 +683,64 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                   const SizedBox(
                     width: 5,
                   ),
-                  CommonImageButton(
-                    width: 110,
-                    height: 60,
-                    backgroundColor: AppColorConstants.keyBoardBackColor,
-                    borderColor: AppColorConstants.keyBoardBackColor,
-                    isHorizontal: true,
-                    buttonIcon: Icons.folder_copy,
-                    buttonIconColor: AppColorConstants.keyBoardTextColor,
-                    textStyle: const TextStyle(
-                        color: AppColorConstants.keyBoardTextColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10),
-                    buttonName: "Favorites",
-                    text: "Favorites",
-                    flutterTts: widget.flutterTts,
-                    onTap: () {},
-                  ),
+                  if (widget.isMain)
+                    CommonImageButton(
+                      width: 110,
+                      height: 60,
+                      backgroundColor: AppColorConstants.keyBoardBackColor,
+                      borderColor: AppColorConstants.keyBoardBackColor,
+                      isHorizontal: true,
+                      buttonIcon: Icons.folder_copy,
+                      buttonIconColor: AppColorConstants.keyBoardTextColor,
+                      textStyle: const TextStyle(
+                          color: AppColorConstants.keyBoardTextColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10),
+                      buttonName: "Favorites",
+                      text: "Favorites",
+                      flutterTts: widget.flutterTts,
+                      onTap: () {
+                        if (widget.keyboradShow != null) {
+                          widget.keyboradShow!(true, true, false);
+                        }
+                        setState(() {});
+                      },
+                    ),
                   const SizedBox(
                     width: 5,
                   ),
-                  CommonImageButton(
-                    width: 80,
-                    height: 60,
-                    backgroundColor: AppColorConstants.keyBoardBackColor,
-                    borderColor: AppColorConstants.keyBoardBackColor,
-                    isHorizontal: true,
-                    buttonIcon: Icons.save,
-                    buttonIconColor: AppColorConstants.keyBoardTextColor,
-                    textStyle: const TextStyle(
-                        color: AppColorConstants.keyBoardTextColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10),
-                    buttonName: "Save",
-                    text: "Save",
-                    flutterTts: widget.flutterTts,
-                    onTap: () {},
-                  ),
+                  if (!widget.isMain)
+                    const SizedBox(
+                      width: 190,
+                    ),
+                  if (widget.isMain)
+                    CommonImageButton(
+                      width: 80,
+                      height: 60,
+                      backgroundColor: AppColorConstants.keyBoardBackColor,
+                      borderColor: AppColorConstants.keyBoardBackColor,
+                      isHorizontal: true,
+                      buttonIcon: Icons.save,
+                      buttonIconColor: widget.isSaveEnable
+                          ? AppColorConstants.keyBoardTextColor
+                          : AppColorConstants.icons,
+                      textStyle: TextStyle(
+                          color: widget.isSaveEnable
+                              ? AppColorConstants.keyBoardTextColor
+                              : AppColorConstants.icons,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10),
+                      buttonName: "Save",
+                      text: "Save",
+                      flutterTts: widget.flutterTts,
+                      onTap: () {
+                        if (widget.keyboradShow != null &&
+                            widget.isSaveEnable) {
+                          widget.keyboradShow!(true, false, true);
+                        }
+                        setState(() {});
+                      },
+                    ),
                   const SizedBox(
                     width: 5,
                   ),
