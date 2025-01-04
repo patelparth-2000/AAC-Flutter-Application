@@ -155,13 +155,13 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
       "number": "0",
       "icon": null
     },
-    {
-      "name": "delete",
-      "Cname": "delete",
-      "number": "delete",
-      "icon": Icons.backspace_rounded,
-      "action": "delete"
-    },
+    // {
+    //   "name": "delete",
+    //   "Cname": "delete",
+    //   "number": "delete",
+    //   "icon": Icons.backspace_rounded,
+    //   "action": "delete"
+    // },
   ];
   List<Map<String, dynamic>> keyBoardList2 = [
     {
@@ -238,13 +238,13 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
       "number": "\"",
       "icon": null
     },
-    {
-      "name": "next",
-      "Cname": "next",
-      "number": "next",
-      "icon": Icons.backspace_rounded,
-      "action": "next"
-    },
+    // {
+    //   "name": "next",
+    //   "Cname": "next",
+    //   "number": "next",
+    //   "icon": Icons.backspace_rounded,
+    //   "action": "next"
+    // },
   ];
   List<Map<String, dynamic>> keyBoardList3 = [
     {
@@ -327,12 +327,19 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
       "number": "?",
       "icon": null
     },
+    // {
+    //   "name": "delete",
+    //   "Cname": "delete",
+    //   "number": "delete",
+    //   "icon": Icons.settings_backup_restore_outlined,
+    //   "action": "delete"
+    // },
     {
-      "name": "delete",
-      "Cname": "delete",
-      "number": "delete",
-      "icon": Icons.settings_backup_restore_outlined,
-      "action": "delete"
+      "name": "next",
+      "Cname": "next",
+      "number": "next",
+      "icon": Icons.backspace_rounded,
+      "action": "next"
     },
   ];
 
@@ -533,7 +540,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount:
                         keyBoardList1.length, // Number of columns in the grid
-                    childAspectRatio: 9 / 8, // Aspect ratio of the grid items
+                    childAspectRatio: 1.25, // Aspect ratio of the grid items
                     mainAxisSpacing: 5,
                     crossAxisSpacing: 5),
                 shrinkWrap: true,
@@ -615,7 +622,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount:
                         keyBoardList2.length, // Number of columns in the grid
-                    childAspectRatio: 9 / 8, // Aspect ratio of the grid items
+                    childAspectRatio: 1.25, // Aspect ratio of the grid items
                     mainAxisSpacing: 5,
                     crossAxisSpacing: 5),
                 shrinkWrap: true,
@@ -697,7 +704,7 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount:
                         keyBoardList3.length, // Number of columns in the grid
-                    childAspectRatio: 9 / 8, // Aspect ratio of the grid items
+                    childAspectRatio: 1.1, // Aspect ratio of the grid items
                     mainAxisSpacing: 5,
                     crossAxisSpacing: 5),
                 shrinkWrap: true,
@@ -713,9 +720,9 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                                 isCapsOn = !isCapsOn;
                                 // speakToText(isCapsOn ? "Capital" : "Small",
                                 //     widget.flutterTts);
+                              } else {
+                                widget.deleteLast();
                               }
-                            } else {
-                              widget.deleteLast();
                             }
                             setState(() {});
                           }
