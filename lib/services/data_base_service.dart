@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'package:avaz_app/model/language_modal.dart' as language;
-import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -141,7 +140,7 @@ class DataBaseService {
       await db.execute(query);
     }
 
-    print("All tables created successfully!");
+    // print("All tables created successfully!");
 
     // Helper function to check if a table is empty
     Future<bool> isTableEmpty(String tableName) async {
@@ -225,7 +224,7 @@ class DataBaseService {
           borderRadius: "5"));
     }
 
-    print("All tables created and default data inserted if necessary!");
+    // print("All tables created and default data inserted if necessary!");
   }
 
   Future<void> createTablesFromApiData({
@@ -256,10 +255,10 @@ class DataBaseService {
           final alterTableQuery =
               'ALTER TABLE $safeTableName ADD COLUMN $column TEXT';
           await db.execute(alterTableQuery);
-          print('Added column $column to table $safeTableName');
+          // print('Added column $column to table $safeTableName');
         }
       } else {
-        print('No new columns to add.');
+        // print('No new columns to add.');
       }
     } else {
       // If the table doesn't exist, create it with the API keys as columns
@@ -277,7 +276,7 @@ class DataBaseService {
 
       // Execute the query
       await db.execute(createTableQuery);
-      print('Table $safeTableName created with columns: $columns');
+      // print('Table $safeTableName created with columns: $columns');
     }
 
     // Insert the data into the table
@@ -333,7 +332,7 @@ class DataBaseService {
       await deleteNullData(tableName: safeTableName);
       // print('Data inserted into $tableName: $data');
     } else {
-      print('Data already exists in $tableName, skipping insert.');
+      // print('Data already exists in $tableName, skipping insert.');
     }
   }
 
@@ -364,10 +363,10 @@ class DataBaseService {
           final alterTableQuery =
               'ALTER TABLE $safeTableName ADD COLUMN $column TEXT';
           await db.execute(alterTableQuery);
-          print('Added column $column to table $safeTableName');
+          // print('Added column $column to table $safeTableName');
         }
       } else {
-        print('No new columns to add.');
+        // print('No new columns to add.');
       }
       id = await db.insert("'$tableName'", data);
     } else {
@@ -384,7 +383,7 @@ class DataBaseService {
     ''';
       // Execute the query
       await db.execute(createTableQuery);
-      print('Table $tableName created with columns: $columns');
+      // print('Table $tableName created with columns: $columns');
       id = await db.insert(tableName, data);
     }
     return id;
@@ -431,7 +430,7 @@ class DataBaseService {
       final db = await database;
       final tableExists = await _checkIfTableExists(db, tableName);
       if (tableExists) {
-        print("SELECT * FROM $tableName WHERE type = 'sub_categories'");
+        // print("SELECT * FROM $tableName WHERE type = 'sub_categories'");
         final result = await db
             .rawQuery("SELECT * FROM $tableName WHERE type = 'sub_categories'");
         return result;
@@ -439,7 +438,7 @@ class DataBaseService {
         return [];
       }
     } catch (e) {
-      debugPrint("Database query failed for table: $tableName. Error: $e");
+      // debugPrint("Database query failed for table: $tableName. Error: $e");
       return [];
     }
   }
@@ -450,14 +449,14 @@ class DataBaseService {
       final tableExists = await _checkIfTableExists(db, "language_data_add");
       if (tableExists) {
         final result = await db.rawQuery("SELECT * FROM language_data_add");
-        print(result);
+        // print(result);
         return result.map((data) => language.Data.fromJson(data)).toList();
       } else {
         return [];
       }
     } catch (e) {
-      debugPrint(
-          "Database query failed for table: 'language_data_add'. Error: $e");
+      // debugPrint(
+      //     "Database query failed for table: 'language_data_add'. Error: $e");
       return [];
     }
   }
@@ -497,9 +496,6 @@ class DataBaseService {
     FROM $tableName 
     LIMIT 1;
   ''');
-
-    print("datat =====> ${result.first['MAX(row_number)']}");
-
     // Safely parse the result as int
     return result.isNotEmpty
         ? int.tryParse(result.first['MAX(row_number)'].toString())
@@ -554,10 +550,11 @@ class DataBaseService {
     final db = await database;
     final accountDb = AccountSettingDatabase(db);
     final account = await accountDb.getAccountSetting(1);
-    // if (account != null) {
-    //   print(
-    //       "Account Setting: ${account.subscriptionType}, ${account.subscriptionPrice}");
-    // }
+    print("hello");
+    if (account != null) {
+      print(
+          "Account Setting: ${account.subscriptionType}, ${account.subscriptionPrice}");
+    }
 
     // final allAccounts = await accountDb.getAllAccountSettings();
     // for (var acc in allAccounts) {
