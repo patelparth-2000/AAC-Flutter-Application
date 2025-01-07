@@ -993,6 +993,37 @@ class DashboardScreenState extends State<DashboardScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 3),
               child: Text(_mainTextFieldController.text));
         }
+      } else {
+        String lastText = "";
+        if (_widgetList.isNotEmpty &&
+            _widgetList.last["widget"] is Container &&
+            (_widgetList.last["widget"] as Container).child != null) {
+          if ((_widgetList.last["widget"] as Container).child is Text) {
+            lastText = ((_widgetList.last["widget"] as Container).child as Text)
+                    .data ??
+                '';
+          } else if ((_widgetList.last["widget"] as Container).child
+              is Column) {
+            lastText +=
+                ((_widgetList.last["widget"] as Container).child as Column)
+                    .children
+                    .whereType<Text>()
+                    .map((textWidget) => textWidget.data ?? "")
+                    .join(" ");
+          }
+        }
+        if (lastText.isNotEmpty) {
+          lastText = lastText.substring(0, lastText.length - 1);
+          _mainTextFieldController.text = lastText;
+          _widgetList[_widgetList.length - 1]["widget"] = Container(
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              child: Text(_mainTextFieldController.text));
+        }
+      }
+      if (_mainTextFieldController.text.isEmpty && _widgetList.isNotEmpty) {
+        _widgetList.remove(_widgetList.last);
+        _isNewWidget = true;
+        keyboardSuggtionText = "";
       }
       scrollLastItem();
     });

@@ -407,20 +407,24 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
 
   void _filterSearchList() {
     keyboardSuggestionList.clear();
-    final query = widget.suggetionSearch.toLowerCase();
-    setState(() {
-      final filteredItems = searchTable
-          .where((item) => item.voice.toLowerCase().contains(query))
-          .toList();
-      filteredSearchList = filteredItems
-          .toSet()
-          .take(5)
-          .toList(); // Remove duplicates and limit to 5 items
-      for (var element in filteredSearchList) {
-        keyboardSuggestionList.add(element.voice);
-      }
-    });
-    setState(() {});
+    Future.delayed(const Duration(milliseconds: 50)).whenComplete(
+      () {
+        final query = widget.suggetionSearch.toLowerCase();
+        setState(() {
+          final filteredItems = searchTable
+              .where((item) => item.voice.toLowerCase().startsWith(query))
+              .toList();
+          filteredSearchList = filteredItems
+              .toSet()
+              .take(5)
+              .toList(); // Remove duplicates and limit to 5 items
+          for (var element in filteredSearchList) {
+            keyboardSuggestionList.add(element.voice);
+          }
+        });
+        setState(() {});
+      },
+    );
   }
 
   @override
