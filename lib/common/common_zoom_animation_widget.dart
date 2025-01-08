@@ -30,6 +30,7 @@ class CommonZoomAnimationWidget extends StatefulWidget {
   final double imageSize;
   final double textSize;
   final Function()? stopAudio;
+  final Function(int? id, {int? rowNumber})? onLongTap;
 
   const CommonZoomAnimationWidget(
       {super.key,
@@ -48,6 +49,7 @@ class CommonZoomAnimationWidget extends StatefulWidget {
       required this.textSize,
       required this.playAudio,
       this.stopAudio,
+      this.onLongTap,
       required this.hexToBordorColor});
 
   @override
@@ -111,6 +113,8 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
     return ScaleTransition(
       scale: _animation,
       child: CommonImageButton(
+        onLongTap: widget.onLongTap,
+        isLongTap: true,
         touchSettingModel: widget.touchSettingModel,
         stopAudio: widget.stopAudio,
         iscolorChange: false,
@@ -118,6 +122,8 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
         changeTable: widget.changeTable,
         slug: widget.getCategoryModal.slug,
         type: widget.getCategoryModal.type,
+        itemId: widget.getCategoryModal.id,
+        rowNumber: widget.getCategoryModal.rowNumber,
         onAdd: widget.onAdd,
         playAudio: widget.playAudio,
         flutterTts: widget.flutterTts,

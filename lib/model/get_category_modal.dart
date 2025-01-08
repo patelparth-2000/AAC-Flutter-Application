@@ -1,6 +1,7 @@
 // ignore_for_file: unnecessary_this, prefer_collection_literals, unnecessary_new
 
 class GetCategoryModal {
+  int? rowNumber;
   String? id;
   String? type;
   String? lang;
@@ -21,7 +22,8 @@ class GetCategoryModal {
   String? color;
 
   GetCategoryModal(
-      {this.id,
+      {this.rowNumber,
+      this.id,
       this.type,
       this.lang,
       this.categoryId,
@@ -37,9 +39,11 @@ class GetCategoryModal {
       this.deleteStatus,
       this.category,
       this.langName,
-      this.subcategory,this.color});
+      this.subcategory,
+      this.color});
 
   GetCategoryModal.fromJson(Map<String, dynamic> json) {
+    rowNumber = json['row_number'];
     id = json['id'];
     type = json['type'];
     lang = json['lang'];
@@ -71,6 +75,7 @@ class GetCategoryModal {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['row_number'] = this.rowNumber;
     data['id'] = this.id;
     data['type'] = this.type;
     data['lang'] = this.lang;

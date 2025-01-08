@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -33,11 +34,15 @@ class CommonImageButton extends StatefulWidget {
     this.isTextShow = true,
     this.iscolorChange = true,
     this.isSpeak = false,
+    this.isLongPress = false,
+    this.isLongTap = false,
     this.buttonImage,
     this.borderRadius,
     this.text,
     this.slug,
     this.type,
+    this.itemId,
+    this.rowNumber,
     this.flutterTts,
     this.onAdd,
     this.changeTable,
@@ -50,6 +55,7 @@ class CommonImageButton extends StatefulWidget {
     this.voiceFile,
     this.playAudio,
     this.stopAudio,
+    this.onLongTap,
     this.touchSettingModel,
   });
   final double? vertical;
@@ -77,9 +83,13 @@ class CommonImageButton extends StatefulWidget {
   final bool isTextShow;
   final bool iscolorChange;
   final bool isSpeak;
+  final bool isLongPress;
+  final bool isLongTap;
   final String? text;
   final String? slug;
   final String? type;
+  final String? itemId;
+  final int? rowNumber;
   final String textPostion;
   final FontWeight fontWeight;
   final FlutterTts? flutterTts;
@@ -89,6 +99,7 @@ class CommonImageButton extends StatefulWidget {
   final Function(String slug)? changeTable;
   final Function()? onTap;
   final Function()? stopAudio;
+  final Function(int? id, {int? rowNumber})? onLongTap;
   final TouchSettingModel? touchSettingModel;
   // final AudioPlayer? player;
   final Function(String audioPath)? playAudio;
@@ -100,6 +111,7 @@ class CommonImageButton extends StatefulWidget {
 class _CommonImageButtonState extends State<CommonImageButton> {
   String? audioPath;
   bool isButtonClick = false;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -111,19 +123,6 @@ class _CommonImageButtonState extends State<CommonImageButton> {
       isButtonClick = true;
     });
   }
-
-  // void _handleTapUp(TapUpDetails details) {
-  //   setState(() {
-  //     _currentBackgroundColor = widget.backgroundColor; // Reset on release
-  //   });
-  //   if (widget.text != null && widget.flutterTts != null) {
-  //     speckbutton();
-  //   } else {
-  //     if (widget.onTap != null) {
-  //       widget.onTap!();
-  //     }
-  //   }
-  // }
 
   void _handleTapUp(TapUpDetails details) async {
     if (widget.touchSettingModel!.enableTouch! &&
@@ -213,40 +212,44 @@ class _CommonImageButtonState extends State<CommonImageButton> {
     }
   }
 
-  // Future<void> playAudio() async {
-  //   try {
-  //     // Always stop the current audio
-  //     await player.stop();
+  void _startBackspace() {
+    if (widget.isLongTap) {
+      if (widget.onLongTap != null) {
+        widget.onLongTap!(int.parse(widget.itemId.toString()),
+            rowNumber: widget.rowNumber);
+      }
+    } else if (widget.isLongPress) {
+      _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+        if (widget.onTap != null) {
+          widget.onTap!();
+        }
+      });
+    }
+  }
 
-  //     // Play the new audio if the path is not null
-  //     if (audioPath != null) {
-  //       await player.play(DeviceFileSource(audioPath!));
-  //     }
-  //   } catch (e) {
-  //     // ignore: avoid_print
-  //     print("Error playing audio: $e");
-  //   }
-  // }
-
-  // Future<void> stopAudio() async {
-  //   if (player.state == PlayerState.playing) {
-  //     await player.stop();
-  //   }
-  // }
+  void _stopBackspace() {
+    if (widget.isLongPress) {
+      _timer?.cancel();
+      _timer = null;
+    }
+  }
 
   @override
   void dispose() {
     super.dispose();
-    // player.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       // onTap: widget.onTap,
       onTapDown: _handleTapDown,
       onTapUp: _handleTapUp,
       onTapCancel: _handleTapCancel,
+      onLongPress:
+          widget.isLongPress || widget.isLongTap ? _startBackspace : null,
+      onLongPressUp:
+          widget.isLongPress || widget.isLongTap ? _stopBackspace : null,
       child: Container(
         height: widget.height,
         width: widget.width,

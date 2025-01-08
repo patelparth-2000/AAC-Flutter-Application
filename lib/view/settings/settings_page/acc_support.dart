@@ -29,14 +29,14 @@ class _AccSupportState extends State<AccSupport> {
               height: 20,
             ),
             TitleWidget(
-              text: "Touch Voz SUPPORT",
+              text: "TouchVoz SUPPORT",
             ),
             SettingWidget(
-              text: "Join Touch Voz User Group on WhatsApp",
+              text: "Join TouchVoz User Group on WhatsApp",
               isArrow: false,
             ),
             SettingWidget(
-              text: "View Touch Voz FAQs",
+              text: "View TouchVoz FAQs",
               isArrow: false,
             ),
             SettingWidget(

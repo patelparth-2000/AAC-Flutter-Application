@@ -467,14 +467,25 @@ class DataBaseService {
     return result;
   }
 
-  Future<dynamic> deleteItem(int id, String? tableName) async {
+  Future<dynamic> deleteItem(int? id, String? tableName,
+      {int? rowNumber}) async {
     final db = await database;
     String tableName0 = tableName ?? "favourite_table";
-    final result = await db.rawQuery('''
+    dynamic result;
+    if (id != null) {
+      result = await db.rawQuery('''
     UPDATE $tableName0
     SET delete_status = 1
     WHERE id = $id;
     ''');
+    } else {
+      result = await db.rawQuery('''
+    UPDATE $tableName0
+    SET delete_status = 1
+    WHERE row_number = $rowNumber;
+    ''');
+    }
+
     return result;
   }
 

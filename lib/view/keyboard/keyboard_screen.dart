@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:avaz_app/util/dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -335,11 +337,11 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
     //   "action": "delete"
     // },
     {
-      "name": "next",
-      "Cname": "next",
-      "number": "next",
+      "name": "delete",
+      "Cname": "delete",
+      "number": "delete",
       "icon": Icons.backspace_rounded,
-      "action": "next"
+      "action": "delete"
     },
   ];
 
@@ -717,6 +719,10 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                   var data = keyBoardList3[index];
                   return CommonImageButton(
                     touchSettingModel: widget.touchSettingModel,
+                    isLongPress:
+                        data["action"] != null && data["action"] == "delete"
+                            ? true
+                            : false,
                     onTap: data["action"] != null
                         ? () {
                             if (data["action"] != null) {
@@ -919,7 +925,8 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                     isHorizontal: true,
                     buttonIcon: Icons.notifications_active_rounded,
                     buttonIconColor: AppColorConstants.keyBoardTextColor,
-                    text: "Alarm",
+                    text: "Help",
+                    isSpeak: true,
                     flutterTts: widget.flutterTts,
                     onTap: () {},
                   ),

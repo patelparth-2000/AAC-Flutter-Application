@@ -433,7 +433,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           text: "SUPPORT",
                         ),
                         SettingWidget(
-                            text: "Touch Voz Support",
+                            text: "TouchVoz Support",
                             onTap: () {
                               nextpage(const AccSupport());
                             }),

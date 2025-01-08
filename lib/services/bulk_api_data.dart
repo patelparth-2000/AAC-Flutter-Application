@@ -282,7 +282,7 @@ class BulkApiData {
     "My name is",
     "I live in",
     "I study in",
-    "I use Touch Voz to communicate",
+    "I use TouchVoz to communicate",
   ];
   static List<String> needHelpFavourite = [
     "I want to use the restroom",

@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Touch Voz',
+      title: 'TouchVoz',
       theme: ThemeData(
         fontFamily: AppConstants.fontFamilyNormal,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

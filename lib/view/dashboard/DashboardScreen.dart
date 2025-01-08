@@ -286,12 +286,14 @@ class DashboardScreenState extends State<DashboardScreen> {
       for (var item in categoryData) {
         if (item is Map<String, dynamic>) {
           Map<String, dynamic> modifiableItem = Map<String, dynamic>.from(item);
-          imageExists = await _checkImageExists(modifiableItem);
-          modifiableItem["imagePath"] = imagePath;
-          if (!imageExists) {
-            modifiableItem["image"] = null;
+          if (modifiableItem["delete_status"] != "1") {
+            imageExists = await _checkImageExists(modifiableItem);
+            modifiableItem["imagePath"] = imagePath;
+            if (!imageExists) {
+              modifiableItem["image"] = null;
+            }
+            getCategoryModalList.add(GetCategoryModal.fromJson(modifiableItem));
           }
-          getCategoryModalList.add(GetCategoryModal.fromJson(modifiableItem));
         }
       }
     }
@@ -380,6 +382,69 @@ class DashboardScreenState extends State<DashboardScreen> {
     isFavorite = favorite;
     isSave = save;
     setState(() {});
+  }
+
+  void showDeleteDialog(int? id, {int? rowNumber}) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColorConstants.keyBoardBackColor,
+        surfaceTintColor: AppColorConstants.keyBoardBackColor,
+        shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        title: const Text("Warning"),
+        content: const Text(
+          "Do you want to delete the\nselcted item?",
+          textAlign: TextAlign.center,
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              width: 100,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                  color: AppColorConstants.white,
+                  borderRadius: BorderRadius.circular(5)),
+              child: const Text(
+                "Close",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColorConstants.imageTextButtonColor),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () async {
+              await dbService.deleteItem(id, tableNames.last,
+                  rowNumber: rowNumber);
+              refreshGirdData();
+              // ignore: use_build_context_synchronously
+              Navigator.pop(context);
+            },
+            child: Container(
+              width: 100,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                  color: AppColorConstants.imageTextButtonColor,
+                  borderRadius: BorderRadius.circular(5)),
+              child: const Text(
+                "Delete",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColorConstants.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -716,6 +781,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                               playAudio: playAudio,
                                               onAdd: _addNewWidget,
                                               changeTable: changeTables,
+                                              onLongTap: showDeleteDialog,
                                               accountSettingModel:
                                                   accountSettingModel,
                                               audioSettingModel:
