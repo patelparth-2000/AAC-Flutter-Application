@@ -89,6 +89,7 @@ import 'package:avaz_app/util/app_color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
+import '../../common/common.dart';
 import '../../common/common_zoom_animation_widget.dart';
 import '../../model/get_category_modal.dart';
 import '../../util/dimensions.dart';
@@ -100,7 +101,7 @@ import '../settings/setting_model/picture_appearance_setting_model.dart';
 import '../settings/setting_model/picture_behaviour_setting_model.dart';
 import '../settings/setting_model/touch_setting.dart';
 
-class GridDateScreen extends StatefulWidget {
+class GridDateScreen extends StatelessWidget {
   const GridDateScreen(
       {super.key,
       required this.flutterTts,
@@ -117,7 +118,8 @@ class GridDateScreen extends StatefulWidget {
       required this.playAudio,
       this.stopAudio,
       this.onLongTap,
-      required this.hexToBordorColor});
+      required this.hexToBordorColor,
+      required this.gridScrollController});
   final FlutterTts flutterTts;
   final List<GetCategoryModal> getCategoryModalList;
   final Function(String text, String? image, {String? audioFile}) onAdd;
@@ -132,105 +134,28 @@ class GridDateScreen extends StatefulWidget {
   final GeneralSettingModel? generalSettingModel;
   final TouchSettingModel? touchSettingModel;
   final Function()? stopAudio;
-  final Function(int? id,{int? rowNumber})? onLongTap;
-
-  @override
-  State<GridDateScreen> createState() => _GridDateScreenState();
-}
-
-class _GridDateScreenState extends State<GridDateScreen> {
-  List<dynamic> gridList = [
-    {
-      "count": 77,
-      "item": 11,
-      "ratio": 1.3,
-      "image": Dimensions.screenHeight * 0.05,
-      "text": Dimensions.screenHeight * 0.01
-    },
-    {
-      "count": 60,
-      "item": 10,
-      "ratio": 1.3,
-      "image": Dimensions.screenHeight * 0.05,
-      "text": Dimensions.screenHeight * 0.01
-    },
-    {
-      "count": 40,
-      "item": 8,
-      "ratio": 1.3,
-      "image": Dimensions.screenHeight * 0.08,
-      "text": Dimensions.screenHeight * 0.03
-    },
-    {
-      "count": 24,
-      "item": 6,
-      "ratio": 1.3,
-      "image": Dimensions.screenHeight * 0.1,
-      "text": Dimensions.screenHeight * 0.05
-    },
-    {
-      "count": 15,
-      "item": 5,
-      "ratio": 1.3,
-      "image": Dimensions.screenHeight * 0.1,
-      "text": Dimensions.screenHeight * 0.05
-    },
-    {
-      "count": 8,
-      "item": 4,
-      "ratio": 1.2,
-      "image": Dimensions.screenHeight * 0.2,
-      "text": Dimensions.screenHeight * 0.07
-    },
-    {
-      "count": 4,
-      "item": 2,
-      "ratio": 2.4,
-      "image": Dimensions.screenHeight * 0.2,
-      "text": Dimensions.screenHeight * 0.07
-    },
-    {
-      "count": 3,
-      "item": 3,
-      "ratio": 0.8,
-      "image": Dimensions.screenHeight * 0.3,
-      "text": Dimensions.screenHeight * 0.1
-    },
-    {
-      "count": 2,
-      "item": 2,
-      "ratio": 1.2,
-      "image": Dimensions.screenHeight * 0.3,
-      "text": Dimensions.screenHeight * 0.1
-    },
-    {
-      "count": 1,
-      "item": 1,
-      "ratio": 2.4,
-      "image": Dimensions.screenHeight * 0.3,
-      "text": Dimensions.screenHeight * 0.1
-    },
-  ];
+  final Function(int? id, {int? rowNumber})? onLongTap;
+  final ScrollController gridScrollController;
 
   @override
   Widget build(BuildContext context) {
     double ratio = gridList.firstWhere(
       (element) =>
           element["count"] ==
-          widget.pictureAppearanceSettingModel!.picturePerScreenCount!,
+          pictureAppearanceSettingModel!.picturePerScreenCount!,
       orElse: () =>
           {"ratio": 1.0}, // Provide a default value if no match is found
     )["ratio"];
     int count = gridList.firstWhere(
       (element) =>
           element["count"] ==
-          widget.pictureAppearanceSettingModel!.picturePerScreenCount!,
+          pictureAppearanceSettingModel!.picturePerScreenCount!,
       orElse: () => {"item": 6}, // Provide a default value if no match is found
     )["item"];
     double imageSize = gridList.firstWhere(
       (element) =>
           element["count"] ==
-          widget.pictureAppearanceSettingModel!.picturePerScreenCount!,
+          pictureAppearanceSettingModel!.picturePerScreenCount!,
       orElse: () => {
         "image": Dimensions.screenHeight * 0.1
       }, // Provide a default value if no match is found
@@ -238,7 +163,7 @@ class _GridDateScreenState extends State<GridDateScreen> {
     double textSize = gridList.firstWhere(
       (element) =>
           element["count"] ==
-          widget.pictureAppearanceSettingModel!.picturePerScreenCount!,
+          pictureAppearanceSettingModel!.picturePerScreenCount!,
       orElse: () => {
         "text": Dimensions.screenHeight * 0.05
       }, // Provide a default value if no match is found
@@ -249,32 +174,33 @@ class _GridDateScreenState extends State<GridDateScreen> {
       color: AppColorConstants.white,
       child: GridView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 5),
+        controller: gridScrollController,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: count, // Number of columns in the grid
             childAspectRatio: ratio, // Aspect ratio of the grid items
             mainAxisSpacing: 5,
             crossAxisSpacing: 5),
         shrinkWrap: true,
-        itemCount: widget.getCategoryModalList.length,
+        itemCount: getCategoryModalList.length,
         itemBuilder: (context, index) {
-          var getCategoryData = widget.getCategoryModalList[index];
+          var getCategoryData = getCategoryModalList[index];
           return CommonZoomAnimationWidget(
-            hexToBordorColor: widget.hexToBordorColor,
-            onLongTap: widget.onLongTap,
-            stopAudio: widget.stopAudio,
-            playAudio: widget.playAudio,
+            hexToBordorColor: hexToBordorColor,
+            onLongTap: onLongTap,
+            stopAudio: stopAudio,
+            playAudio: playAudio,
             imageSize: imageSize,
             textSize: textSize,
-            accountSettingModel: widget.accountSettingModel,
-            audioSettingModel: widget.audioSettingModel,
-            generalSettingModel: widget.generalSettingModel,
-            keyboardSettingModel: widget.keyboardSettingModel,
-            pictureAppearanceSettingModel: widget.pictureAppearanceSettingModel,
-            pictureBehaviourSettingModel: widget.pictureBehaviourSettingModel,
-            touchSettingModel: widget.touchSettingModel,
-            flutterTts: widget.flutterTts,
-            onAdd: widget.onAdd,
-            changeTable: widget.changeTable,
+            accountSettingModel: accountSettingModel,
+            audioSettingModel: audioSettingModel,
+            generalSettingModel: generalSettingModel,
+            keyboardSettingModel: keyboardSettingModel,
+            pictureAppearanceSettingModel: pictureAppearanceSettingModel,
+            pictureBehaviourSettingModel: pictureBehaviourSettingModel,
+            touchSettingModel: touchSettingModel,
+            flutterTts: flutterTts,
+            onAdd: onAdd,
+            changeTable: changeTable,
             getCategoryModal: getCategoryData,
           );
         },

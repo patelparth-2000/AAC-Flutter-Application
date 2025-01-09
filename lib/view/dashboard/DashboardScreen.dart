@@ -36,6 +36,7 @@ class DashboardScreen extends StatefulWidget {
 
 class DashboardScreenState extends State<DashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final ScrollController _gridScrollController = ScrollController();
   final AudioPlayer player = AudioPlayer();
   final GlobalKey<NavigatorState> _dashboradNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -447,6 +448,66 @@ class DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  final double _spacing = 5.0;
+  double offset = 0.0;
+
+  double _calculateItemHeight() {
+    double aspectRatio = gridList.firstWhere(
+      (element) =>
+          element["count"] ==
+          pictureAppearanceSettingModel!.picturePerScreenCount!,
+      orElse: () =>
+          {"ratio": 1.0}, // Provide a default value if no match is found
+    )["ratio"];
+    int crossAxisCount = gridList.firstWhere(
+      (element) =>
+          element["count"] ==
+          pictureAppearanceSettingModel!.picturePerScreenCount!,
+      orElse: () => {"item": 6}, // Provide a default value if no match is found
+    )["item"];
+
+    final width = Dimensions.screenWidth;
+    final availableWidth =
+        (width - ((crossAxisCount - 1) * _spacing)) / crossAxisCount;
+    return availableWidth / aspectRatio;
+  }
+
+  void _scrollDown() {
+    final double itemHeight = _calculateItemHeight();
+    final double maxScrollExtent =
+        _gridScrollController.position.maxScrollExtent;
+
+    if (_gridScrollController.offset < maxScrollExtent) {
+      offset = _gridScrollController.offset + itemHeight + _spacing;
+      if (offset > maxScrollExtent) {
+        offset = maxScrollExtent; // Don't scroll past the end
+      }
+      _gridScrollController.animateTo(
+        offset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _scrollUp() {
+    final double itemHeight = _calculateItemHeight();
+    final double minScrollExtent =
+        _gridScrollController.position.minScrollExtent;
+
+    if (_gridScrollController.offset > minScrollExtent) {
+      offset = _gridScrollController.offset - itemHeight - _spacing;
+      if (offset < minScrollExtent) {
+        offset = minScrollExtent; // Don't scroll past the start
+      }
+      _gridScrollController.animateTo(
+        offset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -772,6 +833,8 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   keyboardSuggtionText,
                                             )
                                           : GridDateScreen(
+                                              gridScrollController:
+                                                  _gridScrollController,
                                               hexToBordorColor:
                                                   hexToBordorColor,
                                               stopAudio: stopAudio,
@@ -883,6 +946,11 @@ class DashboardScreenState extends State<DashboardScreen> {
                             } else if (sideButtonNameList[i]["name"] ==
                                 "Home") {
                               getDataFromDatabse();
+                            } else if (sideButtonNameList[i]["name"] == "Up") {
+                              _scrollUp();
+                            } else if (sideButtonNameList[i]["name"] ==
+                                "Down") {
+                              _scrollDown();
                             } else if (sideButtonNameList[i]["name"] ==
                                 "Search") {
                               isSearchOpen = true;

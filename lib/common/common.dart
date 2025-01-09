@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../util/app_color_constants.dart';
 import '../util/app_constants.dart';
+import '../util/dimensions.dart';
 
 class CommonSystemUI {
   static SystemUiOverlayStyle systemStyle = const SystemUiOverlayStyle(
@@ -53,3 +54,76 @@ String changeDateFormat(String datetime) {
       DateFormat('dd-MMM-yyyy').format(parsedDate).toLowerCase();
   return formattedDate;
 }
+
+List<dynamic> gridList = [
+    {
+      "count": 77,
+      "item": 11,
+      "ratio": 1.3,
+      "image": Dimensions.screenHeight * 0.05,
+      "text": Dimensions.screenHeight * 0.01
+    },
+    {
+      "count": 60,
+      "item": 10,
+      "ratio": 1.3,
+      "image": Dimensions.screenHeight * 0.05,
+      "text": Dimensions.screenHeight * 0.01
+    },
+    {
+      "count": 40,
+      "item": 8,
+      "ratio": 1.3,
+      "image": Dimensions.screenHeight * 0.08,
+      "text": Dimensions.screenHeight * 0.03
+    },
+    {
+      "count": 24,
+      "item": 6,
+      "ratio": 1.3,
+      "image": Dimensions.screenHeight * 0.1,
+      "text": Dimensions.screenHeight * 0.05
+    },
+    {
+      "count": 15,
+      "item": 5,
+      "ratio": 1.3,
+      "image": Dimensions.screenHeight * 0.1,
+      "text": Dimensions.screenHeight * 0.05
+    },
+    {
+      "count": 8,
+      "item": 4,
+      "ratio": 1.2,
+      "image": Dimensions.screenHeight * 0.2,
+      "text": Dimensions.screenHeight * 0.07
+    },
+    {
+      "count": 4,
+      "item": 2,
+      "ratio": 2.4,
+      "image": Dimensions.screenHeight * 0.2,
+      "text": Dimensions.screenHeight * 0.07
+    },
+    {
+      "count": 3,
+      "item": 3,
+      "ratio": 0.8,
+      "image": Dimensions.screenHeight * 0.3,
+      "text": Dimensions.screenHeight * 0.1
+    },
+    {
+      "count": 2,
+      "item": 2,
+      "ratio": 1.2,
+      "image": Dimensions.screenHeight * 0.3,
+      "text": Dimensions.screenHeight * 0.1
+    },
+    {
+      "count": 1,
+      "item": 1,
+      "ratio": 2.4,
+      "image": Dimensions.screenHeight * 0.3,
+      "text": Dimensions.screenHeight * 0.1
+    },
+  ];
