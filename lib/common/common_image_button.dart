@@ -57,6 +57,7 @@ class CommonImageButton extends StatefulWidget {
     this.stopAudio,
     this.onLongTap,
     this.touchSettingModel,
+    this.pinValue,
   });
   final double? vertical;
   final double? horizontal;
@@ -90,6 +91,7 @@ class CommonImageButton extends StatefulWidget {
   final String? type;
   final String? itemId;
   final int? rowNumber;
+  final int? pinValue;
   final String textPostion;
   final FontWeight fontWeight;
   final FlutterTts? flutterTts;
@@ -99,7 +101,7 @@ class CommonImageButton extends StatefulWidget {
   final Function(String slug)? changeTable;
   final Function()? onTap;
   final Function()? stopAudio;
-  final Function(int? id, {int? rowNumber})? onLongTap;
+  final Function(int? id, {int? rowNumber, int? pinValue})? onLongTap;
   final TouchSettingModel? touchSettingModel;
   // final AudioPlayer? player;
   final Function(String audioPath)? playAudio;
@@ -216,7 +218,7 @@ class _CommonImageButtonState extends State<CommonImageButton> {
     if (widget.isLongTap) {
       if (widget.onLongTap != null) {
         widget.onLongTap!(int.parse(widget.itemId.toString()),
-            rowNumber: widget.rowNumber);
+            rowNumber: widget.rowNumber, pinValue: widget.pinValue);
       }
     } else if (widget.isLongPress) {
       _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
@@ -402,6 +404,15 @@ class _CommonImageButtonState extends State<CommonImageButton> {
                       ),
                     ),
             ),
+            if (widget.pinValue != null && widget.pinValue == 1)
+              const Align(
+                alignment: Alignment.topRight,
+                child: Icon(
+                  Icons.push_pin_rounded,
+                  color: AppColorConstants.blue80,
+                  size: 15,
+                ),
+              ),
             Container(
                 width: isButtonClick ? widget.width : 0,
                 height: isButtonClick ? widget.height : 0,

@@ -268,11 +268,13 @@ class DataBaseService {
           .join(', ');
 
       final createTableQuery = '''
-    CREATE TABLE IF NOT EXISTS $safeTableName (
-      row_number INTEGER PRIMARY KEY AUTOINCREMENT,
-      $columns
-    )
-  ''';
+      CREATE TABLE IF NOT EXISTS $safeTableName (
+        row_number INTEGER PRIMARY KEY AUTOINCREMENT,
+        position INTEGER DEFAULT 0,
+        pin_item BOOLEAN DEFAULT 0,
+        $columns
+      )
+    ''';
 
       // Execute the query
       await db.execute(createTableQuery);
@@ -328,8 +330,9 @@ class DataBaseService {
 
     if (existingData.isEmpty) {
       // Insert data into table if it doesn't exist
-      await db.insert(safeTableName, data);
+      int rowNumber = await db.insert(safeTableName, data);
       await deleteNullData(tableName: safeTableName);
+      await postionDataAdd(tableName: safeTableName, rowNumber: rowNumber);
       // print('Data inserted into $tableName: $data');
     } else {
       // print('Data already exists in $tableName, skipping insert.');
@@ -339,6 +342,36 @@ class DataBaseService {
   Future<void> deleteNullData({required String tableName}) async {
     final db = await database;
     await db.execute("DELETE FROM $tableName WHERE id IS NULL");
+  }
+
+  Future<void> postionDataAdd(
+      {required String tableName, required int rowNumber, int? index}) async {
+    final db = await database;
+    final updatedValues = {
+      'position': index ?? rowNumber, // Update only the 'id' column
+    };
+
+    await db.update(
+      tableName, // Table name
+      updatedValues, // Updated values
+      where: 'row_number = ?', // Condition for updating
+      whereArgs: [rowNumber], // Arguments for the condition
+    );
+  }
+
+  Future<void> pinDataAdd(
+      {required String tableName, required int rowNumber,required int pinvalue}) async {
+    final db = await database;
+    final updatedValues = {
+      'pin_item': pinvalue,
+    };
+
+    await db.update(
+      tableName, // Table name
+      updatedValues, // Updated values
+      where: 'row_number = ?', // Condition for updating
+      whereArgs: [rowNumber], // Arguments for the condition
+    );
   }
 
   Future<int> insertDataIntoTableManual({
@@ -378,6 +411,8 @@ class DataBaseService {
       final createTableQuery = '''
       CREATE TABLE IF NOT EXISTS $tableName (
         row_number INTEGER PRIMARY KEY AUTOINCREMENT,
+        position INTEGER DEFAULT 0,
+        pin_item BOOLEAN DEFAULT 0,
         $columns
       )
     ''';

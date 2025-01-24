@@ -26,24 +26,24 @@ class AppColorConstants {
   static const Color black5 = Color(0x0D000000);
 
   //-------------------- Sentiment colours ------------------//
-  static const Color sentimentNegative = Color(0xFFC31E07);
-  static const Color sentimentPositive = Color(0xFF09A158);
-  static const Color sentimentWarning = Color(0xFFF9C50C);
-  static const Color sentimentDotColor = Color(0xFF087CE7);
+  // static const Color sentimentNegative = Color(0xFFC31E07);
+  // static const Color sentimentPositive = Color(0xFF09A158);
+  // static const Color sentimentWarning = Color(0xFFF9C50C);
+  // static const Color sentimentDotColor = Color(0xFF087CE7);
 
   //------------------- Border colours --------------------//
-  static const Color border = Color(0xFFE6E6E6);
-  static const Color outline = Color(0xFFE6E6E6);
-  static const Color separator = Color(0xFFE6E6E6);
-  static const Color pageIndicator = Color(0xFFE8E8E8);
+  // static const Color border = Color(0xFFE6E6E6);
+  // static const Color outline = Color(0xFFE6E6E6);
+  // static const Color separator = Color(0xFFE6E6E6);
+  // static const Color pageIndicator = Color(0xFFE8E8E8);
   // static const Color inActiveButton = Color(0xFFD3D4D7);
 
   //------------------- Base colours ----------------------//
-  static const Color base = Color(0xFFF8F9FD);
-  static const Color green10 = Color(0x1A06C167);
-  static const Color sentimentWarning10 = Color(0x1AF9C50C);
-  static const Color sentimentWarning20 = Color(0x33F9C50C);
-  static const Color transparent = Colors.transparent;
+  // static const Color base = Color(0xFFF8F9FD);
+  // static const Color green10 = Color(0x1A06C167);
+  // static const Color sentimentWarning10 = Color(0x1AF9C50C);
+  // static const Color sentimentWarning20 = Color(0x33F9C50C);
+  // static const Color transparent = Colors.transparent;
 
   //------------------- Icons colours ---------------------//
 
@@ -52,6 +52,10 @@ class AppColorConstants {
   static const Color inActiveButton = Color(0xFF808080);
   static const Color textTitle = Color(0xFF616775);
   static const Color background = Color(0xFFFAFAFA);
+  static const Color textFieldIcon1 = Color(0xFFb116e0);
+  static const Color textFieldIcon2 = Color(0xFFe62ed9);
+  static const Color textFieldIcon3 = Color(0xFFe6772e);
+  static const Color textFieldIcon4 = Color(0xFFe67d2e);
 
   // static const Color keyBackground = Color(0xFFFFE1C4);
   // static const Color keyTextColor = Color(0xFF5C3B24);

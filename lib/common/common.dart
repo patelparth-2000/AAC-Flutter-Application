@@ -56,74 +56,94 @@ String changeDateFormat(String datetime) {
 }
 
 List<dynamic> gridList = [
-    {
-      "count": 77,
-      "item": 11,
-      "ratio": 1.3,
-      "image": Dimensions.screenHeight * 0.05,
-      "text": Dimensions.screenHeight * 0.01
-    },
-    {
-      "count": 60,
-      "item": 10,
-      "ratio": 1.3,
-      "image": Dimensions.screenHeight * 0.05,
-      "text": Dimensions.screenHeight * 0.01
-    },
-    {
-      "count": 40,
-      "item": 8,
-      "ratio": 1.3,
-      "image": Dimensions.screenHeight * 0.08,
-      "text": Dimensions.screenHeight * 0.03
-    },
-    {
-      "count": 24,
-      "item": 6,
-      "ratio": 1.3,
-      "image": Dimensions.screenHeight * 0.1,
-      "text": Dimensions.screenHeight * 0.05
-    },
-    {
-      "count": 15,
-      "item": 5,
-      "ratio": 1.3,
-      "image": Dimensions.screenHeight * 0.1,
-      "text": Dimensions.screenHeight * 0.05
-    },
-    {
-      "count": 8,
-      "item": 4,
-      "ratio": 1.2,
-      "image": Dimensions.screenHeight * 0.2,
-      "text": Dimensions.screenHeight * 0.07
-    },
-    {
-      "count": 4,
-      "item": 2,
-      "ratio": 2.4,
-      "image": Dimensions.screenHeight * 0.2,
-      "text": Dimensions.screenHeight * 0.07
-    },
-    {
-      "count": 3,
-      "item": 3,
-      "ratio": 0.8,
-      "image": Dimensions.screenHeight * 0.3,
-      "text": Dimensions.screenHeight * 0.1
-    },
-    {
-      "count": 2,
-      "item": 2,
-      "ratio": 1.2,
-      "image": Dimensions.screenHeight * 0.3,
-      "text": Dimensions.screenHeight * 0.1
-    },
-    {
-      "count": 1,
-      "item": 1,
-      "ratio": 2.4,
-      "image": Dimensions.screenHeight * 0.3,
-      "text": Dimensions.screenHeight * 0.1
-    },
-  ];
+  {
+    "count": 77,
+    "item": 11,
+    "ratio": 1.3,
+    "image": Dimensions.screenHeight * 0.05,
+    "text": Dimensions.screenHeight * 0.01,
+    "height": Dimensions.screenHeight * .14,
+    "width": Dimensions.screenWidth * .08,
+  },
+  {
+    "count": 60,
+    "item": 10,
+    "ratio": 1.3,
+    "image": Dimensions.screenHeight * 0.05,
+    "text": Dimensions.screenHeight * 0.01,
+    "height": Dimensions.screenHeight * .15,
+    "width": Dimensions.screenWidth * .09,
+  },
+  {
+    "count": 40,
+    "item": 8,
+    "ratio": 1.3,
+    "image": Dimensions.screenHeight * 0.08,
+    "text": Dimensions.screenHeight * 0.03,
+    "height": Dimensions.screenHeight * .2,
+    "width": Dimensions.screenWidth * .12,
+  },
+  {
+    "count": 24,
+    "item": 6,
+    "ratio": 1.3,
+    "image": Dimensions.screenHeight * 0.1,
+    "text": Dimensions.screenHeight * 0.05,
+    "height": Dimensions.screenHeight * .26,
+    "width": Dimensions.screenWidth * .16,
+  },
+  {
+    "count": 15,
+    "item": 5,
+    "ratio": 1.3,
+    "image": Dimensions.screenHeight * 0.1,
+    "text": Dimensions.screenHeight * 0.05,
+    "height": Dimensions.screenHeight * .31,
+    "width": Dimensions.screenWidth * .19,
+  },
+  {
+    "count": 8,
+    "item": 4,
+    "ratio": 1.2,
+    "image": Dimensions.screenHeight * 0.2,
+    "text": Dimensions.screenHeight * 0.07,
+    "height": Dimensions.screenHeight * .4,
+    "width": Dimensions.screenWidth * .24,
+  },
+  {
+    "count": 4,
+    "item": 2,
+    "ratio": 2.4,
+    "image": Dimensions.screenHeight * 0.2,
+    "text": Dimensions.screenHeight * 0.07,
+    "height": Dimensions.screenHeight * .45,
+    "width": Dimensions.screenWidth * .45,
+  },
+  {
+    "count": 3,
+    "item": 3,
+    "ratio": 0.8,
+    "image": Dimensions.screenHeight * 0.3,
+    "text": Dimensions.screenHeight * 0.1,
+    "height": Dimensions.screenHeight * .8,
+    "width": Dimensions.screenWidth * .32,
+  },
+  {
+    "count": 2,
+    "item": 2,
+    "ratio": 1.2,
+    "image": Dimensions.screenHeight * 0.3,
+    "text": Dimensions.screenHeight * 0.1,
+    "height": Dimensions.screenHeight * .8,
+    "width": Dimensions.screenWidth * .45,
+  },
+  {
+    "count": 1,
+    "item": 1,
+    "ratio": 2.4,
+    "image": Dimensions.screenHeight * 0.3,
+    "text": Dimensions.screenHeight * 0.1,
+    "height": Dimensions.screenHeight * .8,
+    "width": Dimensions.screenWidth * .9,
+  },
+];

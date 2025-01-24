@@ -41,7 +41,8 @@ class KeyboardScreen extends StatefulWidget {
       this.isFavorite = false,
       this.isSaveEnable = false,
       this.saveAllText,
-      required this.suggetionSearch});
+      required this.suggetionSearch,
+      required this.isFirstValue});
   final FlutterTts flutterTts;
   final Function(String, String?) onAdd;
   final Function(String, {bool isKeyboard}) onTextValue;
@@ -53,6 +54,7 @@ class KeyboardScreen extends StatefulWidget {
   final bool isSave;
   final bool isFavorite;
   final bool isSaveEnable;
+  final bool isFirstValue;
   final DataBaseService dataBaseService;
   final AccountSettingModel? accountSettingModel;
   final PictureAppearanceSettingModel? pictureAppearanceSettingModel;
@@ -68,7 +70,7 @@ class KeyboardScreen extends StatefulWidget {
 }
 
 class _KeyboardScreenState extends State<KeyboardScreen> {
-  List<String> suggestionList = ["I", "Yes", "Your", "it", "the"];
+  List<String> suggestionList = ["I", "Yes", "Your", "It", "The"];
   List<Map<String, dynamic>> keyBoardList1 = [
     {
       "name": "q",
@@ -492,13 +494,17 @@ class _KeyboardScreenState extends State<KeyboardScreen> {
                       text: data,
                       onTap: () {
                         if (widget.suggetionSearch.isNotEmpty) {
-                          widget.onTextValue(data, isKeyboard: true);
+                          widget.onTextValue(
+                              !widget.isFirstValue ? data.toLowerCase() : data,
+                              isKeyboard: true);
                           Future.delayed(const Duration(milliseconds: 20))
                               .whenComplete(() {
                             widget.onSpace();
                           });
                         } else {
-                          widget.onAdd(data, null);
+                          widget.onAdd(
+                              widget.isSaveEnable ? data.toLowerCase() : data,
+                              null);
                         }
                       },
                       backgroundColor: AppColorConstants.keyBoardBackColor,

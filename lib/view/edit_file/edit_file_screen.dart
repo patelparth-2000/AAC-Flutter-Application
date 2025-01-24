@@ -32,6 +32,7 @@ class EditFileScreen extends StatefulWidget {
 class EditFileScreenState extends State<EditFileScreen> {
   bool isKeyBoardShow = false;
   bool isSearchOpen = false;
+  bool isDotClick = false;
   final TextEditingController _mainTextFieldController =
       TextEditingController();
   final List<Map<String, dynamic>> _widgetList = [];
@@ -194,6 +195,7 @@ class EditFileScreenState extends State<EditFileScreen> {
                     children: [
                       Expanded(
                           child: KeyboardScreen(
+                        isFirstValue: _widgetList.length == 1 || isDotClick,
                         dataBaseService: widget.dataBaseService,
                         flutterTts: widget.flutterTts,
                         onAdd: _addNewWidget,
@@ -238,6 +240,9 @@ class EditFileScreenState extends State<EditFileScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 3),
               child: Text(_mainTextFieldController.text));
         }
+      }
+      if (text == ".") {
+        isDotClick = true;
       }
       keyboardSuggtionText = _mainTextFieldController.text;
       scrollLastItem();

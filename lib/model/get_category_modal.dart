@@ -2,6 +2,8 @@
 
 class GetCategoryModal {
   int? rowNumber;
+  int? position;
+  int? pinItem;
   String? id;
   String? type;
   String? lang;
@@ -23,6 +25,8 @@ class GetCategoryModal {
 
   GetCategoryModal(
       {this.rowNumber,
+      this.position,
+      this.pinItem,
       this.id,
       this.type,
       this.lang,
@@ -44,6 +48,8 @@ class GetCategoryModal {
 
   GetCategoryModal.fromJson(Map<String, dynamic> json) {
     rowNumber = json['row_number'];
+    position = json['position'];
+    pinItem = json['pin_item'];
     id = json['id'];
     type = json['type'];
     lang = json['lang'];
@@ -76,6 +82,8 @@ class GetCategoryModal {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['row_number'] = this.rowNumber;
+    data['position'] = this.position;
+    data['pin_item'] = this.pinItem;
     data['id'] = this.id;
     data['type'] = this.type;
     data['lang'] = this.lang;

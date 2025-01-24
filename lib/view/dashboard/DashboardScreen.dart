@@ -44,6 +44,7 @@ class DashboardScreenState extends State<DashboardScreen> {
   final dbService = DataBaseService.instance;
   bool _canExit = false;
   bool isKeyBoardShow = false;
+  bool isDotClick = false;
   bool isSearchOpen = false;
   bool isFavorite = false;
   bool isSave = false;
@@ -368,14 +369,19 @@ class DashboardScreenState extends State<DashboardScreen> {
   }
 
   void sortCategoryModalList() {
-    getCategoryModalList.sort((a, b) {
-      const typeOrder = {
-        'category': 0,
-        'sub_categories': 1,
-        'voice': 2,
-      };
-      return (typeOrder[a.type] ?? 3).compareTo(typeOrder[b.type] ?? 3);
-    });
+    getCategoryModalList.sort(
+      (a, b) {
+        return (a.position)!.compareTo(b.position!);
+      },
+    );
+    // getCategoryModalList.sort((a, b) {
+    //   const typeOrder = {
+    //     'category': 0,
+    //     'sub_categories': 1,
+    //     'voice': 2,
+    //   };
+    //   return (typeOrder[a.type] ?? 3).compareTo(typeOrder[b.type] ?? 3);
+    // });
   }
 
   void keyboradShow(bool keyboard, bool favorite, bool save) {
@@ -383,6 +389,145 @@ class DashboardScreenState extends State<DashboardScreen> {
     isFavorite = favorite;
     isSave = save;
     setState(() {});
+  }
+
+  void changePosition() async {
+    for (var i = 0; i < getCategoryModalList.length; i++) {
+      await dbService.postionDataAdd(
+          tableName: tableNames.last,
+          rowNumber: getCategoryModalList[i].rowNumber!,
+          index: i + 1);
+    }
+  }
+
+  void pinItemAdd(int? rowNumber, int pinItem) async {
+    await dbService.pinDataAdd(
+        tableName: tableNames.last, rowNumber: rowNumber!, pinvalue: pinItem);
+    for (var i = 0; i < getCategoryModalList.length; i++) {
+      if (rowNumber == getCategoryModalList[i].rowNumber) {
+        getCategoryModalList[i].pinItem = pinItem;
+      }
+    }
+    setState(() {});
+  }
+
+  List<String> optionList = ["Pin", "Delete"];
+
+  void showOptionDialog(int? id, {int? rowNumber, int? pinValue}) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: AppColorConstants.keyBoardBackColor,
+        surfaceTintColor: AppColorConstants.keyBoardBackColor,
+        shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                width: Dimensions.screenWidth * .3,
+                child: const Row(
+                  children: [
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
+                      child: Text(
+                        "Select Option",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              for (int i = 0; i < optionList.length; i++)
+                Column(
+                  children: [
+                    CommonImageButton(
+                      touchSettingModel: touchSettingModel,
+                      width: Dimensions.screenWidth * 0.15,
+                      height: Dimensions.screenHeight * .1,
+                      isHorizontal: true,
+                      text: "${pinValue == 0 ? '' : 'Un'}${optionList[i]}",
+                      buttonName: optionList[i] == "Pin"
+                          ? pinValue == 0
+                              ? 'Pin'
+                              : 'Unpin'
+                          : optionList[i],
+                      horizontal: 10,
+                      vertical: 5,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      fontWeight: FontWeight.bold,
+                      onTap: () {
+                        if (optionList[i] == "Pin") {
+                          if (pinValue == 0) {
+                            pinItemAdd(
+                              rowNumber,
+                              1,
+                            );
+                          } else {
+                            pinItemAdd(
+                              rowNumber,
+                              0,
+                            );
+                          }
+                          Navigator.pop(context);
+                        } else if (optionList[i] == "Delete") {
+                          Navigator.pop(context);
+                          showDeleteDialog(id, rowNumber: rowNumber);
+                        }
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                  ],
+                ),
+              const SizedBox(
+                height: 5,
+              ),
+              SizedBox(
+                width: Dimensions.screenWidth * .3,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        width: 70,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                            color: AppColorConstants.white,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: const Text(
+                          "Close",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: AppColorConstants.imageTextButtonColor),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void showDeleteDialog(int? id, {int? rowNumber}) {
@@ -660,8 +805,15 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   ),
                                                 ),
                                               ),
-                                              if (_widgetList.isNotEmpty)
-                                                for (int i = 0; i < 4; i++)
+                                              for (int i = 0;
+                                                  i <
+                                                      textFieldButtonNameList
+                                                          .length;
+                                                  i++)
+                                                if (_widgetList.isNotEmpty ||
+                                                    ['Menu', 'Search'].contains(
+                                                        textFieldButtonNameList[
+                                                            i]["name"]))
                                                   Row(
                                                     children: [
                                                       CommonImageButton(
@@ -672,6 +824,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                         isTextShow: true,
                                                         vertical: 0,
                                                         horizontal: 0,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
                                                         width: 45,
                                                         height: 45,
                                                         isSpeak: textFieldButtonNameList[
@@ -686,18 +841,30 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                             AppColorConstants
                                                                 .white,
                                                         buttonIconColor:
-                                                            AppColorConstants
-                                                                .imageTextButtonColor,
+                                                            textFieldButtonNameList[
+                                                                        i]
+                                                                    ["color"] ??
+                                                                AppColorConstants
+                                                                    .imageTextButtonColor,
                                                         buttonIcon:
                                                             textFieldButtonNameList[
                                                                 i]["icon"],
                                                         imageSize: 25,
+                                                        borderColor:
+                                                            textFieldButtonNameList[
+                                                                        i]
+                                                                    ["color"] ??
+                                                                AppColorConstants
+                                                                    .imageTextButtonColor,
                                                         buttonName:
                                                             textFieldButtonNameList[
                                                                 i]["name"],
-                                                        textStyle: const TextStyle(
-                                                            color: AppColorConstants
-                                                                .imageTextButtonColor,
+                                                        textStyle: TextStyle(
+                                                            color: textFieldButtonNameList[
+                                                                        i]
+                                                                    ["color"] ??
+                                                                AppColorConstants
+                                                                    .imageTextButtonColor,
                                                             fontSize: 10),
                                                         onTap: () {
                                                           onTextfieldButton(i);
@@ -714,38 +881,38 @@ class DashboardScreenState extends State<DashboardScreen> {
                                           ),
                                         ),
                                       ),
-                                    if (isKeyBoardShow ||
-                                        (pictureAppearanceSettingModel!
-                                                .sideNavigationBarPosition! ==
-                                            "left") ||
-                                        !pictureAppearanceSettingModel!
-                                            .sideNavigationBar!)
-                                      if (pictureAppearanceSettingModel!
-                                          .massageBox!)
-                                        Container(
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: CommonImageButton(
-                                            touchSettingModel:
-                                                touchSettingModel,
-                                            stopAudio: stopAudio,
-                                            isImageShow: true,
-                                            isTextShow: true,
-                                            vertical: 0,
-                                            height: 50,
-                                            width: 75,
-                                            text: "Menu",
-                                            flutterTts: flutterTts,
-                                            buttonIcon: Icons.menu,
-                                            buttonName: "Menu",
-                                            onTap: () {
-                                              isSearchOpen = false;
-                                              setState(() {});
-                                              _scaffoldKey.currentState
-                                                  ?.openEndDrawer();
-                                            },
-                                          ),
-                                        ),
+                                    // if (isKeyBoardShow ||
+                                    //     (pictureAppearanceSettingModel!
+                                    //             .sideNavigationBarPosition! ==
+                                    //         "left") ||
+                                    //     !pictureAppearanceSettingModel!
+                                    //         .sideNavigationBar!)
+                                    //   if (pictureAppearanceSettingModel!
+                                    //       .massageBox!)
+                                    //     Container(
+                                    //       margin: const EdgeInsets.symmetric(
+                                    //           horizontal: 10),
+                                    //       child: CommonImageButton(
+                                    //         touchSettingModel:
+                                    //             touchSettingModel,
+                                    //         stopAudio: stopAudio,
+                                    //         isImageShow: true,
+                                    //         isTextShow: true,
+                                    //         vertical: 0,
+                                    //         height: 50,
+                                    //         width: 75,
+                                    //         text: "Menu",
+                                    //         flutterTts: flutterTts,
+                                    //         buttonIcon: Icons.menu,
+                                    //         buttonName: "Menu",
+                                    //         onTap: () {
+                                    //           isSearchOpen = false;
+                                    //           setState(() {});
+                                    //           _scaffoldKey.currentState
+                                    //               ?.openEndDrawer();
+                                    //         },
+                                    //       ),
+                                    //     ),
                                     if (!pictureAppearanceSettingModel!
                                             .massageBox! &&
                                         !pictureAppearanceSettingModel!
@@ -803,6 +970,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                                     Expanded(
                                       child: isKeyBoardShow
                                           ? KeyboardScreen(
+                                              isFirstValue:
+                                                  _widgetList.length == 1 ||
+                                                      isDotClick,
                                               dataBaseService: dbService,
                                               flutterTts: flutterTts,
                                               onAdd: _addNewWidget,
@@ -833,6 +1003,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   keyboardSuggtionText,
                                             )
                                           : GridDateScreen(
+                                              changePosition: changePosition,
                                               gridScrollController:
                                                   _gridScrollController,
                                               hexToBordorColor:
@@ -844,7 +1015,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                               playAudio: playAudio,
                                               onAdd: _addNewWidget,
                                               changeTable: changeTables,
-                                              onLongTap: showDeleteDialog,
+                                              onLongTap: showOptionDialog,
                                               accountSettingModel:
                                                   accountSettingModel,
                                               audioSettingModel:
@@ -861,6 +1032,13 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   touchSettingModel,
                                             ),
                                     ),
+                                    if (!isKeyBoardShow &&
+                                        (pictureAppearanceSettingModel!
+                                                .sideNavigationBarPosition! ==
+                                            "right") &&
+                                        pictureAppearanceSettingModel!
+                                            .sideNavigationBar!)
+                                      sideBar()
                                   ],
                                 ),
                               )
@@ -870,12 +1048,6 @@ class DashboardScreenState extends State<DashboardScreen> {
                       },
                     ),
                   ),
-                  if (!isKeyBoardShow &&
-                      (pictureAppearanceSettingModel!
-                              .sideNavigationBarPosition! ==
-                          "right") &&
-                      pictureAppearanceSettingModel!.sideNavigationBar!)
-                    sideBar()
                 ],
               ),
       ),
@@ -888,9 +1060,10 @@ class DashboardScreenState extends State<DashboardScreen> {
       color: AppColorConstants.topRowBackground,
       child: Column(
         children: [
-          if (pictureAppearanceSettingModel!.sideNavigationBarPosition! ==
-                  "right" ||
-              !pictureAppearanceSettingModel!.massageBox!)
+          // if (pictureAppearanceSettingModel!.sideNavigationBarPosition! ==
+          //         "right" ||
+          //     !pictureAppearanceSettingModel!.massageBox!)
+          if (!pictureAppearanceSettingModel!.massageBox!)
             CommonImageButton(
               touchSettingModel: touchSettingModel,
               stopAudio: stopAudio,
@@ -909,9 +1082,10 @@ class DashboardScreenState extends State<DashboardScreen> {
                 _scaffoldKey.currentState?.openEndDrawer();
               },
             ),
-          if (pictureAppearanceSettingModel!.sideNavigationBarPosition! ==
-                  "right" ||
-              !pictureAppearanceSettingModel!.massageBox!)
+          // if (pictureAppearanceSettingModel!.sideNavigationBarPosition! ==
+          //         "right" ||
+          //     !pictureAppearanceSettingModel!.massageBox!)
+          if (!pictureAppearanceSettingModel!.massageBox!)
             const SizedBox(
               height: 10,
             ),
@@ -935,7 +1109,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                             color: AppColorConstants.imageTextColor,
                             fontSize: 90 / sidebarShow.length),
                         buttonIcon: sideButtonNameList[i]["icon"],
-                        buttonName: sideButtonNameList[i]["name"],
+                        buttonName: sideButtonNameList[i]["name"]
+                            .toString()
+                            .toUpperCase(),
                         flutterTts: flutterTts,
                         text: sideButtonNameList[i]["name"],
                         onTap: () async {
@@ -1011,10 +1187,28 @@ class DashboardScreenState extends State<DashboardScreen> {
   ];
 
   List<Map<String, dynamic>> textFieldButtonNameList = [
-    {"name": "Speak", "icon": Icons.spatial_tracking_outlined},
-    {"name": "Delete", "icon": Icons.backspace_rounded},
-    {"name": "Clear", "icon": Icons.delete_forever_outlined},
-    {"name": "Share", "icon": Icons.share},
+    {
+      "name": "Speak",
+      "icon": Icons.spatial_tracking_outlined,
+      "color": AppColorConstants.textFieldIcon1
+    },
+    {
+      "name": "Delete",
+      "icon": Icons.backspace_rounded,
+      "color": AppColorConstants.textFieldIcon2
+    },
+    {
+      "name": "Clear",
+      "icon": Icons.delete_forever_outlined,
+      "color": AppColorConstants.textFieldIcon3
+    },
+    {
+      "name": "Share",
+      "icon": Icons.share,
+      "color": AppColorConstants.textFieldIcon4
+    },
+    {"name": "Search", "icon": Icons.search},
+    {"name": "Menu", "icon": Icons.menu},
   ];
 
   void onTextfieldButton(int i) async {
@@ -1044,6 +1238,14 @@ class DashboardScreenState extends State<DashboardScreen> {
           MaterialPageRoute(
             builder: (context) => MyHomePage(title: saveAllText()),
           ));
+    } else if (textFieldButtonNameList[i]["name"] == "Search") {
+      isSearchOpen = true;
+      setState(() {});
+      _scaffoldKey.currentState?.openEndDrawer();
+    } else if (textFieldButtonNameList[i]["name"] == "Menu") {
+      isSearchOpen = false;
+      setState(() {});
+      _scaffoldKey.currentState?.openEndDrawer();
     }
 
     setState(() {});
@@ -1108,6 +1310,9 @@ class DashboardScreenState extends State<DashboardScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 3),
               child: Text(_mainTextFieldController.text));
         }
+      }
+      if (text == ".") {
+        isDotClick = true;
       }
       keyboardSuggtionText = _mainTextFieldController.text;
       scrollLastItem();
@@ -1194,31 +1399,37 @@ class DashboardScreenState extends State<DashboardScreen> {
   // }
 
   void readAllText() async {
+    String textInColumn = "";
     for (var item in _widgetList) {
       // Check if audio is present
       String? audioFile = item['audio'];
       if (audioFile != null && audioFile.isNotEmpty) {
+        if (textInColumn.isNotEmpty) {
+          await speakToText(textInColumn.trim(),
+              flutterTts: flutterTts); // Speak the text
+          textInColumn = "";
+        }
         await playAudioFile(audioFile); // Play the audio file
       } else {
         // Process text from the widget
         var widget = item['widget'];
         if (widget is Container) {
-          String textInColumn = "";
+          // String textInColumn = "";
           var child = widget.child;
           if (child is Column) {
-            textInColumn = child.children
+            textInColumn += child.children
                 .whereType<Text>()
                 .map((textWidget) => textWidget.data ?? "")
                 .join(" ");
           } else if (child is Text) {
-            textInColumn = child.data ?? "";
-          }
-          if (textInColumn.isNotEmpty) {
-            await speakToText(
-                textInColumn.trim(), flutterTts); // Speak the text
+            textInColumn += child.data ?? "";
           }
         }
       }
+    }
+    if (textInColumn.isNotEmpty) {
+      await speakToText(textInColumn.trim(),
+          flutterTts: flutterTts); // Speak the text
     }
   }
 
@@ -1251,7 +1462,8 @@ class DashboardScreenState extends State<DashboardScreen> {
     await completer.future; // Wait until audio playback completes
   }
 
-  Future<void> speakToText(String text, FlutterTts flutterTts) async {
+  Future<void> speakToText(String text,
+      {required FlutterTts flutterTts}) async {
     await flutterTts.speak(text);
     await flutterTts.awaitSpeakCompletion(true); // Wait for speech to finish
   }
