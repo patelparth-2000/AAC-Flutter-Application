@@ -4,6 +4,7 @@ class PictureAppearanceSettingModel {
   int? rowNumber; // Primary Key
   bool? massageBox;
   bool? pictureMassageBox;
+  bool? pictureDrag;
   String? picturePerScreen;
   int? picturePerScreenCount;
   String? textSize;
@@ -18,6 +19,7 @@ class PictureAppearanceSettingModel {
     this.rowNumber,
     this.massageBox,
     this.pictureMassageBox,
+    this.pictureDrag,
     this.picturePerScreen,
     this.picturePerScreenCount,
     this.textSize,
@@ -50,6 +52,7 @@ class PictureAppearanceSettingModel {
       'row_number': rowNumber,
       'massage_box': massageBox == true ? 1 : 0,
       'picture_massage_box': pictureMassageBox == true ? 1 : 0,
+      'picture_drag': pictureDrag == true ? 1 : 0,
       'picture_per_screen': picturePerScreen,
       'picture_per_screen_count': picturePerScreenCount,
       'text_size': textSize,
@@ -74,6 +77,7 @@ class PictureAppearanceSettingModel {
       rowNumber: map['row_number'],
       massageBox: map['massage_box'] == 1,
       pictureMassageBox: map['picture_massage_box'] == 1,
+      pictureDrag: map['picture_drag'] == 1,
       picturePerScreen: map['picture_per_screen'],
       picturePerScreenCount: map['picture_per_screen_count'],
       textSize: map['text_size'],

@@ -8,6 +8,7 @@ import 'package:avaz_app/services/data_base_service.dart';
 import 'package:avaz_app/util/dimensions.dart';
 import 'package:avaz_app/view/test/test2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
 
@@ -411,9 +412,21 @@ class DashboardScreenState extends State<DashboardScreen> {
     setState(() {});
   }
 
-  List<String> optionList = ["Pin", "Delete"];
+  void colorItemAdd(int? rowNumber, String color) async {
+    await dbService.colorDataAdd(
+        tableName: tableNames.last, rowNumber: rowNumber!, color: color);
+    for (var i = 0; i < getCategoryModalList.length; i++) {
+      if (rowNumber == getCategoryModalList[i].rowNumber) {
+        getCategoryModalList[i].color = color;
+      }
+    }
+    setState(() {});
+  }
 
-  void showOptionDialog(int? id, {int? rowNumber, int? pinValue}) {
+  List<String> optionList = ["Pin", "Delete", "Color"];
+
+  void showOptionDialog(int? id,
+      {int? rowNumber, int? pinValue, String? color, required String type}) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -478,6 +491,8 @@ class DashboardScreenState extends State<DashboardScreen> {
                             );
                           }
                           Navigator.pop(context);
+                        } else if (optionList[i] == "Color") {
+                          _showColorPicker(context, color, type, rowNumber!);
                         } else if (optionList[i] == "Delete") {
                           Navigator.pop(context);
                           showDeleteDialog(id, rowNumber: rowNumber);
@@ -527,6 +542,56 @@ class DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showColorPicker(
+      BuildContext context, String? color, String type, int rowNumber) {
+    Color currentColor = type == "voice"
+        ? AppColorConstants.keyBoardBackColor
+        : type == "sub_categories"
+            ? AppColorConstants.keyBoardBackColorPink
+            : AppColorConstants.keyBoardBackColorGreen;
+    if (color != null) {
+      final buffer = StringBuffer();
+      if (color.length == 6 || color.length == 7) buffer.write('ff');
+      buffer.write(color.replaceFirst('#', ''));
+      currentColor = Color(int.parse(buffer.toString(), radix: 16));
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select color'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: currentColor,
+              onColorChanged: (Color color) {
+                setState(() {
+                  currentColor = color;
+                });
+              },
+              pickerAreaHeightPercent: 0.8, // Adjust picker height
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Select'),
+              onPressed: () {
+                String selectedColor = colordata(currentColor) ?? "";
+                colorItemAdd(rowNumber, selectedColor);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

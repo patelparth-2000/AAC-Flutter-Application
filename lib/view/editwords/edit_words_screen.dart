@@ -378,17 +378,17 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
     return true;
   }
 
-  String? colordata() {
-    if (pickerColor == null) {
-      return null;
-    }
+//   String? colordata() {
+//     if (pickerColor == null) {
+//       return null;
+//     }
+// //     String colorHex =
+// //     '#${(pickerColor.opacity * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.r * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.g * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.b * 255).round().toRadixString(16).padLeft(2, '0')}';
+// // print(colorHex);
 //     String colorHex =
-//     '#${(pickerColor.opacity * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.r * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.g * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.b * 255).round().toRadixString(16).padLeft(2, '0')}';
-// print(colorHex);
-    String colorHex =
-        '#${(pickerColor!.r * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor!.g * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor!.b * 255).round().toRadixString(16).padLeft(2, '0')}';
-    return colorHex;
-  }
+//         '#${(pickerColor!.r * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor!.g * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor!.b * 255).round().toRadixString(16).padLeft(2, '0')}';
+//     return colorHex;
+//   }
 
   int? rowNumber;
 
@@ -406,7 +406,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
       "category_id": selectedCategory?.id,
       "sub_category_id": selectedSubCategory?.id,
       "name": voiceController.text,
-      "color": colordata(),
+      "color": colordata(pickerColor),
       "code": null,
       "image": imageName,
       "slug": voiceController.text.toLowerCase().replaceAll(" ", "-"),
@@ -522,7 +522,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
     request.fields.addAll({
       'name': voiceController.text,
       'lang': selectedLang != null ? selectedLang!.id : "",
-      "color": colordata() ?? "",
+      "color": colordata(pickerColor) ?? "",
       'created_by': '1'
     });
     if (imagePath != null) {

@@ -198,6 +198,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           },
                         ),
                         SettingWidget(
+                          text: "Pictures Drag",
+                          isSwitch: true,
+                          switchValue:
+                              pictureAppearanceSettingModel!.pictureDrag!,
+                          onSwitchChanged: (value) {
+                            pictureAppearanceSettingModel!.pictureDrag = value;
+                            dataBaseService.pictureAppearanceSettingUpdate(
+                                pictureAppearanceSettingModel!);
+                            widget.refreshSettingData();
+                            setState(() {});
+                          },
+                        ),
+                        SettingWidget(
                             text: "Pictures per Screen (Grid Size)",
                             onTap: () async {
                               nextpage(PicturesGridSize(

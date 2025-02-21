@@ -147,3 +147,15 @@ List<dynamic> gridList = [
     "width": Dimensions.screenWidth * .9,
   },
 ];
+
+String? colordata(Color? pickerColor) {
+    if (pickerColor == null) {
+      return null;
+    }
+//     String colorHex =
+//     '#${(pickerColor.opacity * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.r * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.g * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.b * 255).round().toRadixString(16).padLeft(2, '0')}';
+// print(colorHex);
+    String colorHex =
+        '#${(pickerColor.r * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.g * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.b * 255).round().toRadixString(16).padLeft(2, '0')}';
+    return colorHex;
+  }

@@ -64,6 +64,7 @@ class DataBaseService {
         row_number INTEGER PRIMARY KEY AUTOINCREMENT,
         massage_box BOOLEAN,
         picture_massage_box BOOLEAN,
+        picture_drag BOOLEAN,
         picture_per_screen TEXT,
         picture_per_screen_count INTEGER,
         text_size TEXT,
@@ -165,6 +166,7 @@ class DataBaseService {
       pictureAppearanceSettingInsert(PictureAppearanceSettingModel(
           massageBox: true,
           pictureMassageBox: true,
+          pictureDrag: false,
           picturePerScreen: "small_(40_pictures)",
           picturePerScreenCount: 40,
           textSize: "large",
@@ -360,10 +362,29 @@ class DataBaseService {
   }
 
   Future<void> pinDataAdd(
-      {required String tableName, required int rowNumber,required int pinvalue}) async {
+      {required String tableName,
+      required int rowNumber,
+      required int pinvalue}) async {
     final db = await database;
     final updatedValues = {
       'pin_item': pinvalue,
+    };
+
+    await db.update(
+      tableName, // Table name
+      updatedValues, // Updated values
+      where: 'row_number = ?', // Condition for updating
+      whereArgs: [rowNumber], // Arguments for the condition
+    );
+  }
+
+  Future<void> colorDataAdd(
+      {required String tableName,
+      required int rowNumber,
+      required String color}) async {
+    final db = await database;
+    final updatedValues = {
+      'color': color,
     };
 
     await db.update(

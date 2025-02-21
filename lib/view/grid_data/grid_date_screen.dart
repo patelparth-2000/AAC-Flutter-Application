@@ -50,7 +50,7 @@ class GridDateScreen extends StatefulWidget {
   final GeneralSettingModel? generalSettingModel;
   final TouchSettingModel? touchSettingModel;
   final Function()? stopAudio;
-  final Function(int? id, {int? rowNumber, int? pinValue})? onLongTap;
+  final Function(int? id, {int? rowNumber, int? pinValue,String? color,required String type})? onLongTap;
   final ScrollController gridScrollController;
 
   @override
@@ -193,7 +193,8 @@ class _GridDateScreenState extends State<GridDateScreen> {
                         .map((entry) {
                       var getCategoryData = entry.value;
                       return DraggableGridItem(
-                        isDraggable: getCategoryData.pinItem == 0,
+                        isDraggable: getCategoryData.pinItem == 0 &&
+                            widget.pictureAppearanceSettingModel!.pictureDrag!,
                         child: CommonZoomAnimationWidget(
                           hexToBordorColor: widget.hexToBordorColor,
                           onLongTap: widget.onLongTap,

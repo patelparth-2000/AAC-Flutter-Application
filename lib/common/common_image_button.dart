@@ -42,6 +42,7 @@ class CommonImageButton extends StatefulWidget {
     this.slug,
     this.type,
     this.itemId,
+    this.itemColor,
     this.rowNumber,
     this.flutterTts,
     this.onAdd,
@@ -90,6 +91,7 @@ class CommonImageButton extends StatefulWidget {
   final String? slug;
   final String? type;
   final String? itemId;
+  final String? itemColor;
   final int? rowNumber;
   final int? pinValue;
   final String textPostion;
@@ -101,7 +103,11 @@ class CommonImageButton extends StatefulWidget {
   final Function(String slug)? changeTable;
   final Function()? onTap;
   final Function()? stopAudio;
-  final Function(int? id, {int? rowNumber, int? pinValue})? onLongTap;
+  final Function(int? id,
+      {int? rowNumber,
+      int? pinValue,
+      String? color,
+      required String type})? onLongTap;
   final TouchSettingModel? touchSettingModel;
   // final AudioPlayer? player;
   final Function(String audioPath)? playAudio;
@@ -218,7 +224,10 @@ class _CommonImageButtonState extends State<CommonImageButton> {
     if (widget.isLongTap) {
       if (widget.onLongTap != null) {
         widget.onLongTap!(int.parse(widget.itemId.toString()),
-            rowNumber: widget.rowNumber, pinValue: widget.pinValue);
+            rowNumber: widget.rowNumber,
+            pinValue: widget.pinValue,
+            color: widget.itemColor,
+            type: widget.type!);
       }
     } else if (widget.isLongPress) {
       _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {

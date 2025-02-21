@@ -30,7 +30,8 @@ class CommonZoomAnimationWidget extends StatefulWidget {
   final double imageSize;
   final double textSize;
   final Function()? stopAudio;
-  final Function(int? id, {int? rowNumber, int? pinValue})? onLongTap;
+  final Function(int? id,
+      {int? rowNumber, int? pinValue, String? color,required String type})? onLongTap;
 
   const CommonZoomAnimationWidget(
       {super.key,
@@ -132,6 +133,7 @@ class _CommonZoomAnimationWidgetState extends State<CommonZoomAnimationWidget>
         textPostion: widget.pictureAppearanceSettingModel!.textPosition!,
         onTap: widget.getCategoryModal.type == "voice" ? _onTap : () {},
         isImageAsset: false,
+        itemColor: widget.getCategoryModal.color,
         buttonImage: widget.getCategoryModal.image != null
             ? "${widget.getCategoryModal.imagePath}${widget.getCategoryModal.image}"
             : null,
