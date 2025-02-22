@@ -49,6 +49,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
   DropDownModel? selectedCategory;
   DropDownModel? selectedSubCategory;
   DropDownModel? selectedLang;
+  DropDownColorModel? selectedColor;
   String? imagePath;
   String? imageName;
   String? audioPath; // To store the selected audio file path
@@ -107,6 +108,13 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
         imageName = widget.getCategoryModal!.image;
         imagePath =
             "${widget.getCategoryModal!.imagePath}${widget.getCategoryModal!.image}";
+      }
+      if (widget.getCategoryModal!.color != null) {
+        for (var items in colorDropList) {
+          if (items.color == widget.getCategoryModal!.color!) {
+            selectedColor = items;
+          }
+        }
       }
       if (widget.getCategoryModal!.type!.toLowerCase().replaceAll(" ", "_") ==
           "category") {
@@ -466,7 +474,8 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
       "category_id": selectedCategory?.id,
       "sub_category_id": selectedSubCategory?.id,
       "name": voiceController.text,
-      "color": colordata(pickerColor),
+      // "color": colordata(pickerColor),
+      "color": selectedColor?.color,
       "image": imageName,
       "voice_file": audioName,
       // "imagePath": directoryPath,
@@ -512,7 +521,8 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
       "category_id": selectedCategory?.id,
       "sub_category_id": selectedSubCategory?.id,
       "name": voiceController.text,
-      "color": colordata(pickerColor),
+      "color": selectedColor?.color,
+      // "color": colordata(pickerColor),
       "code": null,
       "image": imageName,
       "slug": voiceController.text.toLowerCase().replaceAll(" ", "-"),
@@ -661,6 +671,7 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
     }
   }
 
+  // ignore: unused_element
   void _showColorPicker(BuildContext context) {
     showDialog(
       context: context,
@@ -892,15 +903,27 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                           const SizedBox(
                             height: 5,
                           ),
-                          TextDropWidget(
+                          // TextDropWidget(
+                          //   hintText: "Select color",
+                          //   text: "Color",
+                          //   isColorPicker: true,
+                          //   colorPicker: pickerColor,
+                          //   onTap: () {
+                          //     _showColorPicker(context);
+                          //   },
+                          // ),
+                          ColorDropWidget(
                             hintText: "Select color",
                             text: "Color",
-                            isColorPicker: true,
-                            colorPicker: pickerColor,
-                            onTap: () {
-                              _showColorPicker(context);
+                            items: colorDropList,
+                            value: selectedColor,
+                            dropDownOnChanged: (value) {
+                              setState(() {
+                                selectedColor = value;
+                              });
                             },
                           ),
+
                           const SizedBox(
                             height: 5,
                           ),
@@ -1040,4 +1063,11 @@ class DropDownModel {
   String id;
 
   DropDownModel({required this.name, required this.id});
+}
+
+class DropDownColorModel {
+  String name;
+  String color;
+
+  DropDownColorModel({required this.name, required this.color});
 }

@@ -2,6 +2,7 @@ import 'package:avaz_app/view/editwords/edit_words_screen.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 
+import '../../common/common.dart';
 import '../../common/common_text_field_widget.dart';
 import '../../util/app_color_constants.dart';
 
@@ -121,6 +122,92 @@ class TextDropWidget extends StatelessWidget {
               ),
             ),
           ),
+      ],
+    );
+  }
+}
+
+class ColorDropWidget extends StatelessWidget {
+  const ColorDropWidget(
+      {super.key,
+      required this.text,
+      required this.hintText,
+      required this.items,
+      this.value,
+      this.dropDownOnChanged});
+  final String text;
+  final String hintText;
+  final List<DropDownColorModel> items;
+  final DropDownColorModel? value;
+  final ValueChanged<DropDownColorModel?>? dropDownOnChanged;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          alignment: Alignment.centerRight,
+          width: 120,
+          child: Text(
+            text,
+            style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Container(
+          decoration: BoxDecoration(
+              color: AppColorConstants.white,
+              border: Border.all(color: AppColorConstants.black),
+              borderRadius: BorderRadius.circular(5)),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton2<DropDownColorModel>(
+              isExpanded: false,
+              hint: Text(
+                hintText,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).hintColor,
+                ),
+              ),
+              items: items
+                  .map((DropDownColorModel item) =>
+                      DropdownMenuItem<DropDownColorModel>(
+                        value: item,
+                        child: SizedBox(
+                          width: 80,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                item.name,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Container(
+                                height: 20,
+                                width: 20,
+                                color: hexToBordorColorCommon(item.color),
+                              )
+                            ],
+                          ),
+                        ),
+                      ))
+                  .toList(),
+              value: value,
+              onChanged: dropDownOnChanged,
+              buttonStyleData: const ButtonStyleData(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                height: 35,
+                width: 250,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 35,
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

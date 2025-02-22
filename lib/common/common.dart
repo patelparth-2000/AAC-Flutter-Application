@@ -5,6 +5,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import '../util/app_color_constants.dart';
 import '../util/app_constants.dart';
 import '../util/dimensions.dart';
+import '../view/editwords/edit_words_screen.dart';
 
 class CommonSystemUI {
   static SystemUiOverlayStyle systemStyle = const SystemUiOverlayStyle(
@@ -149,13 +150,30 @@ List<dynamic> gridList = [
 ];
 
 String? colordata(Color? pickerColor) {
-    if (pickerColor == null) {
-      return null;
-    }
+  if (pickerColor == null) {
+    return null;
+  }
 //     String colorHex =
 //     '#${(pickerColor.opacity * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.r * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.g * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.b * 255).round().toRadixString(16).padLeft(2, '0')}';
 // print(colorHex);
-    String colorHex =
-        '#${(pickerColor.r * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.g * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.b * 255).round().toRadixString(16).padLeft(2, '0')}';
-    return colorHex;
-  }
+  String colorHex =
+      '#${(pickerColor.r * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.g * 255).round().toRadixString(16).padLeft(2, '0')}${(pickerColor.b * 255).round().toRadixString(16).padLeft(2, '0')}';
+  return colorHex;
+}
+
+Color hexToBordorColorCommon(String hexString) {
+  Color color = AppColorConstants.keyBoardBackColor;
+  final buffer = StringBuffer();
+  if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+  buffer.write(hexString.replaceFirst('#', ''));
+  color = Color(int.parse(buffer.toString(), radix: 16));
+  return color;
+}
+
+List<DropDownColorModel> colorDropList = [
+  DropDownColorModel(color: "#ffc366", name: "Things"),
+  DropDownColorModel(color: "#48ed94", name: "Actions"),
+  DropDownColorModel(color: "#f395b5", name: "Phrases"),
+  DropDownColorModel(color: "#ffe76b", name: "People"),
+  DropDownColorModel(color: "#be95bf", name: "Places"),
+];
