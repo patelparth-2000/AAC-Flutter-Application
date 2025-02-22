@@ -6,6 +6,7 @@ import 'package:avaz_app/util/app_color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
+import '../model/get_category_modal.dart';
 import '../view/settings/setting_model/touch_setting.dart';
 import '../view/settings/settings_page/touch_accommodation.dart';
 import 'common.dart';
@@ -59,6 +60,7 @@ class CommonImageButton extends StatefulWidget {
     this.onLongTap,
     this.touchSettingModel,
     this.pinValue,
+    this.getCategoryModal,
   });
   final double? vertical;
   final double? horizontal;
@@ -106,9 +108,9 @@ class CommonImageButton extends StatefulWidget {
   final Function(int? id,
       {int? rowNumber,
       int? pinValue,
-      String? color,
-      required String type})? onLongTap;
+      required GetCategoryModal getCategoryModal})? onLongTap;
   final TouchSettingModel? touchSettingModel;
+  final GetCategoryModal? getCategoryModal;
   // final AudioPlayer? player;
   final Function(String audioPath)? playAudio;
 
@@ -226,8 +228,7 @@ class _CommonImageButtonState extends State<CommonImageButton> {
         widget.onLongTap!(int.parse(widget.itemId.toString()),
             rowNumber: widget.rowNumber,
             pinValue: widget.pinValue,
-            color: widget.itemColor,
-            type: widget.type!);
+            getCategoryModal: widget.getCategoryModal!);
       }
     } else if (widget.isLongPress) {
       _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {

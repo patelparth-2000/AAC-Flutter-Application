@@ -378,15 +378,29 @@ class DataBaseService {
     );
   }
 
-  Future<void> colorDataAdd(
-      {required String tableName,
-      required int rowNumber,
-      required String color}) async {
+  Future<void> updateRowData({
+    required String tableName,
+    required int rowNumber,
+    required Map<String, dynamic> updatedValues,
+  }) async {
     final db = await database;
-    final updatedValues = {
-      'color': color,
-    };
 
+    // Get the current columns in the table
+    final currentColumns = await _getTableColumns(db, tableName);
+
+    // Find the new columns that are not in the current table
+    final newColumns = updatedValues.keys
+        .where((key) => !currentColumns.contains(key))
+        .toList();
+
+    // Add missing columns to the table
+    for (String column in newColumns) {
+      final alterTableQuery =
+          'ALTER TABLE "$tableName" ADD COLUMN "$column" TEXT';
+      await db.execute(alterTableQuery);
+    }
+
+    // Update the row after ensuring all columns exist
     await db.update(
       tableName, // Table name
       updatedValues, // Updated values

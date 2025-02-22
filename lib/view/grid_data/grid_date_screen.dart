@@ -50,7 +50,7 @@ class GridDateScreen extends StatefulWidget {
   final GeneralSettingModel? generalSettingModel;
   final TouchSettingModel? touchSettingModel;
   final Function()? stopAudio;
-  final Function(int? id, {int? rowNumber, int? pinValue,String? color,required String type})? onLongTap;
+  final Function(int? id, {int? rowNumber, int? pinValue,required GetCategoryModal getCategoryModal})? onLongTap;
   final ScrollController gridScrollController;
 
   @override

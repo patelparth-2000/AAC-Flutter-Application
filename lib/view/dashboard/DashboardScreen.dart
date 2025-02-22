@@ -8,7 +8,6 @@ import 'package:avaz_app/services/data_base_service.dart';
 import 'package:avaz_app/util/dimensions.dart';
 import 'package:avaz_app/view/test/test2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
 
@@ -18,6 +17,7 @@ import '../../model/search_table_model.dart';
 import '../../services/bulk_api_data.dart';
 import '../../util/app_color_constants.dart';
 import '../drawer/drawer_screen.dart';
+import '../editwords/edit_words_screen.dart';
 import '../grid_data/grid_date_screen.dart';
 import '../keyboard/keyboard_screen.dart';
 import '../settings/setting_model/account_setting_model.dart';
@@ -412,21 +412,12 @@ class DashboardScreenState extends State<DashboardScreen> {
     setState(() {});
   }
 
-  void colorItemAdd(int? rowNumber, String color) async {
-    await dbService.colorDataAdd(
-        tableName: tableNames.last, rowNumber: rowNumber!, color: color);
-    for (var i = 0; i < getCategoryModalList.length; i++) {
-      if (rowNumber == getCategoryModalList[i].rowNumber) {
-        getCategoryModalList[i].color = color;
-      }
-    }
-    setState(() {});
-  }
-
-  List<String> optionList = ["Pin", "Delete", "Color"];
+  List<String> optionList = ["Pin", "Delete", "Update"];
 
   void showOptionDialog(int? id,
-      {int? rowNumber, int? pinValue, String? color, required String type}) {
+      {int? rowNumber,
+      int? pinValue,
+      required GetCategoryModal getCategoryModal}) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -491,8 +482,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                             );
                           }
                           Navigator.pop(context);
-                        } else if (optionList[i] == "Color") {
-                          _showColorPicker(context, color, type, rowNumber!);
+                        } else if (optionList[i] == "Update") {
+                          _updateCategoriesData(
+                              context, getCategoryModal, rowNumber!);
                         } else if (optionList[i] == "Delete") {
                           Navigator.pop(context);
                           showDeleteDialog(id, rowNumber: rowNumber);
@@ -545,54 +537,50 @@ class DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _showColorPicker(
-      BuildContext context, String? color, String type, int rowNumber) {
-    Color currentColor = type == "voice"
+  void _updateCategoriesData(
+      BuildContext context, GetCategoryModal getCategoryModal, int rowNumber) {
+    Color currentColor = getCategoryModal.type == "voice"
         ? AppColorConstants.keyBoardBackColor
-        : type == "sub_categories"
+        : getCategoryModal.type == "sub_categories"
             ? AppColorConstants.keyBoardBackColorPink
             : AppColorConstants.keyBoardBackColorGreen;
-    if (color != null) {
+    if (getCategoryModal.color != null) {
       final buffer = StringBuffer();
-      if (color.length == 6 || color.length == 7) buffer.write('ff');
-      buffer.write(color.replaceFirst('#', ''));
+      if (getCategoryModal.color!.length == 6 ||
+          getCategoryModal.color!.length == 7) {
+        buffer.write('ff');
+      }
+      buffer.write(getCategoryModal.color!.replaceFirst('#', ''));
       currentColor = Color(int.parse(buffer.toString(), radix: 16));
     }
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select color'),
-          content: SingleChildScrollView(
-            child: ColorPicker(
-              pickerColor: currentColor,
-              onColorChanged: (Color color) {
-                setState(() {
-                  currentColor = color;
-                });
-              },
-              pickerAreaHeightPercent: 0.8, // Adjust picker height
-            ),
+    bool isCategory = false;
+    bool isSubCategory = false;
+    String name = "Voice";
+    if (getCategoryModal.type!.toLowerCase().replaceAll(" ", "_") ==
+        "category") {
+      isCategory = true;
+      isSubCategory = false;
+      name = "Category";
+    } else if (getCategoryModal.type!.toLowerCase().replaceAll(" ", "_") ==
+        "sub_categories") {
+      isCategory = false;
+      isSubCategory = true;
+      name = "Sub Category";
+    }
+    Navigator.pop(context);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EditWordsScreen(
+            refreshGirdData: refreshGirdData,
+            isCategory: isCategory,
+            isSubCategory: isSubCategory,
+            name: name,
+            touchSettingModel: touchSettingModel,
+            currentColor: currentColor,
+            getCategoryModal: getCategoryModal,
           ),
-          actions: [
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Select'),
-              onPressed: () {
-                String selectedColor = colordata(currentColor) ?? "";
-                colorItemAdd(rowNumber, selectedColor);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+        ));
   }
 
   void showDeleteDialog(int? id, {int? rowNumber}) {

@@ -27,13 +27,18 @@ class EditWordsScreen extends StatefulWidget {
     required this.refreshGirdData,
     this.isCategory = false,
     this.isSubCategory = true,
-    this.name = "Sub Category", this.touchSettingModel,
+    this.name = "Sub Category",
+    this.touchSettingModel,
+    this.currentColor,
+    this.getCategoryModal,
   });
   final Function() refreshGirdData;
   final bool isCategory;
   final bool isSubCategory;
   final String name;
   final TouchSettingModel? touchSettingModel;
+  final Color? currentColor;
+  final GetCategoryModal? getCategoryModal;
 
   @override
   State<EditWordsScreen> createState() => _EditWordsScreenState();
@@ -82,7 +87,55 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
       languageList.add(DropDownModel(name: lang.name!, id: "${lang.id}"));
     }
     adddata(categoryData);
+    updateData();
     setState(() {});
+  }
+
+  void updateData() {
+    if (widget.currentColor != null) {
+      currentColor = widget.currentColor!;
+      pickerColor = widget.currentColor!;
+    }
+    if (widget.getCategoryModal != null) {
+      for (var items in languageList) {
+        if (items.id == widget.getCategoryModal!.lang!) {
+          selectedLang = items;
+        }
+      }
+      if (widget.getCategoryModal!.imagePath != null &&
+          widget.getCategoryModal!.image != null) {
+        imageName = widget.getCategoryModal!.image;
+        imagePath =
+            "${widget.getCategoryModal!.imagePath}${widget.getCategoryModal!.image}";
+      }
+      if (widget.getCategoryModal!.type!.toLowerCase().replaceAll(" ", "_") ==
+          "category") {
+        voiceController.text = widget.getCategoryModal!.name!;
+      } else if (widget.getCategoryModal!.type!
+              .toLowerCase()
+              .replaceAll(" ", "_") ==
+          "sub_categories") {
+        for (var items in categoryList) {
+          if (items.id == widget.getCategoryModal!.categoryId!) {
+            selectedCategory = items;
+          }
+        }
+        voiceController.text = widget.getCategoryModal!.name!;
+      } else {
+        for (var items in categoryList) {
+          if (items.id == widget.getCategoryModal!.categoryId!) {
+            selectedCategory = items;
+            for (var getCategoryModal in getCategoryModalList) {
+              if (getCategoryModal.id == items.id) {
+                String tableName = getCategoryModal.slug!.replaceAll("-", "_");
+                addSubCategory(tableName);
+              }
+            }
+          }
+        }
+        voiceController.text = widget.getCategoryModal!.name!;
+      }
+    }
   }
 
   void adddata(categoryData) async {
@@ -119,6 +172,17 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
       }
     }
     selectedSubCategory = null;
+    if (widget.getCategoryModal != null) {
+      if (widget.getCategoryModal!.subCategoryId != null &&
+          widget.getCategoryModal!.subCategoryId != "") {
+        for (var items in subCategoryList) {
+          if (items.id == widget.getCategoryModal!.subCategoryId!) {
+            selectedSubCategory = items;
+            setState(() {});
+          }
+        }
+      }
+    }
     setState(() {});
   }
 
@@ -392,6 +456,48 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
 
   int? rowNumber;
 
+  void updataSaveData(BuildContext context) async {
+    String tableName = "";
+    rowNumber = widget.getCategoryModal!.rowNumber;
+    Map<String, dynamic> data = {
+      "id": widget.getCategoryModal!.id,
+      "type": widget.getCategoryModal!.type,
+      "lang": selectedLang?.id,
+      "category_id": selectedCategory?.id,
+      "sub_category_id": selectedSubCategory?.id,
+      "name": voiceController.text,
+      "color": colordata(pickerColor),
+      "image": imageName,
+      "voice_file": audioName,
+      // "imagePath": directoryPath,
+    };
+
+    if (selectedSubCategory != null) {
+      for (var item in getSubCategoryModalList) {
+        if (item.id == selectedSubCategory?.id) {
+          tableName = item.slug!.replaceAll("-", "_");
+          await dbService.updateRowData(
+              tableName: tableName, updatedValues: data, rowNumber: rowNumber!);
+        }
+      }
+    } else if (selectedCategory != null) {
+      for (var item in getCategoryModalList) {
+        if (item.id == selectedCategory?.id) {
+          tableName = item.slug!.replaceAll("-", "_");
+          await dbService.updateRowData(
+              tableName: tableName, updatedValues: data, rowNumber: rowNumber!);
+        }
+      }
+    } else {
+      tableName = "category_table";
+      await dbService.updateRowData(
+          tableName: tableName, updatedValues: data, rowNumber: rowNumber!);
+    }
+    widget.refreshGirdData();
+    // ignore: use_build_context_synchronously
+    Navigator.pop(context);
+  }
+
   void addData(BuildContext context) async {
     if (!isValid()) {
       return;
@@ -629,7 +735,11 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                   margin: const EdgeInsets.only(right: 10),
                   child: GestureDetector(
                     onTap: () {
-                      addData(context);
+                      if (widget.getCategoryModal != null) {
+                        updataSaveData(context);
+                      } else {
+                        addData(context);
+                      }
                     },
                     child: const Text(
                       "Save",
@@ -782,20 +892,18 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                           const SizedBox(
                             height: 5,
                           ),
-                          if (widget.isCategory)
-                            TextDropWidget(
-                              hintText: "Select color",
-                              text: "Color",
-                              isColorPicker: true,
-                              colorPicker: pickerColor,
-                              onTap: () {
-                                _showColorPicker(context);
-                              },
-                            ),
-                          if (widget.isCategory)
-                            const SizedBox(
-                              height: 5,
-                            ),
+                          TextDropWidget(
+                            hintText: "Select color",
+                            text: "Color",
+                            isColorPicker: true,
+                            colorPicker: pickerColor,
+                            onTap: () {
+                              _showColorPicker(context);
+                            },
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
                           if (!widget.isCategory && !widget.isSubCategory)
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -822,7 +930,8 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                                     Row(
                                       children: [
                                         CommonImageButton(
-                                          touchSettingModel: widget.touchSettingModel,
+                                          touchSettingModel:
+                                              widget.touchSettingModel,
                                           buttonIcon:
                                               Icons.my_library_music_rounded,
                                           isImageShow: true,
@@ -832,7 +941,8 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                                           width: 10,
                                         ),
                                         CommonImageButton(
-                                          touchSettingModel: widget.touchSettingModel,
+                                          touchSettingModel:
+                                              widget.touchSettingModel,
                                           buttonIcon: isRecording
                                               ? Icons.stop
                                               : Icons.mic,
@@ -872,7 +982,8 @@ class _EditWordsScreenState extends State<EditWordsScreen> {
                                           Row(
                                             children: [
                                               CommonImageButton(
-                                                touchSettingModel: widget.touchSettingModel,
+                                                touchSettingModel:
+                                                    widget.touchSettingModel,
                                                 buttonIcon: isPlaying
                                                     ? Icons.stop
                                                     : Icons.play_arrow,
