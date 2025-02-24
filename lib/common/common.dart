@@ -176,4 +176,8 @@ List<DropDownColorModel> colorDropList = [
   DropDownColorModel(color: "#f395b5", name: "Phrases"),
   DropDownColorModel(color: "#ffe76b", name: "People"),
   DropDownColorModel(color: "#be95bf", name: "Places"),
+  DropDownColorModel(color: "#e4d9df", name: "Time"),
+  DropDownColorModel(color: "#81cceb", name: "Description"),
+  DropDownColorModel(color: "#eeb588", name: "Short"),
+  DropDownColorModel(color: "#c8ffac", name: "None"),
 ];
